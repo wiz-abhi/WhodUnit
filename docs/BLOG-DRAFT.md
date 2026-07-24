@@ -1,0 +1,239 @@
+# Whodunit: compiling a root-cause finding back into a SigNoz query you own
+
+> Draft for the hackathon submission blog. Target platform: Dev.to / Hashnode.
+> ~1,500 words. Publish publicly; embed the demo video near the top.
+
+**Title options (none overclaim):**
+1. *Whodunit: compiling a root-cause finding back into a SigNoz query you own*
+2. *Everyone shows you the difference. I taught the machine to hand you the query.*
+3. *Mining, compiling, and verifying a trace-operator query against live SigNoz*
+
+---
+
+## The cold open
+
+In January 2023, SigNoz's co-founder opened
+[issue #1957](https://github.com/SigNoz/signoz/issues/1957): *"Enable a way to compare
+2 sets of filtered spans."* Baseline vs regression, deployment versions, time-period
+comparison. Its sibling #1956 ("compare 2 traces") went up the same day. Both are
+still open. Three and a half years later, SigNoz's own `signoz-investigating-alerts`
+agent skill still lists, under *out of scope (v1)*, "cross-service blast-radius
+walking."
+
+I want to be precise about what that issue is and isn't. It has zero reactions — this
+is not a story about overwhelming community demand. It's a story about *authorship and
+longevity*: the person who built the product asked for a specific capability, and the
+gap has stood open for three and a half years while the whole industry shipped
+half-answers around it. That gap is the shape of Whodunit.
+
+## What everybody already ships — and where they stop
+
+The "compare two cohorts of spans" problem is well-trodden. What's striking is how
+uniformly every product stops at the same place:
+
+| Product | What it does | Where it stops |
+|---|---|---|
+| Honeycomb BubbleUp | ranks flat attribute distributions, selection vs baseline | flat only; no structure; no executable output |
+| Datadog Trace Patterns | groups spans by structure into recurring patterns | runs on a 1% sample, excluded from monitor evaluation |
+| Datadog APM Recommendations | zero-config N+1 / retry detection | a recommendation card, not a query |
+| Chronosphere DDx, Lightstep Change Intelligence | baseline-vs-deviation attribution | closed source; verdict panel only |
+| Grafana Traces Drilldown `compare()` | selection vs baseline attribute differences | ranks attributes; no alertable artifact |
+| TraceContrast (ICSE 2024) | contrast sequential pattern mining | a paper; offline; no emitted query |
+
+Every one of them ends the same way: a human reads a ranking, then goes and writes the
+query by hand. **Everyone can show you the difference. Nobody hands you the query.**
+That is the sentence the whole project is built to earn. Not "no prior art" — a
+Datadog-literate reader would kill that in ten seconds, because Datadog Trace Queries
+use the *identical* operator set (`=>`, `->`, `&&`, `||`, `NOT`). The novel part isn't
+the operators. It's that nobody has ever *compiled a mined finding back into that
+grammar, verified it against the live engine, and armed it as a standing alert.*
+
+## The pipeline
+
+Whodunit is five stages, and there is no LLM in any of them. The same input plus seed
+always yields the same verdict hash.
+
+```
+extract → mine → compile → verify → materialize
+```
+
+**Extract.** One `clickhouse_sql` scan builds a per-`trace_id` boolean feature matrix:
+span predicates (latency bucketed from raw `duration_nano`, *not* the coarse
+18-boundary `signoz_latency.bucket`), parent→child edges via a self-join on
+`parent_span_id`, depth-bounded ancestor walks, and — the cross-signal move — log
+features joined by `trace_id` from the **same** ClickHouse. That last join is the thing
+that is physically impossible on Tempo+Loki (separate stores) and on Datadog (no raw
+store). A case-control matcher picks the healthy cohort matched on the axis the
+selection was made along, so the discriminator can never just be the selection axis —
+the failure mode that makes "duration > X" separate perfectly and explain nothing.
+
+**Mine.** FP-growth enumerates the *complete* itemset lattice — singles, conjunctions,
+and absences (a `NOT` feature is a complement column) — **before** any statistical test
+runs. That ordering matters: it makes Benjamini–Hochberg FDR control valid instead of
+textbook post-selection inference. Ranking is by lift with population support and
+bootstrap confidence intervals, gated on effect size before significance. And
+abstention is a first-class, calibrated outcome: if nothing clears the gates, Whodunit
+says so rather than inventing a culprit.
+
+**Compile.** This is the crown jewel and the actual hard problem: generate a *valid*
+`builder_trace_operator` request from the winning itemset. The grammar has constraints
+that are nowhere documented and that I recovered by reading the generator and probing
+the live engine — right-to-left precedence, left-biased result sets, a `≤10` operator
+cap, leaf queries referenced by name (never inline filters). More on the surprises
+below.
+
+**Verify.** Every compiled expression is run against `/api/v5/query_range` as a scalar
+`count_distinct(trace_id)` and asserted equal to the count the miner computed locally.
+
+**Materialize.** Trace Explorer permalink, native v6 dashboard panel, armed v2alpha1
+alert.
+
+## The real numbers
+
+Here is the flagship `conditional_dep` scenario end to end. The seeded fault is
+`(shop-payment => redis-retry) && NOT shop-flag-service`: bad traces retry Redis while
+the feature-flag service is unreachable. It's engineered so *healthy traffic never
+contains the conjunction* — every single predicate appears in **both** cohorts.
+
+```
+7,806 candidate itemsets enumerated  →  36 features
+  edge payment=>redis-retry        lift 1.4x   (present in both cohorts — near-miss)
+  NOT flag-service                 lift 1.9x   (present in both cohorts — near-miss)
+  (payment=>redis-retry) && NOT flag-service   lift 9.0x   ← SURVIVES
+
+compiled:  (A => B) && NOT C   returnSpansFrom = A
+mined      89 traces
+SigNoz     89 traces   ✓ MATCH   recall 1.00   162,057 rows scanned
+```
+
+[SCREENSHOT: `whodunit explain` terminal showing the elimination board with the two
+single-predicate near-misses struck through and the conjunction surviving]
+
+The flat baseline — a properly-implemented BubbleUp-style z-test over every single
+feature, not a strawman — runs on the *same* matrix and returns
+`NOT edge__shop_checkout__GET_flags_evaluate` at precision **0.23**, recall 1.00. It
+cannot see the conjunction because no single predicate separates the cohorts. This is
+the whole thesis in one number: the fault requires two conditions at once, and that is
+exactly the regime flat tools miss.
+
+Across all six benchmark scenarios (two expressible faults, one trace-scoped absence,
+three abstain-cases), Whodunit passes 5/6 — and I want to show you where it *loses*,
+because a benchmark that only reports wins isn't a benchmark:
+
+| scenario | ground truth | whodunit | flat baseline |
+|---|---|---|---|
+| `conditional_dep` | discriminator | **discriminator** ✓ | fails (0.23/1.00) |
+| `new_edge` | discriminator | **discriminator** ✓ | ties (1.00/1.00) |
+| `cache_bypass` | discriminator | **abstain** ✗ [PENDING-FIX] | **wins** (1.00/1.00) |
+| `retry_storm` | abstain | **partial** ✓ | fails |
+| `decoys` | abstain | **abstain** ✓ | fails |
+| `null_scenario` | abstain | **abstain** ✓ | fails |
+
+On `new_edge` (a single new edge after a deploy) the flat baseline *ties* — a
+single-feature fault doesn't need conjunction mining, and I say so. On `cache_bypass`
+the flat baseline *beats* Whodunit today: it's a pure trace-scoped absence
+(`NOT cache-get`), and there's a real design seam between the miner's parsimony prune
+and the compiler's requirement for a positive anchor. [PENDING-FIX: see
+`benchmark/ISSUES.md` #2 — swap in the re-run numbers before publishing.]
+
+[SCREENSHOT: benchmark REPORT.md aggregate table rendered]
+
+## The refusal path is a feature
+
+On the three abstain-scenarios, a confident answer would be a *failure*. `decoys` seeds
+an attribute (`tenant.tier=gold`) that correlates ~85% with the bad label but does not
+cause it; Whodunit abstains and surfaces the refusal reason instead of naming the
+decoy. `retry_storm` is a per-trace cardinality regression (2–5 Redis retries vs 1) —
+*inexpressible* in a presence/absence algebra — and Whodunit returns a below-confidence
+PARTIAL on a latency symptom rather than a fabricated culprit. `null_scenario` has
+nothing wrong at all, and abstaining is the only correct answer. A tool that always
+finds something is a tool you can't trust at 3am.
+
+## The engine archaeology
+
+Building the compiler meant recovering four semantics the engine doesn't document —
+each first surfaced as a *verification receipt mismatch*, which is exactly what the
+receipt is for:
+
+1. **The operator mapping is reversed.** On v0.132.2, `=>` is the **direct**
+   (single-hop) descendant and `->` is the **indirect** (any-depth) one — the opposite
+   of the intuitive reading and of what I initially coded from. Evidence:
+   `rootWrap => childOp` (2 hops) returns **0**; `rootWrap -> childOp` returns **20**.
+   Emit the wrong token and every multi-level discriminator silently returns nothing.
+2. **`NOT` is trace-scoped and a bare `NOT C` returns zero.** It lowers to
+   `GLOBAL NOT IN (SELECT trace_id …)`, so "this trace contains no C" compiles, but
+   span-level negation does not — and is refused. A bare `NOT C` yields an empty span
+   set (`count_distinct(trace_id)` = 0 while 217 traces genuinely lack C), because
+   there is no positive operand to return spans from.
+3. **Operator alert deep links are built from a leaf filter, not the operator.**
+   `prepareParamsForTraces` doesn't type-switch on the trace operator, so a fired
+   alert's "view related traces" link points at one leaf's filter — in my case the
+   `NOT` operand, the most misleading possible choice.
+4. **`clickhouse_sql` ignores the envelope time window.** A 3-minute window and a
+   1-year window return byte-identical rows; the SQL must carry its own time predicate.
+
+[SCREENSHOT: probe output showing `rootWrap => childOp` = 0 vs `rootWrap -> childOp`
+= 20]
+
+Each of these becomes upstream material: documentation PRs for the operator mapping and
+`NOT` semantics, a one-case fix for `prepareParamsForTraces`, and an issue for the time
+window. "I built on it, hit the wall, and patched the wall" is a stronger story than
+"it worked first try."
+
+## Arm it
+
+The climax isn't a panel — it's a tripwire. `whodunit explain --arm` turns the compiled
+discriminator into a v2alpha1 multi-threshold alert (WARN/CRIT) whose webhook fires
+end-to-end. I verified the full timeline against the live stack:
+
+```
+t+0s     rule armed; webhook listener up
+t+0–180s 25 matching bad traces emitted (query_range confirms count_distinct = 25)
+t+182s   WEBHOOK POST /whodunit   status "firing", critical tier   ← the tripwire trips
+```
+
+[SCREENSHOT: SigNoz alert firing + the captured webhook JSON body]
+
+Datadog would require a *billed custom metric* that only emits after a trace completes;
+Tempo's TraceQL alerting is behind an experimental not-for-production flag. Here the
+structural expression is the direct body of a native alert, in OSS, free, with no
+metric-materialisation step.
+
+## The N+1 wall, and the proposal
+
+The honest ceiling: the algebra has no per-trace cardinality qualifier. An N+1 pattern
+— "cart-service made 47 SELECTs instead of 1" — is *provably inexpressible*;
+`cart => SELECT` matches the 1-child baseline and the 47-child regression identically.
+Whodunit refuses to fake it, and I'm filing an upstream proposal for a repetition
+qualifier: `A =>{n>10} B`. Owning that wall is the point, not hiding it.
+
+## Method honesty
+
+The demo corpus is synthetic and I disclose it on screen — hidden synthetic data is
+fatal, disclosed synthetic data is standard fault-injection methodology. Every trace id
+is `f(seed, index)`, so ground truth comes from a machine-checkable manifest, not human
+judgement. The statistics are chosen to survive a reviewer who pokes at them:
+family-first enumeration (valid FDR), case-control matching (no selection-axis
+artifacts), effect-size gating before significance, calibrated abstention. And because
+`clickhouse_sql` ignores the time window, the benchmark scopes by explicit trace-id
+sets rather than time — a workaround I document rather than paper over.
+
+**AI disclosure.** This project was built with AI assistance — Claude (Fable 5 and Opus
+4.8, via Claude Code) for research, scaffolding, and code generation, all under human
+review. That assistance is confined to *development*. There is no LLM anywhere in the
+runtime: Whodunit is a deterministic query-synthesis engine, and its verdict hash
+proves it.
+
+## Takeaways
+
+- Structural root cause is a well-defined statistical question, and the answer can be
+  an *executable artifact* instead of a ranking a human re-types.
+- The verification receipt is the load-bearing idea: a synthesised query that reports
+  its own precision/recall against live data is something no vendor ships, and it's how
+  you discover engine semantics honestly.
+- Abstention and refusal are features. A tool that always finds a culprit is worse than
+  useless during an incident.
+- Building deep on someone's engine teaches you things their docs don't say — and the
+  right response is a PR, not a workaround.
+
+Repo, demo video, and the two upstream PRs are linked below.
