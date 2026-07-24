@@ -1,0 +1,128 @@
+{
+  "version": "v5",
+  "schemaVersion": "v2alpha1",
+  "alert": "whodunit-(A => B) && NOT C",
+  "alertType": "TRACES_BASED_ALERT",
+  "ruleType": "threshold_rule",
+  "evaluation": {
+    "kind": "rolling",
+    "spec": {
+      "evalWindow": "5m0s",
+      "frequency": "30s"
+    }
+  },
+  "condition": {
+    "compositeQuery": {
+      "queries": [
+        {
+          "type": "builder_query",
+          "spec": {
+            "name": "A",
+            "signal": "traces",
+            "stepInterval": 60,
+            "aggregations": [
+              {
+                "expression": "count()"
+              }
+            ],
+            "filter": {
+              "expression": "deployment.environment = 'whodunit-demo' AND service.name = 'shop-payment'"
+            },
+            "disabled": false
+          }
+        },
+        {
+          "type": "builder_query",
+          "spec": {
+            "name": "B",
+            "signal": "traces",
+            "stepInterval": 60,
+            "aggregations": [
+              {
+                "expression": "count()"
+              }
+            ],
+            "filter": {
+              "expression": "deployment.environment = 'whodunit-demo' AND name = 'redis-retry'"
+            },
+            "disabled": false
+          }
+        },
+        {
+          "type": "builder_query",
+          "spec": {
+            "name": "C",
+            "signal": "traces",
+            "stepInterval": 60,
+            "aggregations": [
+              {
+                "expression": "count()"
+              }
+            ],
+            "filter": {
+              "expression": "deployment.environment = 'whodunit-demo' AND service.name = 'shop-flag-service'"
+            },
+            "disabled": false
+          }
+        },
+        {
+          "type": "builder_trace_operator",
+          "spec": {
+            "name": "T1",
+            "expression": "(A => B) && NOT C",
+            "returnSpansFrom": "A",
+            "aggregations": [
+              {
+                "expression": "count_distinct(trace_id)"
+              }
+            ],
+            "stepInterval": 0,
+            "disabled": false
+          }
+        }
+      ],
+      "panelType": "graph",
+      "queryType": "builder"
+    },
+    "selectedQueryName": "T1",
+    "thresholds": {
+      "kind": "basic",
+      "spec": [
+        {
+          "name": "warning",
+          "target": 1,
+          "matchType": "1",
+          "op": "1",
+          "channels": [
+            "whodunit-default"
+          ]
+        },
+        {
+          "name": "critical",
+          "target": 5,
+          "matchType": "1",
+          "op": "1",
+          "channels": [
+            "whodunit-default"
+          ]
+        }
+      ]
+    }
+  },
+  "labels": {
+    "severity": "critical",
+    "team": "whodunit"
+  },
+  "annotations": {
+    "description": "Whodunit discriminator (A => B) && NOT C \u2014 count_distinct(trace_id) of matching traces.",
+    "summary": "Whodunit: (A => B) && NOT C is firing."
+  },
+  "notificationSettings": {
+    "groupBy": [],
+    "usePolicy": false,
+    "renotify": {
+      "enabled": false
+    }
+  },
+  "disabled": false
+}

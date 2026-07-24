@@ -1,0 +1,146 @@
+{
+  "queryType": "builder",
+  "builder": {
+    "queryData": [
+      {
+        "dataSource": "traces",
+        "queryName": "A",
+        "aggregateAttribute": {
+          "id": "----",
+          "dataType": "",
+          "key": "",
+          "type": ""
+        },
+        "timeAggregation": "rate",
+        "spaceAggregation": "sum",
+        "filter": {
+          "expression": "deployment.environment = 'whodunit-demo' AND service.name = 'shop-payment'"
+        },
+        "aggregations": [
+          {
+            "expression": "count()"
+          }
+        ],
+        "functions": [],
+        "filters": {
+          "items": [],
+          "op": "AND"
+        },
+        "expression": "A",
+        "disabled": true,
+        "stepInterval": null,
+        "having": [],
+        "limit": null,
+        "orderBy": [],
+        "groupBy": [],
+        "legend": "",
+        "reduceTo": "avg"
+      },
+      {
+        "dataSource": "traces",
+        "queryName": "B",
+        "aggregateAttribute": {
+          "id": "----",
+          "dataType": "",
+          "key": "",
+          "type": ""
+        },
+        "timeAggregation": "rate",
+        "spaceAggregation": "sum",
+        "filter": {
+          "expression": "deployment.environment = 'whodunit-demo' AND name = 'redis-retry'"
+        },
+        "aggregations": [
+          {
+            "expression": "count()"
+          }
+        ],
+        "functions": [],
+        "filters": {
+          "items": [],
+          "op": "AND"
+        },
+        "expression": "B",
+        "disabled": true,
+        "stepInterval": null,
+        "having": [],
+        "limit": null,
+        "orderBy": [],
+        "groupBy": [],
+        "legend": "",
+        "reduceTo": "avg"
+      },
+      {
+        "dataSource": "traces",
+        "queryName": "C",
+        "aggregateAttribute": {
+          "id": "----",
+          "dataType": "",
+          "key": "",
+          "type": ""
+        },
+        "timeAggregation": "rate",
+        "spaceAggregation": "sum",
+        "filter": {
+          "expression": "deployment.environment = 'whodunit-demo' AND service.name = 'shop-flag-service'"
+        },
+        "aggregations": [
+          {
+            "expression": "count()"
+          }
+        ],
+        "functions": [],
+        "filters": {
+          "items": [],
+          "op": "AND"
+        },
+        "expression": "C",
+        "disabled": true,
+        "stepInterval": null,
+        "having": [],
+        "limit": null,
+        "orderBy": [],
+        "groupBy": [],
+        "legend": "",
+        "reduceTo": "avg"
+      }
+    ],
+    "queryFormulas": [],
+    "queryTraceOperator": [
+      {
+        "name": "T1",
+        "expression": "(A => B) && NOT C",
+        "returnSpansFrom": "A",
+        "aggregations": [
+          {
+            "expression": "count_distinct(trace_id)"
+          }
+        ],
+        "filter": {
+          "expression": ""
+        },
+        "disabled": false,
+        "stepInterval": null,
+        "legend": ""
+      }
+    ]
+  },
+  "promql": [
+    {
+      "name": "A",
+      "query": "",
+      "legend": "",
+      "disabled": false
+    }
+  ],
+  "clickhouse_sql": [
+    {
+      "name": "A",
+      "legend": "",
+      "disabled": false,
+      "query": ""
+    }
+  ],
+  "id": "00000000-0000-0000-0000-000000000000",
+  "unit": ""
+}

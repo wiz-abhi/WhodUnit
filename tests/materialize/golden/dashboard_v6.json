@@ -1,0 +1,351 @@
+{
+  "schemaVersion": "v6",
+  "name": "whodunit-a-b-not-c",
+  "spec": {
+    "display": {
+      "name": "Whodunit \u2014 (A => B) && NOT C"
+    },
+    "variables": [],
+    "panels": {
+      "0": {
+        "kind": "Panel",
+        "spec": {
+          "display": {
+            "name": "Matching traces over time",
+            "description": "count_distinct(trace_id) of (A => B) && NOT C"
+          },
+          "plugin": {
+            "kind": "signoz/TimeSeriesPanel",
+            "spec": {}
+          },
+          "queries": [
+            {
+              "kind": "time_series",
+              "spec": {
+                "plugin": {
+                  "kind": "signoz/CompositeQuery",
+                  "spec": {
+                    "queries": [
+                      {
+                        "type": "builder_query",
+                        "spec": {
+                          "name": "A",
+                          "signal": "traces",
+                          "stepInterval": 60,
+                          "aggregations": [
+                            {
+                              "expression": "count()"
+                            }
+                          ],
+                          "filter": {
+                            "expression": "deployment.environment = 'whodunit-demo' AND service.name = 'shop-payment'"
+                          },
+                          "disabled": false
+                        }
+                      },
+                      {
+                        "type": "builder_query",
+                        "spec": {
+                          "name": "B",
+                          "signal": "traces",
+                          "stepInterval": 60,
+                          "aggregations": [
+                            {
+                              "expression": "count()"
+                            }
+                          ],
+                          "filter": {
+                            "expression": "deployment.environment = 'whodunit-demo' AND name = 'redis-retry'"
+                          },
+                          "disabled": false
+                        }
+                      },
+                      {
+                        "type": "builder_query",
+                        "spec": {
+                          "name": "C",
+                          "signal": "traces",
+                          "stepInterval": 60,
+                          "aggregations": [
+                            {
+                              "expression": "count()"
+                            }
+                          ],
+                          "filter": {
+                            "expression": "deployment.environment = 'whodunit-demo' AND service.name = 'shop-flag-service'"
+                          },
+                          "disabled": false
+                        }
+                      },
+                      {
+                        "type": "builder_trace_operator",
+                        "spec": {
+                          "name": "T1",
+                          "expression": "(A => B) && NOT C",
+                          "returnSpansFrom": "A",
+                          "aggregations": [
+                            {
+                              "expression": "count_distinct(trace_id)"
+                            }
+                          ],
+                          "stepInterval": 0,
+                          "disabled": false
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "1": {
+        "kind": "Panel",
+        "spec": {
+          "display": {
+            "name": "Share of traffic",
+            "description": "operator matches / anchor traffic (F1)"
+          },
+          "plugin": {
+            "kind": "signoz/TimeSeriesPanel",
+            "spec": {}
+          },
+          "queries": [
+            {
+              "kind": "time_series",
+              "spec": {
+                "plugin": {
+                  "kind": "signoz/CompositeQuery",
+                  "spec": {
+                    "queries": [
+                      {
+                        "type": "builder_query",
+                        "spec": {
+                          "name": "A",
+                          "signal": "traces",
+                          "stepInterval": 60,
+                          "aggregations": [
+                            {
+                              "expression": "count()"
+                            }
+                          ],
+                          "filter": {
+                            "expression": "deployment.environment = 'whodunit-demo' AND service.name = 'shop-payment'"
+                          },
+                          "disabled": false
+                        }
+                      },
+                      {
+                        "type": "builder_query",
+                        "spec": {
+                          "name": "B",
+                          "signal": "traces",
+                          "stepInterval": 60,
+                          "aggregations": [
+                            {
+                              "expression": "count()"
+                            }
+                          ],
+                          "filter": {
+                            "expression": "deployment.environment = 'whodunit-demo' AND name = 'redis-retry'"
+                          },
+                          "disabled": false
+                        }
+                      },
+                      {
+                        "type": "builder_query",
+                        "spec": {
+                          "name": "C",
+                          "signal": "traces",
+                          "stepInterval": 60,
+                          "aggregations": [
+                            {
+                              "expression": "count()"
+                            }
+                          ],
+                          "filter": {
+                            "expression": "deployment.environment = 'whodunit-demo' AND service.name = 'shop-flag-service'"
+                          },
+                          "disabled": false
+                        }
+                      },
+                      {
+                        "type": "builder_trace_operator",
+                        "spec": {
+                          "name": "T1",
+                          "expression": "(A => B) && NOT C",
+                          "returnSpansFrom": "A",
+                          "aggregations": [
+                            {
+                              "expression": "count_distinct(trace_id)"
+                            }
+                          ],
+                          "stepInterval": 0,
+                          "disabled": false
+                        }
+                      },
+                      {
+                        "type": "builder_query",
+                        "spec": {
+                          "name": "ADenom",
+                          "signal": "traces",
+                          "stepInterval": 60,
+                          "aggregations": [
+                            {
+                              "expression": "count_distinct(trace_id)"
+                            }
+                          ],
+                          "filter": {
+                            "expression": "deployment.environment = 'whodunit-demo' AND service.name = 'shop-payment'"
+                          },
+                          "disabled": false
+                        }
+                      },
+                      {
+                        "type": "builder_formula",
+                        "spec": {
+                          "name": "F1",
+                          "expression": "T1 / ADenom"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "2": {
+        "kind": "Panel",
+        "spec": {
+          "display": {
+            "name": "Verification receipt",
+            "description": "**Discriminator:** `(A => B) && NOT C`\n\n- returnSpansFrom: `A`\n- leaves: A, B, C\n- verification: mined 1284 / SigNoz 1284 -> MATCH\n- precision 0.98 / recall 0.95\n- compiled against SigNoz `v0.132.2`"
+          },
+          "plugin": {
+            "kind": "signoz/NumberPanel",
+            "spec": {}
+          },
+          "queries": [
+            {
+              "kind": "time_series",
+              "spec": {
+                "plugin": {
+                  "kind": "signoz/CompositeQuery",
+                  "spec": {
+                    "queries": [
+                      {
+                        "type": "builder_query",
+                        "spec": {
+                          "name": "A",
+                          "signal": "traces",
+                          "stepInterval": 60,
+                          "aggregations": [
+                            {
+                              "expression": "count()"
+                            }
+                          ],
+                          "filter": {
+                            "expression": "deployment.environment = 'whodunit-demo' AND service.name = 'shop-payment'"
+                          },
+                          "disabled": false
+                        }
+                      },
+                      {
+                        "type": "builder_query",
+                        "spec": {
+                          "name": "B",
+                          "signal": "traces",
+                          "stepInterval": 60,
+                          "aggregations": [
+                            {
+                              "expression": "count()"
+                            }
+                          ],
+                          "filter": {
+                            "expression": "deployment.environment = 'whodunit-demo' AND name = 'redis-retry'"
+                          },
+                          "disabled": false
+                        }
+                      },
+                      {
+                        "type": "builder_query",
+                        "spec": {
+                          "name": "C",
+                          "signal": "traces",
+                          "stepInterval": 60,
+                          "aggregations": [
+                            {
+                              "expression": "count()"
+                            }
+                          ],
+                          "filter": {
+                            "expression": "deployment.environment = 'whodunit-demo' AND service.name = 'shop-flag-service'"
+                          },
+                          "disabled": false
+                        }
+                      },
+                      {
+                        "type": "builder_trace_operator",
+                        "spec": {
+                          "name": "T1",
+                          "expression": "(A => B) && NOT C",
+                          "returnSpansFrom": "A",
+                          "aggregations": [
+                            {
+                              "expression": "count_distinct(trace_id)"
+                            }
+                          ],
+                          "stepInterval": 0,
+                          "disabled": false
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "layouts": [
+      {
+        "kind": "Grid",
+        "spec": {
+          "items": [
+            {
+              "x": 0,
+              "y": 0,
+              "width": 12,
+              "height": 8,
+              "content": {
+                "$ref": "#/spec/panels/0"
+              }
+            },
+            {
+              "x": 0,
+              "y": 8,
+              "width": 6,
+              "height": 8,
+              "content": {
+                "$ref": "#/spec/panels/1"
+              }
+            },
+            {
+              "x": 6,
+              "y": 8,
+              "width": 6,
+              "height": 8,
+              "content": {
+                "$ref": "#/spec/panels/2"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
