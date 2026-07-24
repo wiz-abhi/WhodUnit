@@ -24,7 +24,7 @@ dev = [
 ]
 
 [project.scripts]
-whodunit = "whodunit.__main__:main"
+whodunit = "whodunit.cli:main"
 
 [build-system]
 requires = ["hatchling"]
