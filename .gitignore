@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtualenvs
+.venv/
+venv/
+env/
+
+# Environment / secrets
+.env
+.env.*
+*.token
+token.txt
+*_token.json
+token_dump*
+
+# Corpus generated output
+corpus/out/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
