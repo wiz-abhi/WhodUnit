@@ -149,23 +149,25 @@ flat baseline for comparison ([`benchmark/REPORT.md`](benchmark/REPORT.md)):
 |---|---|---|:--:|---|---|
 | `conditional_dep` | discriminator | **discriminator** ✓ | 1.00 | **fails** (0.23/1.00) | — |
 | `new_edge` | discriminator | **discriminator** ✓ | 1.00 | ties (1.00/1.00) | single-feature fault |
-| `cache_bypass` | discriminator | **abstain** ✗ [PENDING-FIX] | — | **wins** (1.00/1.00) | pure trace-scoped absence |
+| `cache_bypass` | discriminator | **discriminator** ✓ | 1.00 | ties (1.00/1.00) | single-feature absence |
 | `retry_storm` | abstain | **partial** ✓ | — | fails (0.21/0.99) | — (cardinality, inexpressible) |
 | `decoys` | abstain | **abstain** ✓ | — | fails (0.29/0.85) | — (no false culprit) |
 | `null_scenario` | abstain | **abstain** ✓ | — | fails (0.14/0.77) | — (nothing is wrong) |
 
-**5/6 pass.** Whodunit nails the flagship conjunction the flat baseline cannot see,
-ties on the single-feature fault, and takes the honesty path — calibrated
+**6/6 pass.** Whodunit nails the flagship conjunction the flat baseline cannot see,
+ties on the single-feature faults, and takes the honesty path — calibrated
 abstain/partial, never a false culprit — on the three where a confident answer would
-be wrong. It is honest about where the flat baseline *beats* it (`new_edge`,
-`cache_bypass`).
+be wrong. It is honest about where the flat baseline performs equally well
+(`new_edge`, `cache_bypass` — its home turf of single-feature faults).
 
-> `cache_bypass` is the one miss and is [PENDING-FIX: see `benchmark/ISSUES.md` #2 —
-> update before publishing]. A pure-absence discriminator (`NOT cache-get`) is
-> soundly refused by the compiler (no positive operand to return spans from), and the
-> miner's MDL prune drops the compilable positive-anchored superset. The fix injects
-> an always-present anchor (`A && NOT C`); numbers here will be swapped for the
-> re-run result before publication.
+> `cache_bypass` originally scored as a miss (ABSTAIN): the pure-absence
+> discriminator (`NOT cache-get`) is soundly refused by the compiler (no positive
+> operand to return spans from), and the miner's MDL prune dropped the compilable
+> positive-anchored superset at a tied CI floor. The fix recovers the best
+> *compilable* candidate from the miner's near-misses at a tied lift-CI floor
+> (`benchmark/ISSUES.md` #2, original finding preserved). Re-run (seed 203):
+> compiled `(A => B) && NOT (C => D)`, label recall/precision 1.0, differential
+> verification 160/160.
 
 ## Documented limitations
 

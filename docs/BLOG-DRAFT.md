@@ -117,24 +117,30 @@ the whole thesis in one number: the fault requires two conditions at once, and t
 exactly the regime flat tools miss.
 
 Across all six benchmark scenarios (two expressible faults, one trace-scoped absence,
-three abstain-cases), Whodunit passes 5/6 — and I want to show you where it *loses*,
-because a benchmark that only reports wins isn't a benchmark:
+three abstain-cases), Whodunit now passes 6/6 — but the most useful row is the one it
+initially *lost*, because a benchmark that only reports wins isn't a benchmark:
 
 | scenario | ground truth | whodunit | flat baseline |
 |---|---|---|---|
 | `conditional_dep` | discriminator | **discriminator** ✓ | fails (0.23/1.00) |
 | `new_edge` | discriminator | **discriminator** ✓ | ties (1.00/1.00) |
-| `cache_bypass` | discriminator | **abstain** ✗ [PENDING-FIX] | **wins** (1.00/1.00) |
+| `cache_bypass` | discriminator | **discriminator** ✓ | ties (1.00/1.00) |
 | `retry_storm` | abstain | **partial** ✓ | fails |
 | `decoys` | abstain | **abstain** ✓ | fails |
 | `null_scenario` | abstain | **abstain** ✓ | fails |
 
-On `new_edge` (a single new edge after a deploy) the flat baseline *ties* — a
-single-feature fault doesn't need conjunction mining, and I say so. On `cache_bypass`
-the flat baseline *beats* Whodunit today: it's a pure trace-scoped absence
-(`NOT cache-get`), and there's a real design seam between the miner's parsimony prune
-and the compiler's requirement for a positive anchor. [PENDING-FIX: see
-`benchmark/ISSUES.md` #2 — swap in the re-run numbers before publishing.]
+On `new_edge` and `cache_bypass` (single-feature faults) the flat baseline *ties* —
+those are its home turf, they don't need conjunction mining, and I say so. And
+`cache_bypass` initially scored as a loss: the pure trace-scoped absence
+(`NOT cache-get`) is soundly refused by the compiler (bare `NOT` has no positive
+operand to return spans from — the engine returns zero traces for it, a documented
+conformance finding), while the miner's parsimony prune dropped the compilable
+anchored superset at a tied confidence floor. The fix wasn't to weaken either
+engine — it was to let the pipeline recover the best *compilable* candidate from the
+miner's own near-misses at a tied lift-CI floor. Re-run: compiled
+`(A => B) && NOT (C => D)`, label recall and precision 1.0, differential verification
+160/160. The original failing result is preserved in `benchmark/ISSUES.md` #2,
+because finding that seam is exactly the kind of thing this project exists to surface.
 
 [SCREENSHOT: benchmark REPORT.md aggregate table rendered]
 
