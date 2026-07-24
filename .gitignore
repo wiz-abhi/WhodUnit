@@ -25,6 +25,9 @@ token_dump*
 # Corpus generated output
 corpus/out/
 
+# foundryctl forge output (regenerated from casting.yaml + lock)
+pours/
+
 # OS / editor
 .DS_Store
 Thumbs.db
