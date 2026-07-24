@@ -1,0 +1,12 @@
+# Whodunit demo corpus — exact runtime dependencies.
+# Everything else is Python 3.11 standard library (argparse, random, hashlib,
+# gzip, json, math, dataclasses, datetime, pathlib).
+#
+# Validated against these exact versions on CPython 3.11.4.
+opentelemetry-sdk==1.43.0
+opentelemetry-exporter-otlp-proto-http==1.43.0
+
+# Transitive (pulled in by the two above; pinned here for reproducibility):
+opentelemetry-api==1.43.0
+opentelemetry-exporter-otlp-proto-common==1.43.0
+opentelemetry-proto==1.43.0
