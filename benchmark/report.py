@@ -28,10 +28,11 @@ def render_report(payload: dict) -> str:
              "ties the baseline on the single-feature fault (`new_edge`); and takes the "
              "honesty path — calibrated ABSTAIN/PARTIAL, never a false culprit — on the "
              "inexpressible (`retry_storm`), the decoy trap (`decoys`), and the null "
-             "cohort (`null_scenario`). The one miss is `cache_bypass`: a pure trace-"
-             "scoped absence (`NOT cache-get`) that the baseline finds but whodunit "
-             "abstains on, because the compiler needs a positive anchor and the MDL "
-             "prune drops the compilable anchored phrasing (ISSUES.md #2).\n")
+             "cohort (`null_scenario`). It also recovers the pure trace-scoped absence "
+             "(`cache_bypass`: `NOT cache-get`) that the flat baseline finds — the "
+             "pipeline now anchors the absence to an always-present positive "
+             "(`... && NOT cache-get`) so it compiles and verifies (recall 1.0, "
+             "ISSUES.md #2 FIXED).\n")
 
     # ---- aggregate table ---------------------------------------------------
     L.append("## Aggregate results\n")
@@ -163,15 +164,21 @@ DISCRIMINATOR where ground truth is abstain); wall-clock; rows scanned.
 
 ## Limitations
 
-- **Pure-absence discriminators are lost (`cache_bypass` fails).** When the only
-  separator is a trace-scoped absence (`NOT cache-get`), whodunit ABSTAINS: the
-  compiler soundly refuses absence-only itemsets (a `builder_trace_operator` needs
-  a positive operand to return spans from), and the miner's MDL dominance prune
-  discards the compilable positive-anchored superset (`db-span && NOT cache-get`)
-  because it shares the minimal itemset's CI floor. So a fault that *is*
-  expressible in the algebra is missed, and here the flat baseline beats whodunit.
-  This is a real limitation (design seam between miner prune and compiler anchor
-  rule), documented with a repro and a local fix suggestion in `ISSUES.md` #2.
+- **Pure-absence discriminators — recovered (`cache_bypass` passes, ISSUES.md #2
+  FIXED).** When the only separator is a trace-scoped absence (`NOT cache-get`) the
+  compiler soundly refuses the absence-only itemset (a `builder_trace_operator`
+  needs a positive operand to return spans from), and the miner's MDL dominance
+  prune drops the compilable positive-anchored superset (`anchor && NOT cache-get`)
+  because it shares the minimal itemset's CI floor — so the naive pipeline
+  ABSTAINed. The pipeline's `_select_finding` now closes this seam: when every
+  surviving finding is compiler-refusable, it recovers the best *compilable*
+  candidate from `near_misses` whose lift-CI floor ties the refused top tier
+  (statistically equivalent, engineering choice favours executability — the same
+  principle as the intra-tier tie-break). `cache_bypass` (seed 203) now returns a
+  verified DISCRIMINATOR, `edge__shop_cart__SELECT_cart_items && NOT
+  edge__shop_cart__cache_get`, recall 1.0 / precision 1.0, 160/160 live match. The
+  sibling compiler and miner are left untouched; the fix is local to
+  `whodunit.pipeline`.
 - **Repetition faults are inexpressible.** `retry_storm` is a per-trace
   cardinality regression (2-5 vs 1 redis-retry). The presence/absence trace
   algebra has no cardinality qualifier, so the honest answer is ABSTAIN/PARTIAL,

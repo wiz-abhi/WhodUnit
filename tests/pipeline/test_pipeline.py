@@ -134,6 +134,105 @@ def test_explain_result_json_roundtrips(
 
 
 # --------------------------------------------------------------------------- #
+# Absence-only recovery (ISSUES.md #2 — the cache_bypass regression)
+# --------------------------------------------------------------------------- #
+def _build_cache_bypass_matrix() -> MaterializedMatrix:
+    """A matrix mirroring the corpus ``cache_bypass`` fault.
+
+    Bad traces are exactly those *missing* the ``cache-get`` span; an always-
+    present ``shop-db`` service anchors every trace. So the only sound structural
+    discriminator is the trace-scoped absence ``NOT cache-get`` — which the
+    compiler refuses on its own (absence-only) — while the statistically
+    identical, *compilable* superset ``shop-db AND NOT cache-get`` is the phrasing
+    the pipeline must recover instead of abstaining.
+    """
+    import polars as pl
+
+    from whodunit.types import FeatureMatrix
+
+    cache = "svc__shop_cache__cache_get"
+    anchor = "svc__shop_db"
+    noise = "svc__shop_cart"
+    columns = [
+        FeatureColumn(
+            name=cache,
+            kind=FeatureKind.SPAN_PREDICATE,
+            description="trace contains the 'cache-get' span",
+            service_name="shop-cache",
+            span_name="cache-get",
+        ),
+        FeatureColumn(
+            name=anchor,
+            kind=FeatureKind.SPAN_PREDICATE,
+            description="trace contains a 'shop-db' span (present in every trace)",
+            service_name="shop-db",
+        ),
+        FeatureColumn(
+            name=noise,
+            kind=FeatureKind.SPAN_PREDICATE,
+            description="trace contains a 'shop-cart' span",
+            service_name="shop-cart",
+        ),
+    ]
+
+    n_bad, n_healthy = 60, 140
+    tids: list[str] = []
+    labels: list[int] = []
+    cache_col: list[int] = []
+    anchor_col: list[int] = []
+    noise_col: list[int] = []
+    for i in range(n_bad + n_healthy):
+        is_bad = i < n_bad
+        tids.append(f"trace{i:05d}")
+        labels.append(1 if is_bad else 0)
+        cache_col.append(0 if is_bad else 1)  # bad traces MISS cache-get
+        anchor_col.append(1)  # shop-db in every trace
+        noise_col.append(i % 2)  # decorrelated from the label
+
+    frame = pl.DataFrame(
+        {
+            "trace_id": tids,
+            "label": pl.Series(labels, dtype=pl.Int8),
+            cache: pl.Series(cache_col, dtype=pl.Int8),
+            anchor: pl.Series(anchor_col, dtype=pl.Int8),
+            noise: pl.Series(noise_col, dtype=pl.Int8),
+        }
+    )
+    meta = FeatureMatrix(
+        columns=columns,
+        n_traces_bad=n_bad,
+        n_traces_healthy=n_healthy,
+        window_start_unix_ms=1_000,
+        window_end_unix_ms=2_000,
+    )
+    return MaterializedMatrix(frame=frame, meta=meta)
+
+
+def test_explain_recovers_anchored_superset_for_absence_only(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """cache_bypass regression: the top discriminator is absence-only (refused),
+    and the statistically-tied compilable superset was dominance-pruned into
+    near_misses. The pipeline must recover it and return a DISCRIMINATOR — never
+    ABSTAIN — with a compiled ``... && NOT ...`` expression."""
+    mm = _build_cache_bypass_matrix()
+    monkeypatch.setattr(pipeline, "extract_matrix", lambda *a, **k: mm)
+
+    # 60 bad traces, all matched by the recovered discriminator.
+    result = explain(FakeClient(scalar_count=60), _spec(), mine_config=MineConfig())
+
+    assert result.verdict is Verdict.DISCRIMINATOR
+    assert result.chosen_finding is not None
+    itemset = set(result.chosen_finding.itemset)
+    # Absence conjunct on cache-get, plus a positive anchor so it compiles.
+    assert "NOT svc__shop_cache__cache_get" in itemset
+    assert any(not tok.startswith("NOT ") for tok in itemset)
+    assert result.compiled is not None
+    assert result.compiled.envelope  # actually compiled, not refused
+    assert "NOT" in result.compiled.expression
+
+
+# --------------------------------------------------------------------------- #
 # Determinism — the "run twice, hashes identical" proof
 # --------------------------------------------------------------------------- #
 def test_verdict_hash_is_deterministic(

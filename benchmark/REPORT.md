@@ -4,7 +4,7 @@ _Generated 2026-07-24T18:44:08Z against the running SigNoz stack (localhost:8080
 
 ## Bottom line
 
-**5/6 scenarios pass.** Whodunit nails the flagship conjunctive fault the flat baseline cannot (`conditional_dep`: `(A => B) && NOT C`, recall 1.0, baseline top-feature precision 0.23); ties the baseline on the single-feature fault (`new_edge`); and takes the honesty path — calibrated ABSTAIN/PARTIAL, never a false culprit — on the inexpressible (`retry_storm`), the decoy trap (`decoys`), and the null cohort (`null_scenario`). The one miss is `cache_bypass`: a pure trace-scoped absence (`NOT cache-get`) that the baseline finds but whodunit abstains on, because the compiler needs a positive anchor and the MDL prune drops the compilable anchored phrasing (ISSUES.md #2).
+**6/6 scenarios pass.** Whodunit nails the flagship conjunctive fault the flat baseline cannot (`conditional_dep`: `(A => B) && NOT C`, recall 1.0, baseline top-feature precision 0.23); ties the baseline on the single-feature fault (`new_edge`); and takes the honesty path — calibrated ABSTAIN/PARTIAL, never a false culprit — on the inexpressible (`retry_storm`), the decoy trap (`decoys`), and the null cohort (`null_scenario`). It also recovers the pure trace-scoped absence (`cache_bypass`: `NOT cache-get`) that the flat baseline finds — the pipeline now anchors the absence to an always-present positive (`... && NOT cache-get`) so it compiles and verifies (recall 1.0, ISSUES.md #2 FIXED).
 
 ## Aggregate results
 
@@ -12,12 +12,12 @@ _Generated 2026-07-24T18:44:08Z against the running SigNoz stack (localhost:8080
 |---|---|---|:--:|:--:|:--:|:--:|:--:|:--:|---|--:|--:|--:|
 | `conditional_dep` | discriminator | **discriminator** | yes | yes | 1.00 | 1.00 | - | no | 0.23/1.00 | 147.60s | 162057 | 36 |
 | `new_edge` | discriminator | **discriminator** | yes | yes | 1.00 | 1.00 | - | yes | 1.00/1.00 | 145.10s | 164955 | 36 |
-| `cache_bypass` | discriminator | **abstain** | no | no | - | - | - | yes | 1.00/1.00 | 115.10s | 143621 | 34 |
+| `cache_bypass` | discriminator | **discriminator** | yes | yes | 1.00 | 1.00 | - | yes | 1.00/1.00 | 107.40s | 142956 | 34 |
 | `retry_storm` | abstain | **partial** | yes | - | 0.81 | 0.23 | yes | no | 0.21/0.99 | 139.10s | 180216 | 36 |
 | `decoys` | abstain | **abstain** | yes | - | - | - | yes | no | 0.29/0.85 | 128.10s | 119884 | 35 |
 | `null_scenario` | abstain | **abstain** | yes | - | - | - | yes | no | 0.14/0.77 | 136.20s | 164703 | 36 |
 
-**5/6 scenarios passed.**
+**6/6 scenarios passed.**
 
 ## Verification receipts (mined vs live SigNoz)
 
@@ -25,7 +25,7 @@ _Generated 2026-07-24T18:44:08Z against the running SigNoz stack (localhost:8080
 |---|--:|--:|:--:|---|
 | `conditional_dep` | 89 | 89 | yes | The culprit is WITH edge__shop_payment__redis_retry AND WITHOUT span__shop_flag_service__G |
 | `new_edge` | 147 | 147 | yes | The culprit is WITH edge__shop_cart__inventory_sync (lift 5.4x) |
-| `cache_bypass` | - | - | - | ABSTAIN — no structural discriminator cleared every gate. The engine refuses to invent a c |
+| `cache_bypass` | 160 | 160 | yes | The culprit is WITH edge__shop_cart__SELECT_cart_items AND WITHOUT edge__shop_cart__cache_ |
 | `retry_storm` | 555 | 673 | no | A partial (below-confidence) signal: WITH dur__ge2204678_lt4504835 AND WITH dur__ge4504835 |
 | `decoys` | - | - | - | ABSTAIN — no structural discriminator cleared every gate. The engine refuses to invent a c |
 | `null_scenario` | - | - | - | ABSTAIN — no structural discriminator cleared every gate. The engine refuses to invent a c |
@@ -52,14 +52,16 @@ _Generated 2026-07-24T18:44:08Z against the running SigNoz stack (localhost:8080
 - **Flat baseline top pick:** `edge__shop_cart__inventory_sync` (z=28.28, prec 1.00, rec 1.00) -> found=yes
 - _New cart => inventory-sync edge post-deploy. Single-feature presence discriminator — the flat baseline should also find it._
 
-### `cache_bypass` — cache_bypass (seed 103)
+### `cache_bypass` — cache_bypass (seed 203)
 
-- **Expected:** discriminator  **Got:** **abstain**  **Pass:** no
-- **Matrix:** 158 bad / 642 healthy traces, 34 features, family size 6538, 158 bad ingested
-- **Label metrics vs manifest:** recall -, precision(in-corpus) -
+- **Expected:** discriminator  **Got:** **discriminator**  **Pass:** yes
+- **Winner itemset:** `edge__shop_cart__SELECT_cart_items AND NOT edge__shop_cart__cache_get`
+- **Compiled trace-operator:** `(A => B) && NOT (C => D)`
+- **Matrix:** 160 bad / 640 healthy traces, 34 features, family size 6523, 160 bad ingested
+- **Label metrics vs manifest:** recall 1.00, precision(in-corpus) 1.00
 - **Flat baseline top pick:** `NOT edge__shop_cart__cache_get` (z=28.28, prec 1.00, rec 1.00) -> found=yes
 - **Refusals surfaced:** NOT edge__shop_cart__cache_get: itemset is absence-only (all NOT); trace-operator expressions need a positive op; NOT span__shop_cache__cache_get: itemset is absence-only (all NOT); trace-operator expressions need a positive op; NOT svc__shop_cache: itemset is absence-only (all NOT); trace-operator expressions need a positive op
-- _Bad traces miss the cache-get span entirely. Trace-scoped absence discriminator (NOT cache-get); must compile (trace-scoped NOT safe)._
+- _Bad traces miss the cache-get span entirely. Trace-scoped absence discriminator recovered as a positive-anchored superset (edge__shop_cart__SELECT_cart_items && NOT cache-get); compiles + verifies (ISSUES.md #2 FIXED)._
 
 ### `retry_storm` — retry_storm (seed 104)
 
@@ -154,15 +156,21 @@ DISCRIMINATOR where ground truth is abstain); wall-clock; rows scanned.
 
 ## Limitations
 
-- **Pure-absence discriminators are lost (`cache_bypass` fails).** When the only
-  separator is a trace-scoped absence (`NOT cache-get`), whodunit ABSTAINS: the
-  compiler soundly refuses absence-only itemsets (a `builder_trace_operator` needs
-  a positive operand to return spans from), and the miner's MDL dominance prune
-  discards the compilable positive-anchored superset (`db-span && NOT cache-get`)
-  because it shares the minimal itemset's CI floor. So a fault that *is*
-  expressible in the algebra is missed, and here the flat baseline beats whodunit.
-  This is a real limitation (design seam between miner prune and compiler anchor
-  rule), documented with a repro and a local fix suggestion in `ISSUES.md` #2.
+- **Pure-absence discriminators — recovered (`cache_bypass` passes, ISSUES.md #2
+  FIXED).** When the only separator is a trace-scoped absence (`NOT cache-get`) the
+  compiler soundly refuses the absence-only itemset (a `builder_trace_operator`
+  needs a positive operand to return spans from), and the miner's MDL dominance
+  prune drops the compilable positive-anchored superset (`anchor && NOT cache-get`)
+  because it shares the minimal itemset's CI floor — so the naive pipeline
+  ABSTAINed. The pipeline's `_select_finding` now closes this seam: when every
+  surviving finding is compiler-refusable, it recovers the best *compilable*
+  candidate from `near_misses` whose lift-CI floor ties the refused top tier
+  (statistically equivalent, engineering choice favours executability — the same
+  principle as the intra-tier tie-break). `cache_bypass` (seed 203) now returns a
+  verified DISCRIMINATOR, `edge__shop_cart__SELECT_cart_items && NOT
+  edge__shop_cart__cache_get`, recall 1.0 / precision 1.0, 160/160 live match. The
+  sibling compiler and miner are left untouched; the fix is local to
+  `whodunit.pipeline`.
 - **Repetition faults are inexpressible.** `retry_storm` is a per-trace
   cardinality regression (2-5 vs 1 redis-retry). The presence/absence trace
   algebra has no cardinality qualifier, so the honest answer is ABSTAIN/PARTIAL,

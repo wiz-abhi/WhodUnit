@@ -248,6 +248,37 @@ def _positive_edge_count(finding: Finding, table: dict[str, FeatureColumn]) -> i
     return n
 
 
+# Two lift-CI floors within this tolerance are treated as the same statistical
+# tier — the fallback below only ever substitutes a candidate that is no weaker
+# than the refused survivors, so any ``NOT``-only refusal is repaired by an
+# equally-strong *compilable* phrasing, never by a worse one.
+_CI_TIE_EPS = 1e-9
+
+
+def _rank_by_executability(
+    candidates: list[Finding], table: dict[str, FeatureColumn]
+) -> list[Finding]:
+    """Order compilable candidates by the engineering tie-break.
+
+    Maximise positive structural edges, then minimise total operators, then the
+    candidate's original position. Candidates the IR cannot even build are
+    dropped (they cannot compile anyway).
+    """
+    scored: list[tuple[tuple[int, int, int], Finding]] = []
+    for idx, finding in enumerate(candidates):
+        build = build_ir(finding, table)
+        if build.root is None:
+            continue
+        key = (
+            -_positive_edge_count(finding, table),
+            count_operators(build.root),
+            idx,
+        )
+        scored.append((key, finding))
+    scored.sort(key=lambda t: t[0])
+    return [f for _, f in scored]
+
+
 def _select_finding(
     findings: list[Finding],
     columns: list[FeatureColumn],
@@ -255,6 +286,7 @@ def _select_finding(
     base_filter: str | None,
     start: int,
     end: int,
+    near_misses: list[Finding] | None = None,
 ) -> tuple[Finding | None, CompiledQuery | None, list[Refusal]]:
     """Choose the finding to publish, with a compile-aware tie-break.
 
@@ -274,6 +306,19 @@ def _select_finding(
        then original rank.
 
     Falls back to best-first compilation for anything outside the tier.
+
+    Absence-only recovery (ISSUES.md #2). A pure trace-scoped absence such as
+    ``NOT cache-get`` is a *sound* discriminator, but the compiler soundly
+    refuses an absence-only itemset (a ``builder_trace_operator`` needs a
+    positive operand to return spans from), and the miner's MDL dominance-prune
+    drops the *compilable* positive-anchored superset ``A && NOT cache-get`` when
+    it shares the subset's CI floor. Left alone, the only survivor is the refused
+    ``NOT cache-get`` and the pipeline ABSTAINs on a fault it *can* express. So
+    when every survivor is refused, we recover the best **compilable** candidate
+    from ``near_misses`` whose lift-CI floor ties the refused top tier. This is
+    the same principle as the tie-break above — the candidates are statistically
+    equivalent, so the engineering selection favours the one that is executable —
+    applied across the dominance-prune boundary rather than within a tier.
     """
     refusals: list[Refusal] = []
     if not findings:
@@ -289,25 +334,12 @@ def _select_finding(
         and f.verdict == best.verdict
     ]
 
-    scored: list[tuple[tuple[int, int, int], Finding]] = []
-    for idx, finding in enumerate(tier):
-        build = build_ir(finding, table)
-        if build.root is None:
-            continue
-        key = (
-            -_positive_edge_count(finding, table),
-            count_operators(build.root),
-            idx,
-        )
-        scored.append((key, finding))
-
     ordered: list[Finding]
-    if scored:
-        scored.sort(key=lambda t: t[0])
-        chosen_tier = [f for _, f in scored]
+    ranked_tier = _rank_by_executability(tier, table)
+    if ranked_tier:
         # Anything outside the tier, in original order, as a fallback.
         rest = [f for f in findings if f not in tier]
-        ordered = chosen_tier + rest
+        ordered = ranked_tier + rest
     else:
         ordered = findings
 
@@ -318,6 +350,24 @@ def _select_finding(
         if compiled.envelope:
             return finding, compiled, refusals
         refusals.extend(compiled.refusals)
+
+    # Every survivor was compiler-refused (e.g. an absence-only discriminator).
+    # Recover a compilable, statistically-equivalent phrasing from near_misses.
+    if near_misses:
+        floor = best.ci_low - _CI_TIE_EPS
+        recovery = [
+            f
+            for f in near_misses
+            if f.verdict == best.verdict and f.ci_low >= floor
+        ]
+        for finding in _rank_by_executability(recovery, table):
+            compiled = compile_finding(
+                finding, columns, base_filter=base_filter, start=start, end=end
+            )
+            if compiled.envelope:
+                return finding, compiled, refusals
+            refusals.extend(compiled.refusals)
+
     return None, None, refusals
 
 
@@ -361,6 +411,7 @@ def explain(
         base_filter=base_filter,
         start=start,
         end=end,
+        near_misses=mine_result.near_misses,
     )
 
     # Surface mined-but-noncompilable itemsets as refusals too (honesty).

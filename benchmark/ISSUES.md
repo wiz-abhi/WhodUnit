@@ -56,9 +56,14 @@ matched id set. See `benchmark/pipeline_scoped.py` and REPORT.md Methods.
 
 ---
 
-## #2 — Pure-absence discriminators are lost: absence-only refusal + dominance prune (WHODUNIT)
+## #2 — Pure-absence discriminators are lost: absence-only refusal + dominance prune (WHODUNIT) — FIXED
 
-**Severity:** medium (one benchmark scenario, `cache_bypass`, fails because of it).
+**Status:** FIXED (2026-07-25). Fix landed in `src/whodunit/pipeline.py`
+(`_select_finding`); the sibling compiler (`compile/`) and miner (`mine/`) are
+untouched. The original finding below is preserved verbatim for honesty; the
+resolution is appended at the end of this entry.
+
+**Severity:** medium (one benchmark scenario, `cache_bypass`, failed because of it).
 
 **Symptom.** On `cache_bypass` — where bad traces are exactly those *missing* the
 `cache-get` span (a sound, trace-scoped absence) — whodunit **ABSTAINS** even
@@ -104,6 +109,40 @@ always-present positive anchor injected (`A && NOT C`); or (b) exempt an
 absence-only itemset from dominance pruning when a positive-anchored superset with
 an equal CI floor exists and is compilable. Option (a) is local to
 `whodunit.pipeline` and would not touch sibling code.
+
+**RESOLUTION (2026-07-25).** Implemented a variant of option (a), chosen over the
+`mine/` guard (option b) as the lower-risk, sibling-respecting path: it lives
+entirely in `whodunit.pipeline` and reuses the miner's *own* already-enumerated
+candidates rather than re-deriving parsimony inside the compiler-facing code.
+
+- **Change.** `_select_finding` now takes `near_misses`. After its normal
+  best-first loop refuses every surviving finding, it recovers the best
+  *compilable* candidate from `near_misses` whose calibrated verdict matches the
+  refused top tier and whose lift-CI floor ties it (`ci_low >= best.ci_low - eps`),
+  ordered by the existing executability tie-break (max positive edges, then min
+  operators). This is the same principle as the intra-tier tie-break already in
+  that function — the candidates are statistically equivalent, so the engineering
+  selection favours the phrasing SigNoz can execute — applied across the
+  dominance-prune boundary. The dominance-pruned superset `A && NOT cache-get`
+  lands in `near_misses` as a DISCRIMINATOR at the tied CI floor, so it is exactly
+  what gets recovered. Both callers (`pipeline.explain` and the benchmark's
+  `pipeline_scoped.explain_scoped`) pass `mine_result.near_misses`.
+- **Refusals still surfaced.** The absence-only itemsets are tried and refused
+  first, so their refusals remain in `refusals` (honest); the compiled winner is
+  the recovered anchored superset.
+- **Regression test.** `tests/pipeline/test_pipeline.py::
+  test_explain_recovers_anchored_superset_for_absence_only` — a synthetic matrix
+  mirroring `cache_bypass` (bad = missing `cache-get`, always-present anchor). The
+  sole miner survivor is the absence-only `NOT cache-get`; the tied compilable
+  superset sits in `near_misses`. Asserts the pipeline returns a DISCRIMINATOR with
+  a compiled `... && NOT ...` expression, never ABSTAIN.
+- **Live re-run (fresh seed 203, trace-id scoped per issue #1).** `cache_bypass`
+  now **PASSES**: verdict **DISCRIMINATOR**, compiled
+  `(A => B) && NOT (C => D)` =
+  `edge__shop_cart__SELECT_cart_items && NOT edge__shop_cart__cache_get`,
+  label-recall **1.0**, in-corpus label-precision **1.0**, live differential
+  verification **160/160 match**. (Was: ABSTAIN, three absence-only refusals,
+  baseline-only.) See `results.json` / `REPORT.md`.
 
 ---
 

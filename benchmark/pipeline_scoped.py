@@ -115,6 +115,7 @@ def explain_scoped(
     chosen, compiled, refusals = _select_finding(
         mine_result.findings, adapted,
         base_filter=base_filter, start=window_start_ms, end=window_end_ms,
+        near_misses=mine_result.near_misses,
     )
     for itemset in mine_result.noncompilable_itemsets:
         refusals.append(Refusal(
