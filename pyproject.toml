@@ -37,6 +37,8 @@ packages = ["src/whodunit"]
 line-length = 100
 src = ["src", "tests"]
 target-version = "py311"
+# corpus/ is the demo fault-injection package (separate wave, its own quality bar).
+extend-exclude = ["corpus", "pours"]
 
 [tool.ruff.lint]
 select = [
