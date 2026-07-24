@@ -1,0 +1,96 @@
+{
+  "envelope": {
+    "compositeQuery": {
+      "queries": [
+        {
+          "spec": {
+            "aggregations": [
+              {
+                "expression": "count()"
+              }
+            ],
+            "disabled": false,
+            "filter": {
+              "expression": "deployment.environment = 'whodunit-demo' AND service.name = 'shop-payment'"
+            },
+            "name": "A",
+            "signal": "traces",
+            "stepInterval": 0
+          },
+          "type": "builder_query"
+        },
+        {
+          "spec": {
+            "aggregations": [
+              {
+                "expression": "count()"
+              }
+            ],
+            "disabled": false,
+            "filter": {
+              "expression": "deployment.environment = 'whodunit-demo' AND name = 'redis-retry'"
+            },
+            "name": "B",
+            "signal": "traces",
+            "stepInterval": 0
+          },
+          "type": "builder_query"
+        },
+        {
+          "spec": {
+            "aggregations": [
+              {
+                "expression": "count()"
+              }
+            ],
+            "disabled": false,
+            "filter": {
+              "expression": "deployment.environment = 'whodunit-demo' AND service.name = 'shop-flag-service'"
+            },
+            "name": "C",
+            "signal": "traces",
+            "stepInterval": 0
+          },
+          "type": "builder_query"
+        },
+        {
+          "spec": {
+            "aggregations": [
+              {
+                "expression": "count_distinct(trace_id)"
+              }
+            ],
+            "disabled": false,
+            "expression": "(A => B) && NOT C",
+            "name": "T1",
+            "returnSpansFrom": "A"
+          },
+          "type": "builder_trace_operator"
+        },
+        {
+          "spec": {
+            "aggregations": [
+              {
+                "expression": "count_distinct(trace_id)"
+              }
+            ],
+            "disabled": false,
+            "filter": {
+              "expression": "deployment.environment = 'whodunit-demo' AND service.name = 'shop-payment'"
+            },
+            "name": "ADenom",
+            "signal": "traces",
+            "stepInterval": 0
+          },
+          "type": "builder_query"
+        }
+      ]
+    },
+    "end": 0,
+    "requestType": "scalar",
+    "schemaVersion": "v1",
+    "start": 0
+  },
+  "expression": "(A => B) && NOT C",
+  "return_spans_from": "A"
+}
