@@ -106,13 +106,13 @@ contains the conjunction* — every single predicate appears in **both** cohorts
 
 ```
 7,806 candidate itemsets enumerated  →  36 features
-  edge payment=>redis-retry        lift 1.4x   (present in both cohorts — near-miss)
-  NOT flag-service                 lift 1.9x   (present in both cohorts — near-miss)
-  (payment=>redis-retry) && NOT flag-service   lift 9.0x   ← SURVIVES
+  edge payment=>redis-retry        present in both cohorts — near-miss, struck out
+  NOT flag-service                 present in both cohorts — near-miss, struck out
+  (payment=>redis-retry) && NOT flag-service   lift 13.1x   ← SURVIVES
 
 compiled:  (A => B) && NOT C   returnSpansFrom = A
-mined      89 traces
-SigNoz     89 traces   ✓ MATCH   recall 1.00   162,057 rows scanned
+mined      61 traces
+SigNoz     61 traces   ✓ MATCH   recall 1.00   163,464 rows scanned
 ```
 
 ![The whodunit explain elimination board: the winning conjunction survives at lift 13.1x while every single-predicate near-miss is eliminated.](https://raw.githubusercontent.com/wiz-abhi/WhodUnit/main/docs/blog/images/elimination-board.png)
@@ -121,7 +121,7 @@ SigNoz     89 traces   ✓ MATCH   recall 1.00   162,057 rows scanned
 
 The flat baseline — a properly-implemented BubbleUp-style z-test over every single
 feature, not a strawman — runs on the *same* matrix and returns
-`NOT edge__shop_checkout__GET_flags_evaluate` at precision **0.23**, recall 1.00. It
+`NOT edge__shop_checkout__GET_flags_evaluate` at precision **0.17**, recall 1.00. It
 cannot see the conjunction because no single predicate separates the cohorts. This is
 the whole thesis in one number: the fault requires two conditions at once, and that is
 exactly the regime flat tools miss.
@@ -132,7 +132,7 @@ initially *lost*, because a benchmark that only reports wins isn't a benchmark:
 
 | scenario | ground truth | whodunit | flat baseline |
 |---|---|---|---|
-| `conditional_dep` | discriminator | **discriminator** ✓ | fails (0.23/1.00) |
+| `conditional_dep` | discriminator | **discriminator** ✓ | fails (0.17/1.00) |
 | `new_edge` | discriminator | **discriminator** ✓ | ties (1.00/1.00) |
 | `cache_bypass` | discriminator | **discriminator** ✓ | ties (1.00/1.00) |
 | `retry_storm` | abstain | **partial** ✓ | fails |
