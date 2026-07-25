@@ -241,26 +241,32 @@ confident answer would be wrong.
 > `(A => B) && NOT (C => D)`, recall/precision 1.0, verification 160/160. **Finding a
 > seam like this, then fixing it in the open, is exactly what this project is for.**
 
-## What we found in the engine
+## Engine constraints the compiler respects
 
-Four semantics of the trace-operator engine are undocumented or misdocumented. Each was
-recovered by probing the live v0.132.2 stack, is load-bearing for the compiler, and is
-headed upstream ([`probe-results/PROBES.md`](../probe-results/PROBES.md),
+Four `builder_trace_operator` semantics are load-bearing for the compiler. Some SigNoz
+already documents; some were hit during the build and caught by the differential receipt.
+Each is verified against the live v0.132.2 stack
+([`probe-results/PROBES.md`](../probe-results/PROBES.md),
 [`compile/ENGINE-NOTES.md`](src/whodunit/compile/ENGINE-NOTES.md)):
 
-1. **Operator mapping is the reverse of the intuitive reading.** On v0.132.2, `=>` is
-   the **direct** (single-hop) descendant and `->` is the **indirect** (any-depth) one.
-   `rootWrap => childOp` (2 hops) returns **0**; `rootWrap -> childOp` returns **20**.
-   Emit the wrong token and every multi-level discriminator silently returns nothing.
-2. **Operator alert deep links are built from a leaf filter, not the operator.**
-   `prepareParamsForTraces` doesn't type-switch on the trace operator, so a fired
-   alert's "view related traces" link points at one leaf's filter (in our case the
-   `NOT` operand — the most misleading choice). Whodunit ships its own correct permalink.
-3. **`NOT` is trace-scoped, and a bare `NOT C` returns zero.** It lowers to
-   `GLOBAL NOT IN (SELECT trace_id …)`, so "this trace contains no C" compiles soundly,
-   but "this span is not accompanied by C" does not and is **refused**.
+1. **Operator direction + left-bias** *(documented — [#10025](https://github.com/SigNoz/signoz/issues/10025), [trace-operators blog](https://signoz.io/blog/trace-operators/))*.
+   Every operator returns the **left** operand's spans; `=>` is the **direct** (single-hop)
+   descendant, `->` is **indirect** (any-depth). `rootWrap => childOp` (2 hops) returns
+   **0**; `rootWrap -> childOp` returns **20**. The compiler normalizes the outcome operand
+   left and emits the correct token.
+2. **`NOT` is trace-scoped, so a bare `NOT C` returns zero.** A consequence of the
+   left-bias rule (no positive operand → nothing to return from). Absence is only
+   expressible as `A && NOT C`; absence-only itemsets are **refused**.
+3. **The operator's alert deep link resolves to a leaf filter, not the operator.**
+   `prepareParamsForTraces` doesn't type-switch on the operator, so a fired alert's "view
+   related traces" link points at one leaf's filter (in our case the `NOT` operand).
+   Whodunit ships its own correct permalink.
 4. **`clickhouse_sql` does not apply the envelope time window.** A 3-minute window and a
-   1-year window return byte-identical rows; the SQL must carry its own time predicate.
+   1-year window return byte-identical rows; the SQL carries its own time predicate.
+
+> These aren't claimed as novel discoveries — where SigNoz documents a behavior we build
+> on it; where we hit a sharper edge, the differential receipt surfaced it. That is the
+> point of verifying a synthesized query against the engine rather than trusting it.
 
 ## Documented limitations
 

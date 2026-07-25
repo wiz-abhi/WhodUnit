@@ -169,35 +169,42 @@ finds something is a tool you can't trust at 3am.
 
 ## The engine archaeology
 
-Building the compiler meant recovering four semantics the engine doesn't document —
-each first surfaced as a *verification receipt mismatch*, which is exactly what the
-receipt is for:
+Building the compiler meant getting four `builder_trace_operator` semantics exactly
+right — some SigNoz already documents, some I learned the hard way. Every one first
+surfaced as a *verification receipt mismatch*, which is precisely what the receipt is
+for:
 
-1. **The operator mapping is reversed.** On v0.132.2, `=>` is the **direct**
-   (single-hop) descendant and `->` is the **indirect** (any-depth) one — the opposite
-   of the intuitive reading and of what I initially coded from. Evidence:
-   `rootWrap => childOp` (2 hops) returns **0**; `rootWrap -> childOp` returns **20**.
-   Emit the wrong token and every multi-level discriminator silently returns nothing.
-2. **`NOT` is trace-scoped and a bare `NOT C` returns zero.** It lowers to
-   `GLOBAL NOT IN (SELECT trace_id …)`, so "this trace contains no C" compiles, but
-   span-level negation does not — and is refused. A bare `NOT C` yields an empty span
-   set (`count_distinct(trace_id)` = 0 while 217 traces genuinely lack C), because
-   there is no positive operand to return spans from.
-3. **Operator alert deep links are built from a leaf filter, not the operator.**
-   `prepareParamsForTraces` doesn't type-switch on the trace operator, so a fired
-   alert's "view related traces" link points at one leaf's filter — in my case the
-   `NOT` operand, the most misleading possible choice.
-4. **`clickhouse_sql` ignores the envelope time window.** A 3-minute window and a
-   1-year window return byte-identical rows; the SQL must carry its own time predicate.
+1. **Operator direction and left-bias.** SigNoz documents — in
+   [issue #10025](https://github.com/SigNoz/signoz/issues/10025) and the
+   [trace-operators blog](https://signoz.io/blog/trace-operators/) — that every operator
+   returns the **left** operand's spans, and that `=>` is the **direct** (single-hop)
+   descendant while `->` is **indirect** (any-depth). I had coded the `=>`/`->` direction
+   backwards from intuition, and the receipt caught it: `rootWrap => childOp` (2 hops)
+   returned **0** while `rootWrap -> childOp` returned **20**. The compiler now normalizes
+   the outcome operand to the left and emits the correct token.
+2. **`NOT` is trace-scoped, so a bare `NOT C` returns zero.** A direct consequence of the
+   left-bias rule: with no positive operand there is nothing to return spans *from*, so
+   `count_distinct(trace_id)` is 0 even though 217 traces genuinely lack C. Absence is
+   only expressible as a conjunct `A && NOT C` — so the compiler **refuses** absence-only
+   itemsets rather than emit a silently-empty query.
+3. **The operator's alert deep link resolves to a leaf filter, not the operator.** On a
+   fired alert, "view related traces" pointed at one leaf's filter (in my case the `NOT`
+   operand — the most misleading choice), because `prepareParamsForTraces` doesn't
+   type-switch on the operator. That is why Whodunit ships its **own** correct Trace
+   Explorer permalink.
+4. **`clickhouse_sql` doesn't apply the envelope time window.** A 3-minute window and a
+   1-year window returned byte-identical rows, so the SQL must carry its own time
+   predicate — which is why the benchmark scopes by explicit trace-id sets.
 
 ![Engine probe: rootWrap => childOp returns 0 (direct, single hop) while rootWrap -> childOp returns 20 (indirect, any depth).](https://raw.githubusercontent.com/wiz-abhi/WhodUnit/main/docs/blog/images/operator-probe.png)
 
-*Recovering the reversed operator mapping on v0.132.2: the 2-hop `rootWrap => childOp` returns 0 (`=>` is the direct, single-hop descendant) while `rootWrap -> childOp` returns 20 (`->` is the any-depth one) — the opposite of the intuitive reading.*
+*The `=>` (direct, single-hop) vs `->` (any-depth) distinction on v0.132.2: `rootWrap => childOp` (2 hops) returns 0 while `rootWrap -> childOp` returns 20. I had coded it backwards; the differential receipt is what surfaced it.*
 
-Each of these becomes upstream material: documentation PRs for the operator mapping and
-`NOT` semantics, a one-case fix for `prepareParamsForTraces`, and an issue for the time
-window. "I built on it, hit the wall, and patched the wall" is a stronger story than
-"it worked first try."
+None of this is a victory lap over the engine. Where SigNoz already documents a behavior
+(#10025), I build on it correctly; where I hit a sharper edge, the differential receipt
+surfaced it. That is the entire point of verifying a synthesized query against the engine
+instead of trusting it — **"I built on it, hit the wall, and the receipt showed me the
+wall"** beats "it worked first try."
 
 ## Arm it
 
