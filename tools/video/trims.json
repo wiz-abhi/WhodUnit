@@ -1,5 +1,6 @@
 {
   "_comment": "EDITABLE spec consumed by make_manifest.py. Each segment is [start_s, end_s] into the beat's source capture, or [start_s, end_s, 'other-file.mp4'] to pull that segment from a different raw take. Durations in manifest.json are MEASURED with ffprobe, never copied from here.",
+  "_order": "v2 cut, 11 beats: b1, b9, b2, b3, b4, b5, b6, b10, b7, b11, b8. The static intro cards (docs/video/intro/intro.mp4) are RETIRED - the landing beat b9 opens the film instead.",
   "corpus": {
     "fault": "conditional_dep",
     "seed": 778,
@@ -26,8 +27,29 @@
         ]
       ],
       "on_screen": [],
-      "narration": "SigNoz's co-founder asked for this in January 2023. It is still open. This is the implementation - and instead of a side-by-side panel, it hands you the query.",
+      "narration": "SigNoz's co-founder asked for this three and a half years ago - compare two sets of filtered spans. It's still open. Here's the implementation.",
       "notes": "Title, #1957, Open badge, pranay01, Jan 2 2023 all legible before the scroll. Recorded headless with Playwright."
+    },
+    {
+      "id": "b9",
+      "title": "The landing page - thesis, competitors, architecture, receipt",
+      "source": "b9.mp4",
+      "segments": [
+        [
+          0.0,
+          46.1
+        ]
+      ],
+      "on_screen": [
+        "winner_lift",
+        "mined",
+        "signoz",
+        "match",
+        "expression",
+        "verdict_hash"
+      ],
+      "narration": "Every tool in this space shows you the difference between two cohorts of traces. BubbleUp, Trace Patterns, DDx, Grafana's compare - they rank attributes, and then a human types the query by hand. Whodunit closes that loop. One ClickHouse scan builds a feature matrix over traces and logs in the same store. FP-growth mines the whole lattice. The winner gets compiled into SigNoz's own trace-operator grammar, verified against the live engine, and armed as an alert. Five stages, and no LLM in any of them.",
+      "notes": "One unbroken programmatic crawl down replay/index.html at 1920x1080: hero (13.1x / 61 = 61 / 6 of 6 / 0 LLM chips and the honest banner) -> the 'nobody hands you the query' competitor table -> the five deterministic stages -> the five SigNoz surfaces -> a hold on the proof/receipt section. Served locally from replay/ on :8099, byte-identical to the deployed Space. Replaces the retired static intro cards."
     },
     {
       "id": "b2",
@@ -50,7 +72,7 @@
         "support_healthy",
         "scan_rows_scanned"
       ],
-      "narration": "One question to ClickHouse. Then the whole itemset lattice is enumerated locally. The machine considers the obvious answers - the edge alone, the missing flag-service alone - and rejects them. Only the conjunction separates the cohorts.",
+      "narration": "One question to ClickHouse. Then the whole lattice is enumerated locally. The machine weighs the obvious answers - the edge alone - and rejects them. Only the conjunction separates the cohorts, at thirteen times lift.",
       "notes": "One real 472.3s run; the spinner plays that wait back in 5s with its counter ramping to the true elapsed, which is then printed."
     },
     {
@@ -67,7 +89,7 @@
         "precision",
         "recall"
       ],
-      "narration": "This is what every flat tool sees - BubbleUp, compare, Trace Patterns. Its best single predicate lands at precision 0.17. The fault needs two conditions at once, and no single predicate can see it.",
+      "narration": "This is what every flat tool sees - BubbleUp, compare, Trace Patterns. Its best single predicate lands at precision zero point one seven. The fault needs two conditions at once.",
       "notes": "benchmark/baseline.py on the identical matrix. Top pick NOT edge__shop_checkout__GET_flags_evaluate, precision 0.17, recall 1.00 - fails the 0.80/0.50 gate."
     },
     {
@@ -92,7 +114,7 @@
         "verify_rows_scanned",
         "verdict_hash"
       ],
-      "narration": "No model wrote this. It is compiled into SigNoz's own trace-operator grammar, then run back against the live engine. Whodunit mined 61 traces; SigNoz returned 61. They agree.",
+      "narration": "No model wrote this. It's compiled into SigNoz's own grammar - A implies B, and not C - then run back against the engine. Mined sixty-one. SigNoz returned sixty-one.",
       "notes": "Leaves A/B/C, (A => B) && NOT C, returnSpansFrom A, then the differential receipt and the verdict hash."
     },
     {
@@ -113,7 +135,7 @@
         "expression",
         "leaves"
       ],
-      "narration": "That permalink opens the machine-written query in SigNoz's own Explorer. Same language, same engine - three leaves, the operator, the matched set. Open one trace and the shape is right there: payment retries redis, and flag-service never ran.",
+      "narration": "That permalink opens the machine-written query in SigNoz's own Trace Explorer - all three leaves and the operator, rendered in the real UI. The result set collapses to the matched traces. Open one, and the flame graph shows the shape: payment retries redis, and flag-service never ran.",
       "notes": "compositeQuery is double-URL-encoded and carries builder.queryTraceOperator (materialize/NOTES.md 1). The Explorer renders all three leaves and the operator, and the flame graph shows redis-retry under shop-payment with no shop-flag-service span."
     },
     {
@@ -138,8 +160,22 @@
       "on_screen": [
         "expression"
       ],
-      "narration": "One flag arms it. The discriminator becomes a native SigNoz alert with warning and critical thresholds. Replay the fault and the webhook fires - the rule id in that POST is the rule the command just created. Everyone else stops at a panel.",
+      "narration": "One flag arms it. The discriminator becomes a native v2alpha1 alert with warning and critical thresholds. Replay the fault, and at t plus one eighty-two seconds the webhook fires - the rule ID in that payload is the rule the command just created. Everyone else in this category stops at a panel.",
       "notes": "Armed live (rule 019f97fb-f4a7-743a-8499-be519fb5bbeb); the middle segment is SigNoz's own Alert Rules page showing the rule plotted against both threshold lines. The ~1-3 min evaluation delay is cut out of one continuous take."
+    },
+    {
+      "id": "b10",
+      "title": "Abstention - and the one it first got wrong",
+      "source": "b10.mp4",
+      "segments": [
+        [
+          0.0,
+          32.93
+        ]
+      ],
+      "on_screen": [],
+      "narration": "Here's what matters more. Point it at a decoy - an attribute that tracks failure but doesn't cause it - and it abstains. Point it at a healthy system, it abstains again. Across six seeded faults, it never named a false culprit. And this one it first got wrong - it abstained where a real answer existed. I found the seam, fixed it, and left the original failure in the repo.",
+      "notes": "Termcast, same offscreen pipeline as b2/b3/b4. tools/video/demo_abstention.py renders benchmark/results.json - the record of the 946.5s live benchmark run behind REPORT.md. Board: 6/6 pass, 0 false culprits, ABSTAIN on decoys + null_scenario, PARTIAL on retry_storm. Then cache_bypass: the original ABSTAIN, the absence-only compiler refusal quoted from the run, the MDL dominance prune, the _select_finding fix, and the re-run - (A => B) && NOT (C => D), recall 1.0, precision 1.0, 160/160 live match, original failure kept in benchmark/ISSUES.md #2. on_screen is empty on purpose: these numbers come from the benchmark, not from the seed-778 explain-result.json that real_numbers reads."
     },
     {
       "id": "b7",
@@ -154,8 +190,29 @@
       "on_screen": [
         "verdict_hash"
       ],
-      "narration": "Same input, same seed, same hash - every time. No LLM anywhere in the runtime. This is deterministic.",
+      "narration": "Run it twice. Same input, same seed, same verdict hash. There is no LLM anywhere in the runtime - this is deterministic. The corpus is synthetic and disclosed; ground truth comes from a manifest.",
       "notes": "Two complete live runs (scan, mine the whole lattice, compile, verify). The mining waits are played back compressed; the hashes are not touched."
+    },
+    {
+      "id": "b11",
+      "title": "The replay app - step through the run in a browser",
+      "source": "b11.mp4",
+      "segments": [
+        [
+          0.0,
+          18.0
+        ]
+      ],
+      "on_screen": [
+        "mined",
+        "signoz",
+        "match",
+        "precision",
+        "recall",
+        "verify_rows_scanned"
+      ],
+      "narration": "And you don't need my machine to check any of it. The whole run is stepped through in the browser - the board, the compiled query, the receipt, the hash - hosted, no install.",
+      "notes": "replay/app.html at 1920x1080, served locally on :8099 and byte-identical to the deployed Space. Lands on the shell, then ArrowRight x3 to the elimination board, the compiled trace-operator and the verification receipt, where 'Run differential verification' snaps in mined 61 / SigNoz 61 / MATCH. The viewport never moves: document height equals viewport height and only #panel scrolls. Keyboard-only, so no cursor is in frame."
     },
     {
       "id": "b8",
@@ -168,7 +225,7 @@
         ]
       ],
       "on_screen": [],
-      "narration": "Everyone shows you the difference. Only SigNoz can arm it. One command reproduces the whole thing.",
+      "narration": "Everyone can show you the difference. Only SigNoz can arm it. One command reproduces the whole thing - casting file and lock, committed.",
       "notes": "foundryctl cast is typed but deliberately not run - the live stack already owns :8080 / :4318. casting.yaml.lock is committed next to it."
     }
   ]

@@ -1,16 +1,18 @@
 #!/usr/bin/env python
-"""Assemble the Whodunit submission video: intro + demo + narration + burned captions.
+"""Assemble the Whodunit submission video: demo + narration + burned captions.
 
-    docs/video/intro/intro.mp4        (rendered by tools/video/intro/render_intro.py)
-  + docs/video/demo-silent.mp4        (assembled from the recorded beats)
-  + audio/seg01.wav .. audio/seg13.wav (recorded by a human, per docs/video/NARRATION-SCRIPT.md)
+    docs/video/demo-silent.mp4        (assembled from the recorded beats)
+  + audio/seg01.wav .. audio/seg11.wav (recorded by a human, per docs/NARRATION-SCRIPT-v2.md)
   -> docs/video/whodunit-final.mp4    (1080p H.264 + AAC, captions burned in)
+
+The v2 cut has no intro half: the five static cards are retired and the recorded
+landing-page beat (b9) opens the film. ``--intro FILE`` prepends one anyway.
 
 What it does, in order:
 
-1. Normalises intro and demo to a common 1080p/30fps/yuv420p H.264 encode and
-   concatenates them (re-encode, not stream copy — the two halves come from different
-   pipelines and their encoder settings will not match).
+1. Normalises the input(s) to a common 1080p/30fps/yuv420p H.264 encode and
+   concatenates them (re-encode, not stream copy — halves from different pipelines
+   will not have matching encoder settings).
 2. Rebuilds ``docs/video/CAPTIONS.srt`` via ``tools/video/captions/build_captions.py``
    so the burned captions can never be stale relative to the narration script.
 3. Places each ``segNN.wav`` at its segment's start offset + its lead-in (0.3s, or
@@ -42,9 +44,12 @@ HERE = Path(__file__).resolve().parent
 REPO = HERE.parent.parent  # tools/video -> tools -> repo
 sys.path.insert(0, str(HERE / "captions"))
 
-from build_captions import load_timeline, parse_script  # noqa: E402
+from build_captions import SCRIPT_MD, load_timeline, parse_script  # noqa: E402
 
-INTRO = REPO / "docs" / "video" / "intro" / "intro.mp4"
+# The v2 cut retires the five static intro cards - the recorded landing-page beat
+# (b9) opens the film - so there is no intro half by default. Pass --intro to put
+# one back; the concat below simply skips it when it is absent.
+INTRO: Path | None = None
 DEMO = REPO / "docs" / "video" / "demo-silent.mp4"
 SRT = REPO / "docs" / "video" / "CAPTIONS.srt"
 DEFAULT_OUT = REPO / "docs" / "video" / "whodunit-final.mp4"
@@ -205,7 +210,8 @@ def main() -> int:
                     help="directory holding seg01.wav .. segNN.wav")
     ap.add_argument("--no-audio", action="store_true",
                     help="captions-burned silent preview cut (no wavs needed)")
-    ap.add_argument("--intro", type=Path, default=INTRO)
+    ap.add_argument("--intro", type=Path, default=INTRO,
+                    help="optional intro half to prepend (retired in the v2 cut)")
     ap.add_argument("--demo", type=Path, default=DEMO)
     ap.add_argument("--keep-work", action="store_true", help="keep intermediates in .work/")
     args = ap.parse_args()
@@ -213,13 +219,16 @@ def main() -> int:
     for tool in ("ffmpeg", "ffprobe"):
         if shutil.which(tool) is None:
             raise SystemExit(f"{tool} not found on PATH")
-    for src, name in ((args.intro, "intro"), (args.demo, "demo")):
-        if not src.exists():
-            raise SystemExit(
-                f"missing {name} video: {src}\n"
-                + ("  run tools/video/intro/render_intro.py" if name == "intro"
-                   else "  assemble the recorded beats into docs/video/demo-silent.mp4 first")
-            )
+    if not args.demo.exists():
+        raise SystemExit(
+            f"missing demo video: {args.demo}\n"
+            "  assemble the recorded beats into docs/video/demo-silent.mp4 first"
+        )
+    if args.intro is not None and not args.intro.exists():
+        raise SystemExit(
+            f"missing intro video: {args.intro}\n"
+            "  run tools/video/intro/render_intro.py"
+        )
 
     WORK.mkdir(parents=True, exist_ok=True)
 
@@ -231,7 +240,7 @@ def main() -> int:
     )
 
     # 2. timeline (same source of truth the captions use)
-    texts = parse_script(REPO / "docs" / "video" / "NARRATION-SCRIPT.md")
+    texts = parse_script(SCRIPT_MD)
     segments, _ = load_timeline()
     for seg in segments:
         seg.text = texts.get(seg.seg_id, "")
@@ -239,16 +248,22 @@ def main() -> int:
 
     # 3. normalise + concat video
     print("video")
-    n_intro, n_demo = WORK / "intro-n.mp4", WORK / "demo-n.mp4"
-    normalise(args.intro, n_intro, "intro")
+    parts: list[Path] = []
+    if args.intro is not None:
+        n_intro = WORK / "intro-n.mp4"
+        normalise(args.intro, n_intro, "intro")
+        parts.append(n_intro)
+    n_demo = WORK / "demo-n.mp4"
     normalise(args.demo, n_demo, "demo")
+    parts.append(n_demo)
     listfile = WORK / "concat.txt"
     listfile.write_text(
-        f"file '{n_intro.as_posix()}'\nfile '{n_demo.as_posix()}'\n", encoding="utf-8"
+        "".join(f"file '{p.as_posix()}'\n" for p in parts), encoding="utf-8"
     )
     silent = WORK / "video-silent.mp4"
     run(["ffmpeg", "-y", "-loglevel", "error", "-f", "concat", "-safe", "0",
-         "-i", str(listfile), "-c", "copy", str(silent)], "concat intro + demo")
+         "-i", str(listfile), "-c", "copy", str(silent)],
+        "concat " + " + ".join(["intro"] * (args.intro is not None) + ["demo"]))
     total = float(probe(silent))
     print(f"  concatenated video: {total:.3f}s")
 

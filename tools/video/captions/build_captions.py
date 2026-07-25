@@ -35,7 +35,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parent.parent.parent  # tools/video/captions -> tools/video -> tools -> repo
 
-SCRIPT_MD = REPO / "docs" / "video" / "NARRATION-SCRIPT.md"
+SCRIPT_MD = REPO / "docs" / "NARRATION-SCRIPT-v2.md"
 INTRO_MANIFEST = REPO / "tools" / "video" / "intro" / "intro-manifest.json"
 DEMO_MANIFEST = REPO / "tools" / "video" / "manifest.json"
 DEFAULT_OUT = REPO / "docs" / "video" / "CAPTIONS.srt"
@@ -51,13 +51,19 @@ DANGLERS = {"—", "–", "-", ":", ";", ","}  # noqa: RUF001
 
 # Segment order. Intro segments are keyed by intro-manifest card key; demo segments by
 # the beat id the capture tooling uses.
-INTRO_SEGMENTS = ["card1", "card2", "card3", "card4", "card5"]
-DEMO_SEGMENTS = ["b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8"]
+#
+# v2 cut: the five static intro cards are RETIRED — the recorded landing-page beat
+# (b9) opens the film instead — so INTRO_SEGMENTS is empty and every segNN maps to a
+# recorded beat. Keeping the intro machinery (rather than deleting it) means an intro
+# can be reinstated by listing its card keys here again.
+INTRO_SEGMENTS: list[str] = []
+DEMO_SEGMENTS = ["b1", "b9", "b2", "b3", "b4", "b5", "b6", "b10", "b7", "b11", "b8"]
 
 # docs/DEMO-RUNBOOK.md timing budget — used only until tools/video/manifest.json exists.
 FALLBACK_BEATS: dict[str, float] = {
     "b1": 12.0, "b2": 33.0, "b3": 20.0, "b4": 30.0,
     "b5": 25.0, "b6": 25.0, "b7": 15.0, "b8": 10.0,
+    "b9": 46.0, "b10": 32.0, "b11": 18.0,
 }
 
 
@@ -113,12 +119,14 @@ def load_timeline() -> tuple[list[Segment], list[str]]:
     """Build the ordered segment list with start offsets. Returns (segments, warnings)."""
     warnings: list[str] = []
 
-    if not INTRO_MANIFEST.exists():
-        raise SystemExit(
-            f"{INTRO_MANIFEST} missing — run tools/video/intro/render_intro.py first"
-        )
-    intro = json.loads(INTRO_MANIFEST.read_text(encoding="utf-8"))
-    intro_by_key = {s["key"]: s for s in intro["segments"]}
+    intro_by_key: dict[str, dict] = {}
+    if INTRO_SEGMENTS:
+        if not INTRO_MANIFEST.exists():
+            raise SystemExit(
+                f"{INTRO_MANIFEST} missing — run tools/video/intro/render_intro.py first"
+            )
+        intro = json.loads(INTRO_MANIFEST.read_text(encoding="utf-8"))
+        intro_by_key = {s["key"]: s for s in intro["segments"]}
 
     demo_by_key: dict[str, tuple[float, float | None]] = {}
     demo_lead: float | None = None
@@ -335,7 +343,9 @@ def report(segments: list[Segment], warnings: list[str]) -> int:
             f"{s.seg_id:<6}{s.key:<8}{s.duration:>8.2f}s{len(s.words):>7}"
             f"{s.speech_seconds:>8.1f}s{s.headroom:>7.1f}s  {status}"
         )
-    total = sum(s.duration for s in segments)
+    # Beats overlap by one crossfade, so the film is the last segment's END, not
+    # the sum of the segment durations.
+    total = max((s.start + s.duration for s in segments), default=0.0)
     print("-" * 72)
     print(f"total video {total:.2f}s  ({int(total // 60)}:{total % 60:04.1f})")
     for w in warnings:

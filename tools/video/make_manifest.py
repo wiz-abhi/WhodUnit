@@ -120,14 +120,18 @@ def main() -> int:
         })
         t = end - XFADE  # the next beat overlaps by one crossfade
 
-    total = round(beats[-1]["timeline_end_s"] - XFADE * (len(beats) - 1), 2)
+    # Each beat's timeline_start_s already backs off one crossfade from the
+    # previous beat's end, so the last beat's end IS the predicted total. (It
+    # used to subtract the crossfades a second time, which under-reported the
+    # cut by XFADE * (n - 1).)
+    total = round(beats[-1]["timeline_end_s"], 2)
     doc = {
         "generated_by": "tools/video/make_manifest.py",
         "corpus": spec.get("corpus"),
         "stack": spec.get("stack"),
         "crossfade_s": XFADE,
         "voice_lead_s": VOICE_LEAD,
-        "cap_s": 170.0,
+        "cap_s": 270.0,
         "predicted_total_s": total,
         "real_numbers": nums,
         "beats": beats,

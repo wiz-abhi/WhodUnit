@@ -1,6 +1,13 @@
 # Whodunit — narration script
 
-**This is the file you record from.** One block per on-screen segment, in order. Each
+> ## ⚠️ SUPERSEDED — do not record from this file
+>
+> This is the v1 script for the retired 13-segment cut (5 static intro cards + b1–b8).
+> The shipped cut is the 11-beat v2: **[`docs/NARRATION-SCRIPT-v2.md`](../NARRATION-SCRIPT-v2.md)**,
+> which is what `tools/video/captions/build_captions.py` and `final_assemble.py` read.
+> Kept only as the record of the earlier cut.
+
+**This was the file you recorded from.** One block per on-screen segment, in order. Each
 block gives you the window it has to fit inside, the exact words, and what to lean on.
 
 - **Pace target: 145 wpm** (≈ 2.4 words/second). Every block below is word-counted
