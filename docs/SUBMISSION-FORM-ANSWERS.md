@@ -62,7 +62,7 @@ Foundry deployment, as required. (Note in README: the live dev stack occupies
 
 ### 7. Deployed link (optional)
 
-`https://<username>-whodunit-replay.hf.space` **[FILL IN after deploying `replay/` — a static, offline interactive replay of the real seed-778 run; steps: `replay/DEPLOY.md`]**
+**https://wiz-abhi-whodunit-replay.static.hf.space** — a static, offline interactive replay of the real seed-778 run (live on Hugging Face Spaces).
 
 *(Whodunit itself is a CLI + engine, not a hosted service; this deployed link is an
 interactive replay of the committed run — elimination board → compiled query →

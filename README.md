@@ -13,7 +13,7 @@
 ![license](https://img.shields.io/badge/license-MIT-green)
 ![track](https://img.shields.io/badge/SigNoz%20hackathon-Track%202-orange)
 
-**▶ [Try the live replay](replay/DEPLOY.md)** — step through the real run in your browser, no install: `https://<username>-whodunit-replay.hf.space` *(deploy `replay/` first)*
+**▶ [Try it live → wiz-abhi-whodunit-replay.static.hf.space](https://wiz-abhi-whodunit-replay.static.hf.space)** — step through the real seed-778 run in your browser, no install required.
 
 ---
 
