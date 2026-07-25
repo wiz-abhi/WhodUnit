@@ -1,0 +1,923 @@
+{
+  "verdict": "discriminator",
+  "headline": "The culprit is WITH edge__shop_payment__redis_retry AND WITHOUT span__shop_flag_service__GET_flags_evaluate (lift 13.1x)",
+  "matrix_meta": {
+    "columns": [
+      {
+        "name": "edge__shop_checkout__GET_flags_evaluate",
+        "kind": "edge",
+        "description": "a 'GET /flags/evaluate' span directly under a 'shop-checkout' span",
+        "service_name": null,
+        "span_name": null,
+        "status": null,
+        "duration_ge_ns": null,
+        "duration_lt_ns": null,
+        "edge_parent": "shop-checkout",
+        "edge_child": "GET /flags/evaluate",
+        "requires_span_level_negation": false
+      },
+      {
+        "name": "span__shop_flag_service__GET_flags_evaluate",
+        "kind": "span_predicate",
+        "description": "trace contains a 'shop-flag-service' span named 'GET /flags/evaluate'",
+        "service_name": "shop-flag-service",
+        "span_name": "GET /flags/evaluate",
+        "status": null,
+        "duration_ge_ns": null,
+        "duration_lt_ns": null,
+        "edge_parent": null,
+        "edge_child": null,
+        "requires_span_level_negation": false
+      },
+      {
+        "name": "svc__shop_flag_service",
+        "kind": "span_predicate",
+        "description": "trace contains any 'shop-flag-service' span",
+        "service_name": "shop-flag-service",
+        "span_name": null,
+        "status": null,
+        "duration_ge_ns": null,
+        "duration_lt_ns": null,
+        "edge_parent": null,
+        "edge_child": null,
+        "requires_span_level_negation": false
+      },
+      {
+        "name": "edge__shop_payment__redis_retry",
+        "kind": "edge",
+        "description": "a 'redis-retry' span directly under a 'shop-payment' span",
+        "service_name": null,
+        "span_name": null,
+        "status": null,
+        "duration_ge_ns": null,
+        "duration_lt_ns": null,
+        "edge_parent": "shop-payment",
+        "edge_child": "redis-retry",
+        "requires_span_level_negation": false
+      },
+      {
+        "name": "span__shop_payment__redis_retry",
+        "kind": "span_predicate",
+        "description": "trace contains a 'shop-payment' span named 'redis-retry'",
+        "service_name": "shop-payment",
+        "span_name": "redis-retry",
+        "status": null,
+        "duration_ge_ns": null,
+        "duration_lt_ns": null,
+        "edge_parent": null,
+        "edge_child": null,
+        "requires_span_level_negation": false
+      },
+      {
+        "name": "edge__shop_checkout__notify_enqueue",
+        "kind": "edge",
+        "description": "a 'notify.enqueue' span directly under a 'shop-checkout' span",
+        "service_name": null,
+        "span_name": null,
+        "status": null,
+        "duration_ge_ns": null,
+        "duration_lt_ns": null,
+        "edge_parent": "shop-checkout",
+        "edge_child": "notify.enqueue",
+        "requires_span_level_negation": false
+      },
+      {
+        "name": "span__shop_notification__notify_enqueue",
+        "kind": "span_predicate",
+        "description": "trace contains a 'shop-notification' span named 'notify.enqueue'",
+        "service_name": "shop-notification",
+        "span_name": "notify.enqueue",
+        "status": null,
+        "duration_ge_ns": null,
+        "duration_lt_ns": null,
+        "edge_parent": null,
+        "edge_child": null,
+        "requires_span_level_negation": false
+      },
+      {
+        "name": "svc__shop_notification",
+        "kind": "span_predicate",
+        "description": "trace contains any 'shop-notification' span",
+        "service_name": "shop-notification",
+        "span_name": null,
+        "status": null,
+        "duration_ge_ns": null,
+        "duration_lt_ns": null,
+        "edge_parent": null,
+        "edge_child": null,
+        "requires_span_level_negation": false
+      },
+      {
+        "name": "dur__ge0_lt1052885",
+        "kind": "span_predicate",
+        "description": "trace has a span with duration_nano in [None, 1052885)",
+        "service_name": null,
+        "span_name": null,
+        "status": null,
+        "duration_ge_ns": null,
+        "duration_lt_ns": 1052885,
+        "edge_parent": null,
+        "edge_child": null,
+        "requires_span_level_negation": true
+      },
+      {
+        "name": "dur__ge1052885_lt3160002",
+        "kind": "span_predicate",
+        "description": "trace has a span with duration_nano in [1052885, 3160002)",
+        "service_name": null,
+        "span_name": null,
+        "status": null,
+        "duration_ge_ns": 1052885,
+        "duration_lt_ns": 3160002,
+        "edge_parent": null,
+        "edge_child": null,
+        "requires_span_level_negation": true
+      },
+      {
+        "name": "dur__ge17265680_ltinf",
+        "kind": "span_predicate",
+        "description": "trace has a span with duration_nano in [17265680, None)",
+        "service_name": null,
+        "span_name": null,
+        "status": null,
+        "duration_ge_ns": 17265680,
+        "duration_lt_ns": null,
+        "edge_parent": null,
+        "edge_child": null,
+        "requires_span_level_negation": true
+      },
+      {
+        "name": "dur__ge3160002_lt5619371",
+        "kind": "span_predicate",
+        "description": "trace has a span with duration_nano in [3160002, 5619371)",
+        "service_name": null,
+        "span_name": null,
+        "status": null,
+        "duration_ge_ns": 3160002,
+        "duration_lt_ns": 5619371,
+        "edge_parent": null,
+        "edge_child": null,
+        "requires_span_level_negation": true
+      },
+      {
+        "name": "dur__ge5619371_lt9122183",
+        "kind": "span_predicate",
+        "description": "trace has a span with duration_nano in [5619371, 9122183)",
+        "service_name": null,
+        "span_name": null,
+        "status": null,
+        "duration_ge_ns": 5619371,
+        "duration_lt_ns": 9122183,
+        "edge_parent": null,
+        "edge_child": null,
+        "requires_span_level_negation": true
+      },
+      {
+        "name": "dur__ge9122183_lt17265680",
+        "kind": "span_predicate",
+        "description": "trace has a span with duration_nano in [9122183, 17265680)",
+        "service_name": null,
+        "span_name": null,
+        "status": null,
+        "duration_ge_ns": 9122183,
+        "duration_lt_ns": 17265680,
+        "edge_parent": null,
+        "edge_child": null,
+        "requires_span_level_negation": true
+      },
+      {
+        "name": "edge__shop_checkout__inventory_check",
+        "kind": "edge",
+        "description": "a 'inventory.check' span directly under a 'shop-checkout' span",
+        "service_name": null,
+        "span_name": null,
+        "status": null,
+        "duration_ge_ns": null,
+        "duration_lt_ns": null,
+        "edge_parent": "shop-checkout",
+        "edge_child": "inventory.check",
+        "requires_span_level_negation": false
+      },
+      {
+        "name": "edge__shop_inventory__SELECT_stock",
+        "kind": "edge",
+        "description": "a 'SELECT stock' span directly under a 'shop-inventory' span",
+        "service_name": null,
+        "span_name": null,
+        "status": null,
+        "duration_ge_ns": null,
+        "duration_lt_ns": null,
+        "edge_parent": "shop-inventory",
+        "edge_child": "SELECT stock",
+        "requires_span_level_negation": false
+      },
+      {
+        "name": "span__shop_db__SELECT_stock",
+        "kind": "span_predicate",
+        "description": "trace contains a 'shop-db' span named 'SELECT stock'",
+        "service_name": "shop-db",
+        "span_name": "SELECT stock",
+        "status": null,
+        "duration_ge_ns": null,
+        "duration_lt_ns": null,
+        "edge_parent": null,
+        "edge_child": null,
+        "requires_span_level_negation": false
+      },
+      {
+        "name": "span__shop_inventory__inventory_check",
+        "kind": "span_predicate",
+        "description": "trace contains a 'shop-inventory' span named 'inventory.check'",
+        "service_name": "shop-inventory",
+        "span_name": "inventory.check",
+        "status": null,
+        "duration_ge_ns": null,
+        "duration_lt_ns": null,
+        "edge_parent": null,
+        "edge_child": null,
+        "requires_span_level_negation": false
+      },
+      {
+        "name": "svc__shop_inventory",
+        "kind": "span_predicate",
+        "description": "trace contains any 'shop-inventory' span",
+        "service_name": "shop-inventory",
+        "span_name": null,
+        "status": null,
+        "duration_ge_ns": null,
+        "duration_lt_ns": null,
+        "edge_parent": null,
+        "edge_child": null,
+        "requires_span_level_negation": false
+      },
+      {
+        "name": "edge__shop_cart__SELECT_cart_items",
+        "kind": "edge",
+        "description": "a 'SELECT cart_items' span directly under a 'shop-cart' span",
+        "service_name": null,
+        "span_name": null,
+        "status": null,
+        "duration_ge_ns": null,
+        "duration_lt_ns": null,
+        "edge_parent": "shop-cart",
+        "edge_child": "SELECT cart_items",
+        "requires_span_level_negation": false
+      },
+      {
+        "name": "edge__shop_cart__cache_get",
+        "kind": "edge",
+        "description": "a 'cache-get' span directly under a 'shop-cart' span",
+        "service_name": null,
+        "span_name": null,
+        "status": null,
+        "duration_ge_ns": null,
+        "duration_lt_ns": null,
+        "edge_parent": "shop-cart",
+        "edge_child": "cache-get",
+        "requires_span_level_negation": false
+      },
+      {
+        "name": "edge__shop_checkout__cart_load",
+        "kind": "edge",
+        "description": "a 'cart.load' span directly under a 'shop-checkout' span",
+        "service_name": null,
+        "span_name": null,
+        "status": null,
+        "duration_ge_ns": null,
+        "duration_lt_ns": null,
+        "edge_parent": "shop-checkout",
+        "edge_child": "cart.load",
+        "requires_span_level_negation": false
+      },
+      {
+        "name": "edge__shop_checkout__payment_charge",
+        "kind": "edge",
+        "description": "a 'payment.charge' span directly under a 'shop-checkout' span",
+        "service_name": null,
+        "span_name": null,
+        "status": null,
+        "duration_ge_ns": null,
+        "duration_lt_ns": null,
+        "edge_parent": "shop-checkout",
+        "edge_child": "payment.charge",
+        "requires_span_level_negation": false
+      },
+      {
+        "name": "edge__shop_payment__UPDATE_ledger",
+        "kind": "edge",
+        "description": "a 'UPDATE ledger' span directly under a 'shop-payment' span",
+        "service_name": null,
+        "span_name": null,
+        "status": null,
+        "duration_ge_ns": null,
+        "duration_lt_ns": null,
+        "edge_parent": "shop-payment",
+        "edge_child": "UPDATE ledger",
+        "requires_span_level_negation": false
+      },
+      {
+        "name": "span__shop_cache__cache_get",
+        "kind": "span_predicate",
+        "description": "trace contains a 'shop-cache' span named 'cache-get'",
+        "service_name": "shop-cache",
+        "span_name": "cache-get",
+        "status": null,
+        "duration_ge_ns": null,
+        "duration_lt_ns": null,
+        "edge_parent": null,
+        "edge_child": null,
+        "requires_span_level_negation": false
+      },
+      {
+        "name": "span__shop_cart__cart_load",
+        "kind": "span_predicate",
+        "description": "trace contains a 'shop-cart' span named 'cart.load'",
+        "service_name": "shop-cart",
+        "span_name": "cart.load",
+        "status": null,
+        "duration_ge_ns": null,
+        "duration_lt_ns": null,
+        "edge_parent": null,
+        "edge_child": null,
+        "requires_span_level_negation": false
+      },
+      {
+        "name": "span__shop_checkout__POST_api_checkout",
+        "kind": "span_predicate",
+        "description": "trace contains a 'shop-checkout' span named 'POST /api/checkout'",
+        "service_name": "shop-checkout",
+        "span_name": "POST /api/checkout",
+        "status": null,
+        "duration_ge_ns": null,
+        "duration_lt_ns": null,
+        "edge_parent": null,
+        "edge_child": null,
+        "requires_span_level_negation": false
+      },
+      {
+        "name": "span__shop_db__SELECT_cart_items",
+        "kind": "span_predicate",
+        "description": "trace contains a 'shop-db' span named 'SELECT cart_items'",
+        "service_name": "shop-db",
+        "span_name": "SELECT cart_items",
+        "status": null,
+        "duration_ge_ns": null,
+        "duration_lt_ns": null,
+        "edge_parent": null,
+        "edge_child": null,
+        "requires_span_level_negation": false
+      },
+      {
+        "name": "span__shop_db__UPDATE_ledger",
+        "kind": "span_predicate",
+        "description": "trace contains a 'shop-db' span named 'UPDATE ledger'",
+        "service_name": "shop-db",
+        "span_name": "UPDATE ledger",
+        "status": null,
+        "duration_ge_ns": null,
+        "duration_lt_ns": null,
+        "edge_parent": null,
+        "edge_child": null,
+        "requires_span_level_negation": false
+      },
+      {
+        "name": "span__shop_payment__payment_charge",
+        "kind": "span_predicate",
+        "description": "trace contains a 'shop-payment' span named 'payment.charge'",
+        "service_name": "shop-payment",
+        "span_name": "payment.charge",
+        "status": null,
+        "duration_ge_ns": null,
+        "duration_lt_ns": null,
+        "edge_parent": null,
+        "edge_child": null,
+        "requires_span_level_negation": false
+      },
+      {
+        "name": "status_error",
+        "kind": "span_predicate",
+        "description": "trace contains a span with ERROR status",
+        "service_name": null,
+        "span_name": null,
+        "status": "ERROR",
+        "duration_ge_ns": null,
+        "duration_lt_ns": null,
+        "edge_parent": null,
+        "edge_child": null,
+        "requires_span_level_negation": false
+      },
+      {
+        "name": "svc__shop_cache",
+        "kind": "span_predicate",
+        "description": "trace contains any 'shop-cache' span",
+        "service_name": "shop-cache",
+        "span_name": null,
+        "status": null,
+        "duration_ge_ns": null,
+        "duration_lt_ns": null,
+        "edge_parent": null,
+        "edge_child": null,
+        "requires_span_level_negation": false
+      },
+      {
+        "name": "svc__shop_cart",
+        "kind": "span_predicate",
+        "description": "trace contains any 'shop-cart' span",
+        "service_name": "shop-cart",
+        "span_name": null,
+        "status": null,
+        "duration_ge_ns": null,
+        "duration_lt_ns": null,
+        "edge_parent": null,
+        "edge_child": null,
+        "requires_span_level_negation": false
+      },
+      {
+        "name": "svc__shop_checkout",
+        "kind": "span_predicate",
+        "description": "trace contains any 'shop-checkout' span",
+        "service_name": "shop-checkout",
+        "span_name": null,
+        "status": null,
+        "duration_ge_ns": null,
+        "duration_lt_ns": null,
+        "edge_parent": null,
+        "edge_child": null,
+        "requires_span_level_negation": false
+      },
+      {
+        "name": "svc__shop_db",
+        "kind": "span_predicate",
+        "description": "trace contains any 'shop-db' span",
+        "service_name": "shop-db",
+        "span_name": null,
+        "status": null,
+        "duration_ge_ns": null,
+        "duration_lt_ns": null,
+        "edge_parent": null,
+        "edge_child": null,
+        "requires_span_level_negation": false
+      },
+      {
+        "name": "svc__shop_payment",
+        "kind": "span_predicate",
+        "description": "trace contains any 'shop-payment' span",
+        "service_name": "shop-payment",
+        "span_name": null,
+        "status": null,
+        "duration_ge_ns": null,
+        "duration_lt_ns": null,
+        "edge_parent": null,
+        "edge_child": null,
+        "requires_span_level_negation": false
+      }
+    ],
+    "n_traces_bad": 61,
+    "n_traces_healthy": 739,
+    "matched_on": [],
+    "window_start_unix_ms": 1784957400000,
+    "window_end_unix_ms": 1784957940000,
+    "bad_cohort_filter": null,
+    "rows_scanned": 163464,
+    "bytes_scanned": 22423011,
+    "duration_ms": 1843.0
+  },
+  "mine_result_findings": [
+    {
+      "itemset": [
+        "edge__shop_payment__redis_retry",
+        "NOT edge__shop_checkout__GET_flags_evaluate"
+      ],
+      "lift": 13.114754098360656,
+      "ci_low": 10.81081081081081,
+      "ci_high": 17.21554116558741,
+      "support_bad": 61,
+      "support_healthy": 0,
+      "verdict": "discriminator",
+      "p_value": 4.330114900788371e-93,
+      "q_value": 2.6202230167096147e-91,
+      "background_share": 0.0,
+      "demoted_by": null
+    },
+    {
+      "itemset": [
+        "edge__shop_payment__redis_retry",
+        "NOT span__shop_flag_service__GET_flags_evaluate"
+      ],
+      "lift": 13.114754098360656,
+      "ci_low": 10.81081081081081,
+      "ci_high": 17.21554116558741,
+      "support_bad": 61,
+      "support_healthy": 0,
+      "verdict": "discriminator",
+      "p_value": 4.330114900788371e-93,
+      "q_value": 2.6202230167096147e-91,
+      "background_share": 0.0,
+      "demoted_by": null
+    },
+    {
+      "itemset": [
+        "edge__shop_payment__redis_retry",
+        "NOT svc__shop_flag_service"
+      ],
+      "lift": 13.114754098360656,
+      "ci_low": 10.81081081081081,
+      "ci_high": 17.21554116558741,
+      "support_bad": 61,
+      "support_healthy": 0,
+      "verdict": "discriminator",
+      "p_value": 4.330114900788371e-93,
+      "q_value": 2.6202230167096147e-91,
+      "background_share": 0.0,
+      "demoted_by": null
+    },
+    {
+      "itemset": [
+        "span__shop_payment__redis_retry",
+        "NOT edge__shop_checkout__GET_flags_evaluate"
+      ],
+      "lift": 13.114754098360656,
+      "ci_low": 10.81081081081081,
+      "ci_high": 17.21554116558741,
+      "support_bad": 61,
+      "support_healthy": 0,
+      "verdict": "discriminator",
+      "p_value": 4.330114900788371e-93,
+      "q_value": 2.6202230167096147e-91,
+      "background_share": 0.0,
+      "demoted_by": null
+    },
+    {
+      "itemset": [
+        "span__shop_payment__redis_retry",
+        "NOT span__shop_flag_service__GET_flags_evaluate"
+      ],
+      "lift": 13.114754098360656,
+      "ci_low": 10.81081081081081,
+      "ci_high": 17.21554116558741,
+      "support_bad": 61,
+      "support_healthy": 0,
+      "verdict": "discriminator",
+      "p_value": 4.330114900788371e-93,
+      "q_value": 2.6202230167096147e-91,
+      "background_share": 0.0,
+      "demoted_by": null
+    },
+    {
+      "itemset": [
+        "span__shop_payment__redis_retry",
+        "NOT svc__shop_flag_service"
+      ],
+      "lift": 13.114754098360656,
+      "ci_low": 10.81081081081081,
+      "ci_high": 17.21554116558741,
+      "support_bad": 61,
+      "support_healthy": 0,
+      "verdict": "discriminator",
+      "p_value": 4.330114900788371e-93,
+      "q_value": 2.6202230167096147e-91,
+      "background_share": 0.0,
+      "demoted_by": null
+    }
+  ],
+  "near_misses": [
+    {
+      "itemset": [
+        "dur__ge0_lt1052885",
+        "edge__shop_payment__redis_retry",
+        "NOT edge__shop_checkout__GET_flags_evaluate"
+      ],
+      "lift": 13.114754098360656,
+      "ci_low": 10.81081081081081,
+      "ci_high": 17.21554116558741,
+      "support_bad": 61,
+      "support_healthy": 0,
+      "verdict": "discriminator",
+      "p_value": 4.330114900788371e-93,
+      "q_value": 2.6202230167096147e-91,
+      "background_share": 0.0,
+      "demoted_by": null
+    },
+    {
+      "itemset": [
+        "dur__ge0_lt1052885",
+        "edge__shop_payment__redis_retry",
+        "NOT span__shop_flag_service__GET_flags_evaluate"
+      ],
+      "lift": 13.114754098360656,
+      "ci_low": 10.81081081081081,
+      "ci_high": 17.21554116558741,
+      "support_bad": 61,
+      "support_healthy": 0,
+      "verdict": "discriminator",
+      "p_value": 4.330114900788371e-93,
+      "q_value": 2.6202230167096147e-91,
+      "background_share": 0.0,
+      "demoted_by": null
+    },
+    {
+      "itemset": [
+        "dur__ge0_lt1052885",
+        "edge__shop_payment__redis_retry",
+        "NOT svc__shop_flag_service"
+      ],
+      "lift": 13.114754098360656,
+      "ci_low": 10.81081081081081,
+      "ci_high": 17.21554116558741,
+      "support_bad": 61,
+      "support_healthy": 0,
+      "verdict": "discriminator",
+      "p_value": 4.330114900788371e-93,
+      "q_value": 2.6202230167096147e-91,
+      "background_share": 0.0,
+      "demoted_by": null
+    },
+    {
+      "itemset": [
+        "dur__ge0_lt1052885",
+        "span__shop_payment__redis_retry",
+        "NOT edge__shop_checkout__GET_flags_evaluate"
+      ],
+      "lift": 13.114754098360656,
+      "ci_low": 10.81081081081081,
+      "ci_high": 17.21554116558741,
+      "support_bad": 61,
+      "support_healthy": 0,
+      "verdict": "discriminator",
+      "p_value": 4.330114900788371e-93,
+      "q_value": 2.6202230167096147e-91,
+      "background_share": 0.0,
+      "demoted_by": null
+    },
+    {
+      "itemset": [
+        "dur__ge0_lt1052885",
+        "span__shop_payment__redis_retry",
+        "NOT span__shop_flag_service__GET_flags_evaluate"
+      ],
+      "lift": 13.114754098360656,
+      "ci_low": 10.81081081081081,
+      "ci_high": 17.21554116558741,
+      "support_bad": 61,
+      "support_healthy": 0,
+      "verdict": "discriminator",
+      "p_value": 4.330114900788371e-93,
+      "q_value": 2.6202230167096147e-91,
+      "background_share": 0.0,
+      "demoted_by": null
+    },
+    {
+      "itemset": [
+        "dur__ge0_lt1052885",
+        "span__shop_payment__redis_retry",
+        "NOT svc__shop_flag_service"
+      ],
+      "lift": 13.114754098360656,
+      "ci_low": 10.81081081081081,
+      "ci_high": 17.21554116558741,
+      "support_bad": 61,
+      "support_healthy": 0,
+      "verdict": "discriminator",
+      "p_value": 4.330114900788371e-93,
+      "q_value": 2.6202230167096147e-91,
+      "background_share": 0.0,
+      "demoted_by": null
+    },
+    {
+      "itemset": [
+        "dur__ge17265680_ltinf",
+        "edge__shop_payment__redis_retry",
+        "NOT edge__shop_checkout__GET_flags_evaluate"
+      ],
+      "lift": 13.114754098360656,
+      "ci_low": 10.81081081081081,
+      "ci_high": 17.21554116558741,
+      "support_bad": 61,
+      "support_healthy": 0,
+      "verdict": "discriminator",
+      "p_value": 4.330114900788371e-93,
+      "q_value": 2.6202230167096147e-91,
+      "background_share": 0.0,
+      "demoted_by": null
+    },
+    {
+      "itemset": [
+        "dur__ge17265680_ltinf",
+        "edge__shop_payment__redis_retry",
+        "NOT span__shop_flag_service__GET_flags_evaluate"
+      ],
+      "lift": 13.114754098360656,
+      "ci_low": 10.81081081081081,
+      "ci_high": 17.21554116558741,
+      "support_bad": 61,
+      "support_healthy": 0,
+      "verdict": "discriminator",
+      "p_value": 4.330114900788371e-93,
+      "q_value": 2.6202230167096147e-91,
+      "background_share": 0.0,
+      "demoted_by": null
+    },
+    {
+      "itemset": [
+        "dur__ge17265680_ltinf",
+        "edge__shop_payment__redis_retry",
+        "NOT svc__shop_flag_service"
+      ],
+      "lift": 13.114754098360656,
+      "ci_low": 10.81081081081081,
+      "ci_high": 17.21554116558741,
+      "support_bad": 61,
+      "support_healthy": 0,
+      "verdict": "discriminator",
+      "p_value": 4.330114900788371e-93,
+      "q_value": 2.6202230167096147e-91,
+      "background_share": 0.0,
+      "demoted_by": null
+    },
+    {
+      "itemset": [
+        "dur__ge17265680_ltinf",
+        "span__shop_payment__redis_retry",
+        "NOT edge__shop_checkout__GET_flags_evaluate"
+      ],
+      "lift": 13.114754098360656,
+      "ci_low": 10.81081081081081,
+      "ci_high": 17.21554116558741,
+      "support_bad": 61,
+      "support_healthy": 0,
+      "verdict": "discriminator",
+      "p_value": 4.330114900788371e-93,
+      "q_value": 2.6202230167096147e-91,
+      "background_share": 0.0,
+      "demoted_by": null
+    }
+  ],
+  "family_size": 7806,
+  "abstained": false,
+  "chosen_finding": {
+    "itemset": [
+      "edge__shop_payment__redis_retry",
+      "NOT span__shop_flag_service__GET_flags_evaluate"
+    ],
+    "lift": 13.114754098360656,
+    "ci_low": 10.81081081081081,
+    "ci_high": 17.21554116558741,
+    "support_bad": 61,
+    "support_healthy": 0,
+    "verdict": "discriminator",
+    "p_value": 4.330114900788371e-93,
+    "q_value": 2.6202230167096147e-91,
+    "background_share": 0.0,
+    "demoted_by": null
+  },
+  "compiled": {
+    "envelope": {
+      "schemaVersion": "v1",
+      "start": 1784957400000,
+      "end": 1784957940000,
+      "requestType": "scalar",
+      "compositeQuery": {
+        "queries": [
+          {
+            "type": "builder_query",
+            "spec": {
+              "name": "A",
+              "signal": "traces",
+              "stepInterval": 0,
+              "aggregations": [
+                {
+                  "expression": "count()"
+                }
+              ],
+              "filter": {
+                "expression": "deployment.environment = 'whodunit-demo' AND service.name = 'shop-payment'"
+              },
+              "disabled": false
+            }
+          },
+          {
+            "type": "builder_query",
+            "spec": {
+              "name": "B",
+              "signal": "traces",
+              "stepInterval": 0,
+              "aggregations": [
+                {
+                  "expression": "count()"
+                }
+              ],
+              "filter": {
+                "expression": "deployment.environment = 'whodunit-demo' AND name = 'redis-retry'"
+              },
+              "disabled": false
+            }
+          },
+          {
+            "type": "builder_query",
+            "spec": {
+              "name": "C",
+              "signal": "traces",
+              "stepInterval": 0,
+              "aggregations": [
+                {
+                  "expression": "count()"
+                }
+              ],
+              "filter": {
+                "expression": "deployment.environment = 'whodunit-demo' AND service.name = 'shop-flag-service' AND name = 'GET /flags/evaluate'"
+              },
+              "disabled": false
+            }
+          },
+          {
+            "type": "builder_trace_operator",
+            "spec": {
+              "name": "T1",
+              "expression": "(A => B) && NOT C",
+              "returnSpansFrom": "A",
+              "aggregations": [
+                {
+                  "expression": "count_distinct(trace_id)"
+                }
+              ],
+              "disabled": false
+            }
+          },
+          {
+            "type": "builder_query",
+            "spec": {
+              "name": "ADenom",
+              "signal": "traces",
+              "stepInterval": 0,
+              "aggregations": [
+                {
+                  "expression": "count_distinct(trace_id)"
+                }
+              ],
+              "filter": {
+                "expression": "deployment.environment = 'whodunit-demo' AND service.name = 'shop-payment'"
+              },
+              "disabled": false
+            }
+          }
+        ]
+      }
+    },
+    "expression": "(A => B) && NOT C",
+    "return_spans_from": "A",
+    "leaf_queries": [
+      {
+        "name": "A",
+        "filters": {
+          "expression": "deployment.environment = 'whodunit-demo' AND service.name = 'shop-payment'"
+        },
+        "description": "edge__shop_payment__redis_retry::parent"
+      },
+      {
+        "name": "B",
+        "filters": {
+          "expression": "deployment.environment = 'whodunit-demo' AND name = 'redis-retry'"
+        },
+        "description": "edge__shop_payment__redis_retry::child"
+      },
+      {
+        "name": "C",
+        "filters": {
+          "expression": "deployment.environment = 'whodunit-demo' AND service.name = 'shop-flag-service' AND name = 'GET /flags/evaluate'"
+        },
+        "description": "span__shop_flag_service__GET_flags_evaluate"
+      }
+    ],
+    "refusals": [],
+    "verification": {
+      "mined_count": 61,
+      "signoz_count": 61,
+      "match": true,
+      "precision": 1.0,
+      "recall": 1.0,
+      "rows_scanned": 46805
+    },
+    "signoz_version": null
+  },
+  "verification": {
+    "mined_count": 61,
+    "signoz_count": 61,
+    "match": true,
+    "precision": 1.0,
+    "recall": 1.0,
+    "rows_scanned": 46805
+  },
+  "refusals": [],
+  "verdict_hash": "95f8835759e2865ec90f17b45df7f1f74f9944484bad4f014e0f209826f91fb5",
+  "cost": {
+    "scan_rows_scanned": 163464,
+    "scan_bytes_scanned": 22423011,
+    "scan_duration_ms": 1843.0,
+    "verify_rows_scanned": 46805,
+    "family_size": 7806,
+    "n_features": 36
+  },
+  "environment": "whodunit-demo",
+  "window_start_unix_ms": 1784957400000,
+  "window_end_unix_ms": 1784957940000
+}

@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Whodunit — title</title>
+<link rel="stylesheet" href="_base.css">
+<style>
+  .card { justify-content: center; }
+  h1 { font-size: 200px; }
+  .tagline {
+    font-size: 54px;
+    line-height: 1.25;
+    color: var(--fg);
+    font-weight: 300;
+    margin-top: 12px;
+    max-width: 1500px;
+  }
+  .tagline b { font-weight: 650; color: var(--accent); }
+  .sub {
+    font-size: 36px;
+    color: var(--fg-dim);
+    margin-top: 48px;
+    line-height: 1.5;
+  }
+  .chips { display: flex; gap: 18px; margin-top: 56px; }
+  .chip {
+    border: 2px solid var(--line);
+    border-radius: 999px;
+    padding: 14px 34px;
+    font-size: 27px;
+    color: var(--fg-dim);
+    letter-spacing: 0.04em;
+  }
+  .chip.hot { border-color: rgba(255,112,67,0.55); color: var(--accent-soft); }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="eyebrow">Agents of SigNoz &nbsp;·&nbsp; Track 2 — Signals &amp; Dashboards</div>
+  <h1>Whodunit</h1>
+  <div class="rule"></div>
+  <div class="tagline">Everyone can show you the difference.<br><b>Only SigNoz can arm it.</b></div>
+  <div class="sub">Deterministic structural root-cause analysis whose output is a SigNoz query you own.</div>
+  <div class="chips">
+    <div class="chip hot">no LLM in the runtime</div>
+    <div class="chip">mine → compile → verify → arm</div>
+    <div class="chip">6/6 benchmark</div>
+  </div>
+  <div class="footer">
+    <span>github.com/wiz-abhi/WhodUnit</span>
+    <span>wiz-abhi &nbsp;·&nbsp; Abhishek</span>
+  </div>
+</div>
+</body>
+</html>

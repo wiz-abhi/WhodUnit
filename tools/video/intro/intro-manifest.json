@@ -1,0 +1,66 @@
+{
+  "generated_by": "tools/video/intro/render_intro.py",
+  "video": "docs/video/intro/intro.mp4",
+  "width": 1920,
+  "height": 1080,
+  "fps": 30,
+  "fade_seconds": 0.6,
+  "total_measured_seconds": 69.0,
+  "segments": [
+    {
+      "key": "card1",
+      "label": "Title / tagline",
+      "html": "tools/video/intro/cards/card1-title.html",
+      "png": "docs/video/intro/cards/card1.png",
+      "segment": "docs/video/intro/segments/card1.mp4",
+      "declared_seconds": 10.0,
+      "measured_seconds": 10.0,
+      "start_seconds": 0.0,
+      "end_seconds": 10.0
+    },
+    {
+      "key": "card2",
+      "label": "ABOUT \u2014 the problem",
+      "html": "tools/video/intro/cards/card2-problem.html",
+      "png": "docs/video/intro/cards/card2.png",
+      "segment": "docs/video/intro/segments/card2.mp4",
+      "declared_seconds": 15.0,
+      "measured_seconds": 15.0,
+      "start_seconds": 10.0,
+      "end_seconds": 25.0
+    },
+    {
+      "key": "card3",
+      "label": "ABOUT + TECH STACK \u2014 what it does",
+      "html": "tools/video/intro/cards/card3-pipeline.html",
+      "png": "docs/video/intro/cards/card3.png",
+      "segment": "docs/video/intro/segments/card3.mp4",
+      "declared_seconds": 16.0,
+      "measured_seconds": 16.0,
+      "start_seconds": 25.0,
+      "end_seconds": 41.0
+    },
+    {
+      "key": "card4",
+      "label": "HOW IT USES SIGNOZ \u2014 five surfaces",
+      "html": "tools/video/intro/cards/card4-signoz.html",
+      "png": "docs/video/intro/cards/card4.png",
+      "segment": "docs/video/intro/segments/card4.mp4",
+      "declared_seconds": 16.0,
+      "measured_seconds": 16.0,
+      "start_seconds": 41.0,
+      "end_seconds": 57.0
+    },
+    {
+      "key": "card5",
+      "label": "The honest numbers",
+      "html": "tools/video/intro/cards/card5-numbers.html",
+      "png": "docs/video/intro/cards/card5.png",
+      "segment": "docs/video/intro/segments/card5.mp4",
+      "declared_seconds": 12.0,
+      "measured_seconds": 12.0,
+      "start_seconds": 57.0,
+      "end_seconds": 69.0
+    }
+  ]
+}

@@ -1,0 +1,175 @@
+{
+  "_comment": "EDITABLE spec consumed by make_manifest.py. Each segment is [start_s, end_s] into the beat's source capture, or [start_s, end_s, 'other-file.mp4'] to pull that segment from a different raw take. Durations in manifest.json are MEASURED with ffprobe, never copied from here.",
+  "corpus": {
+    "fault": "conditional_dep",
+    "seed": 778,
+    "traces": 800,
+    "fault_rate": 0.11,
+    "manifest": "corpus/out/manifest-conditional_dep-s778-n800-afcf8155.json",
+    "environment": "whodunit-demo",
+    "scoping": "trace_id IN (f(seed, i)) - benchmark/pipeline_scoped.py",
+    "window": "11:00-11:09 local, pinned by WHODUNIT_WINDOW_END_MS/_H so the differential verify sees this corpus and nothing later"
+  },
+  "stack": {
+    "signoz": "http://localhost:8080 (v0.132.2)",
+    "otlp": "http://localhost:4318"
+  },
+  "beats": [
+    {
+      "id": "b1",
+      "title": "The citation - SigNoz/signoz#1957, still open",
+      "source": "b1.mp4",
+      "segments": [
+        [
+          1.0,
+          13.0
+        ]
+      ],
+      "on_screen": [],
+      "narration": "SigNoz's co-founder asked for this in January 2023. It is still open. This is the implementation - and instead of a side-by-side panel, it hands you the query.",
+      "notes": "Title, #1957, Open badge, pranay01, Jan 2 2023 all legible before the scroll. Recorded headless with Playwright."
+    },
+    {
+      "id": "b2",
+      "title": "One scan, THE ELIMINATION BOARD",
+      "source": "b2.mp4",
+      "segments": [
+        [
+          0.0,
+          16.26
+        ]
+      ],
+      "on_screen": [
+        "verdict",
+        "family_size",
+        "n_features",
+        "n_survivors",
+        "winner_lift",
+        "winner_ci",
+        "support_bad",
+        "support_healthy",
+        "scan_rows_scanned"
+      ],
+      "narration": "One question to ClickHouse. Then the whole itemset lattice is enumerated locally. The machine considers the obvious answers - the edge alone, the missing flag-service alone - and rejects them. Only the conjunction separates the cohorts.",
+      "notes": "One real 472.3s run; the spinner plays that wait back in 5s with its counter ramping to the true elapsed, which is then printed."
+    },
+    {
+      "id": "b3",
+      "title": "The flat baseline fails on the same cohort",
+      "source": "b3.mp4",
+      "segments": [
+        [
+          0.0,
+          13.83
+        ]
+      ],
+      "on_screen": [
+        "precision",
+        "recall"
+      ],
+      "narration": "This is what every flat tool sees - BubbleUp, compare, Trace Patterns. Its best single predicate lands at precision 0.17. The fault needs two conditions at once, and no single predicate can see it.",
+      "notes": "benchmark/baseline.py on the identical matrix. Top pick NOT edge__shop_checkout__GET_flags_evaluate, precision 0.17, recall 1.00 - fails the 0.80/0.50 gate."
+    },
+    {
+      "id": "b4",
+      "title": "Compiled query + verification receipt",
+      "source": "b4.mp4",
+      "segments": [
+        [
+          0.0,
+          12.56
+        ]
+      ],
+      "on_screen": [
+        "expression",
+        "return_spans_from",
+        "leaves",
+        "mined",
+        "signoz",
+        "match",
+        "precision",
+        "recall",
+        "verify_rows_scanned",
+        "verdict_hash"
+      ],
+      "narration": "No model wrote this. It is compiled into SigNoz's own trace-operator grammar, then run back against the live engine. Whodunit mined 61 traces; SigNoz returned 61. They agree.",
+      "notes": "Leaves A/B/C, (A => B) && NOT C, returnSpansFrom A, then the differential receipt and the verdict hash."
+    },
+    {
+      "id": "b5",
+      "title": "The permalink, opened in SigNoz Trace Explorer",
+      "source": "b5.mp4",
+      "segments": [
+        [
+          10.0,
+          26.0
+        ],
+        [
+          33.0,
+          45.3
+        ]
+      ],
+      "on_screen": [
+        "expression",
+        "leaves"
+      ],
+      "narration": "That permalink opens the machine-written query in SigNoz's own Explorer. Same language, same engine - three leaves, the operator, the matched set. Open one trace and the shape is right there: payment retries redis, and flag-service never ran.",
+      "notes": "compositeQuery is double-URL-encoded and carries builder.queryTraceOperator (materialize/NOTES.md 1). The Explorer renders all three leaves and the operator, and the flame graph shows redis-retry under shop-payment with no shop-flag-service span."
+    },
+    {
+      "id": "b6",
+      "title": "Arm it - and it fires",
+      "source": "b6.mp4",
+      "segments": [
+        [
+          0.0,
+          14.0
+        ],
+        [
+          19.8,
+          29.8,
+          "b6ui.mp4"
+        ],
+        [
+          15.4,
+          22.36
+        ]
+      ],
+      "on_screen": [
+        "expression"
+      ],
+      "narration": "One flag arms it. The discriminator becomes a native SigNoz alert with warning and critical thresholds. Replay the fault and the webhook fires - the rule id in that POST is the rule the command just created. Everyone else stops at a panel.",
+      "notes": "Armed live (rule 019f97fb-f4a7-743a-8499-be519fb5bbeb); the middle segment is SigNoz's own Alert Rules page showing the rule plotted against both threshold lines. The ~1-3 min evaluation delay is cut out of one continuous take."
+    },
+    {
+      "id": "b7",
+      "title": "Determinism - two live runs, one hash",
+      "source": "b7.mp4",
+      "segments": [
+        [
+          0.0,
+          25.4
+        ]
+      ],
+      "on_screen": [
+        "verdict_hash"
+      ],
+      "narration": "Same input, same seed, same hash - every time. No LLM anywhere in the runtime. This is deterministic.",
+      "notes": "Two complete live runs (scan, mine the whole lattice, compile, verify). The mining waits are played back compressed; the hashes are not touched."
+    },
+    {
+      "id": "b8",
+      "title": "The repo and the one command that reproduces it",
+      "source": "b8.mp4",
+      "segments": [
+        [
+          1.5,
+          19.73
+        ]
+      ],
+      "on_screen": [],
+      "narration": "Everyone shows you the difference. Only SigNoz can arm it. One command reproduces the whole thing.",
+      "notes": "foundryctl cast is typed but deliberately not run - the live stack already owns :8080 / :4318. casting.yaml.lock is committed next to it."
+    }
+  ]
+}

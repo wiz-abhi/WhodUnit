@@ -1,0 +1,344 @@
+{
+  "generated_by": "tools/video/make_manifest.py",
+  "corpus": {
+    "fault": "conditional_dep",
+    "seed": 778,
+    "traces": 800,
+    "fault_rate": 0.11,
+    "manifest": "corpus/out/manifest-conditional_dep-s778-n800-afcf8155.json",
+    "environment": "whodunit-demo",
+    "scoping": "trace_id IN (f(seed, i)) - benchmark/pipeline_scoped.py",
+    "window": "11:00-11:09 local, pinned by WHODUNIT_WINDOW_END_MS/_H so the differential verify sees this corpus and nothing later"
+  },
+  "stack": {
+    "signoz": "http://localhost:8080 (v0.132.2)",
+    "otlp": "http://localhost:4318"
+  },
+  "crossfade_s": 0.3,
+  "voice_lead_s": 0.3,
+  "cap_s": 170.0,
+  "predicted_total_s": 153.34,
+  "real_numbers": {
+    "verdict": "discriminator",
+    "expression": "(A => B) && NOT C",
+    "return_spans_from": "A",
+    "leaves": {
+      "A": "deployment.environment = 'whodunit-demo' AND service.name = 'shop-payment'",
+      "B": "deployment.environment = 'whodunit-demo' AND name = 'redis-retry'",
+      "C": "deployment.environment = 'whodunit-demo' AND service.name = 'shop-flag-service' AND name = 'GET /flags/evaluate'"
+    },
+    "family_size": 7806,
+    "n_features": 36,
+    "n_survivors": 6,
+    "n_near_misses": 10,
+    "winner_lift": 13.114754098360656,
+    "winner_ci": [
+      10.81081081081081,
+      17.21554116558741
+    ],
+    "support_bad": 61,
+    "support_healthy": 0,
+    "mined": 61,
+    "signoz": 61,
+    "match": true,
+    "precision": 1.0,
+    "recall": 1.0,
+    "scan_rows_scanned": 163464,
+    "verify_rows_scanned": 46805,
+    "verdict_hash": "95f8835759e2865ec90f17b45df7f1f74f9944484bad4f014e0f209826f91fb5",
+    "verdict_hash_prefix": "95f88357"
+  },
+  "beats": [
+    {
+      "id": "b1",
+      "title": "The citation - SigNoz/signoz#1957, still open",
+      "file": "docs/video/raw/b1.mp4",
+      "sources": [
+        "docs/video/raw/b1.mp4"
+      ],
+      "source_duration_s": 16.0,
+      "segments": [
+        {
+          "source": "docs/video/raw/b1.mp4",
+          "start": 1.0,
+          "end": 13.0,
+          "seconds": 12.0
+        }
+      ],
+      "cut_duration_s": 12.0,
+      "timeline_start_s": 0.0,
+      "timeline_end_s": 12.0,
+      "on_screen": {},
+      "narration": {
+        "window_start_s": 0.3,
+        "window_end_s": 12.0,
+        "seconds_available": 11.7,
+        "beat": "SigNoz's co-founder asked for this in January 2023. It is still open. This is the implementation - and instead of a side-by-side panel, it hands you the query."
+      },
+      "notes": "Title, #1957, Open badge, pranay01, Jan 2 2023 all legible before the scroll. Recorded headless with Playwright."
+    },
+    {
+      "id": "b2",
+      "title": "One scan, THE ELIMINATION BOARD",
+      "file": "docs/video/raw/b2.mp4",
+      "sources": [
+        "docs/video/raw/b2.mp4"
+      ],
+      "source_duration_s": 16.27,
+      "segments": [
+        {
+          "source": "docs/video/raw/b2.mp4",
+          "start": 0.0,
+          "end": 16.26,
+          "seconds": 16.26
+        }
+      ],
+      "cut_duration_s": 16.27,
+      "timeline_start_s": 11.7,
+      "timeline_end_s": 27.96,
+      "on_screen": {
+        "verdict": "discriminator",
+        "family_size": 7806,
+        "n_features": 36,
+        "n_survivors": 6,
+        "winner_lift": 13.114754098360656,
+        "winner_ci": [
+          10.81081081081081,
+          17.21554116558741
+        ],
+        "support_bad": 61,
+        "support_healthy": 0,
+        "scan_rows_scanned": 163464
+      },
+      "narration": {
+        "window_start_s": 12.0,
+        "window_end_s": 27.96,
+        "seconds_available": 15.96,
+        "beat": "One question to ClickHouse. Then the whole itemset lattice is enumerated locally. The machine considers the obvious answers - the edge alone, the missing flag-service alone - and rejects them. Only the conjunction separates the cohorts."
+      },
+      "notes": "One real 472.3s run; the spinner plays that wait back in 5s with its counter ramping to the true elapsed, which is then printed."
+    },
+    {
+      "id": "b3",
+      "title": "The flat baseline fails on the same cohort",
+      "file": "docs/video/raw/b3.mp4",
+      "sources": [
+        "docs/video/raw/b3.mp4"
+      ],
+      "source_duration_s": 13.83,
+      "segments": [
+        {
+          "source": "docs/video/raw/b3.mp4",
+          "start": 0.0,
+          "end": 13.83,
+          "seconds": 13.83
+        }
+      ],
+      "cut_duration_s": 13.83,
+      "timeline_start_s": 27.66,
+      "timeline_end_s": 41.49,
+      "on_screen": {
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "narration": {
+        "window_start_s": 27.96,
+        "window_end_s": 41.49,
+        "seconds_available": 13.53,
+        "beat": "This is what every flat tool sees - BubbleUp, compare, Trace Patterns. Its best single predicate lands at precision 0.17. The fault needs two conditions at once, and no single predicate can see it."
+      },
+      "notes": "benchmark/baseline.py on the identical matrix. Top pick NOT edge__shop_checkout__GET_flags_evaluate, precision 0.17, recall 1.00 - fails the 0.80/0.50 gate."
+    },
+    {
+      "id": "b4",
+      "title": "Compiled query + verification receipt",
+      "file": "docs/video/raw/b4.mp4",
+      "sources": [
+        "docs/video/raw/b4.mp4"
+      ],
+      "source_duration_s": 12.57,
+      "segments": [
+        {
+          "source": "docs/video/raw/b4.mp4",
+          "start": 0.0,
+          "end": 12.56,
+          "seconds": 12.56
+        }
+      ],
+      "cut_duration_s": 12.57,
+      "timeline_start_s": 41.19,
+      "timeline_end_s": 53.75,
+      "on_screen": {
+        "expression": "(A => B) && NOT C",
+        "return_spans_from": "A",
+        "leaves": {
+          "A": "deployment.environment = 'whodunit-demo' AND service.name = 'shop-payment'",
+          "B": "deployment.environment = 'whodunit-demo' AND name = 'redis-retry'",
+          "C": "deployment.environment = 'whodunit-demo' AND service.name = 'shop-flag-service' AND name = 'GET /flags/evaluate'"
+        },
+        "mined": 61,
+        "signoz": 61,
+        "match": true,
+        "precision": 1.0,
+        "recall": 1.0,
+        "verify_rows_scanned": 46805,
+        "verdict_hash": "95f8835759e2865ec90f17b45df7f1f74f9944484bad4f014e0f209826f91fb5"
+      },
+      "narration": {
+        "window_start_s": 41.49,
+        "window_end_s": 53.75,
+        "seconds_available": 12.26,
+        "beat": "No model wrote this. It is compiled into SigNoz's own trace-operator grammar, then run back against the live engine. Whodunit mined 61 traces; SigNoz returned 61. They agree."
+      },
+      "notes": "Leaves A/B/C, (A => B) && NOT C, returnSpansFrom A, then the differential receipt and the verdict hash."
+    },
+    {
+      "id": "b5",
+      "title": "The permalink, opened in SigNoz Trace Explorer",
+      "file": "docs/video/raw/b5.mp4",
+      "sources": [
+        "docs/video/raw/b5.mp4"
+      ],
+      "source_duration_s": 45.33,
+      "segments": [
+        {
+          "source": "docs/video/raw/b5.mp4",
+          "start": 10.0,
+          "end": 26.0,
+          "seconds": 16.0
+        },
+        {
+          "source": "docs/video/raw/b5.mp4",
+          "start": 33.0,
+          "end": 45.3,
+          "seconds": 12.3
+        }
+      ],
+      "cut_duration_s": 28.3,
+      "timeline_start_s": 53.45,
+      "timeline_end_s": 81.75,
+      "on_screen": {
+        "expression": "(A => B) && NOT C",
+        "leaves": {
+          "A": "deployment.environment = 'whodunit-demo' AND service.name = 'shop-payment'",
+          "B": "deployment.environment = 'whodunit-demo' AND name = 'redis-retry'",
+          "C": "deployment.environment = 'whodunit-demo' AND service.name = 'shop-flag-service' AND name = 'GET /flags/evaluate'"
+        }
+      },
+      "narration": {
+        "window_start_s": 53.75,
+        "window_end_s": 81.75,
+        "seconds_available": 28.0,
+        "beat": "That permalink opens the machine-written query in SigNoz's own Explorer. Same language, same engine - three leaves, the operator, the matched set. Open one trace and the shape is right there: payment retries redis, and flag-service never ran."
+      },
+      "notes": "compositeQuery is double-URL-encoded and carries builder.queryTraceOperator (materialize/NOTES.md 1). The Explorer renders all three leaves and the operator, and the flame graph shows redis-retry under shop-payment with no shop-flag-service span."
+    },
+    {
+      "id": "b6",
+      "title": "Arm it - and it fires",
+      "file": "docs/video/raw/b6.mp4",
+      "sources": [
+        "docs/video/raw/b6.mp4",
+        "docs/video/raw/b6ui.mp4"
+      ],
+      "source_duration_s": 55.5,
+      "segments": [
+        {
+          "source": "docs/video/raw/b6.mp4",
+          "start": 0.0,
+          "end": 14.0,
+          "seconds": 14.0
+        },
+        {
+          "source": "docs/video/raw/b6ui.mp4",
+          "start": 19.8,
+          "end": 29.8,
+          "seconds": 10.0
+        },
+        {
+          "source": "docs/video/raw/b6.mp4",
+          "start": 15.4,
+          "end": 22.36,
+          "seconds": 6.96
+        }
+      ],
+      "cut_duration_s": 30.97,
+      "timeline_start_s": 81.45,
+      "timeline_end_s": 112.41,
+      "on_screen": {
+        "expression": "(A => B) && NOT C"
+      },
+      "narration": {
+        "window_start_s": 81.75,
+        "window_end_s": 112.41,
+        "seconds_available": 30.66,
+        "beat": "One flag arms it. The discriminator becomes a native SigNoz alert with warning and critical thresholds. Replay the fault and the webhook fires - the rule id in that POST is the rule the command just created. Everyone else stops at a panel."
+      },
+      "notes": "Armed live (rule 019f97fb-f4a7-743a-8499-be519fb5bbeb); the middle segment is SigNoz's own Alert Rules page showing the rule plotted against both threshold lines. The ~1-3 min evaluation delay is cut out of one continuous take."
+    },
+    {
+      "id": "b7",
+      "title": "Determinism - two live runs, one hash",
+      "file": "docs/video/raw/b7.mp4",
+      "sources": [
+        "docs/video/raw/b7.mp4"
+      ],
+      "source_duration_s": 25.4,
+      "segments": [
+        {
+          "source": "docs/video/raw/b7.mp4",
+          "start": 0.0,
+          "end": 25.4,
+          "seconds": 25.4
+        }
+      ],
+      "cut_duration_s": 25.4,
+      "timeline_start_s": 112.11,
+      "timeline_end_s": 137.51,
+      "on_screen": {
+        "verdict_hash": "95f8835759e2865ec90f17b45df7f1f74f9944484bad4f014e0f209826f91fb5"
+      },
+      "narration": {
+        "window_start_s": 112.41,
+        "window_end_s": 137.51,
+        "seconds_available": 25.1,
+        "beat": "Same input, same seed, same hash - every time. No LLM anywhere in the runtime. This is deterministic."
+      },
+      "notes": "Two complete live runs (scan, mine the whole lattice, compile, verify). The mining waits are played back compressed; the hashes are not touched."
+    },
+    {
+      "id": "b8",
+      "title": "The repo and the one command that reproduces it",
+      "file": "docs/video/raw/b8.mp4",
+      "sources": [
+        "docs/video/raw/b8.mp4"
+      ],
+      "source_duration_s": 19.73,
+      "segments": [
+        {
+          "source": "docs/video/raw/b8.mp4",
+          "start": 1.5,
+          "end": 19.73,
+          "seconds": 18.23
+        }
+      ],
+      "cut_duration_s": 18.23,
+      "timeline_start_s": 137.21,
+      "timeline_end_s": 155.44,
+      "on_screen": {},
+      "narration": {
+        "window_start_s": 137.51,
+        "window_end_s": 155.44,
+        "seconds_available": 17.93,
+        "beat": "Everyone shows you the difference. Only SigNoz can arm it. One command reproduces the whole thing."
+      },
+      "notes": "foundryctl cast is typed but deliberately not run - the live stack already owns :8080 / :4318. casting.yaml.lock is committed next to it."
+    }
+  ],
+  "assembled": {
+    "file": "docs/video/demo-silent.mp4",
+    "measured_total_s": 155.47,
+    "crossfade_s": 0.3,
+    "cap_s": 170.0
+  }
+}

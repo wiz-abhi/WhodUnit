@@ -1,0 +1,100 @@
+/* Whodunit intro cards — shared look.
+   Self-contained: system font stacks only, no @import, no external assets. */
+
+:root {
+  --bg: #0a0d13;
+  --bg2: #10141d;
+  --line: #1e2531;
+  --fg: #e8ecf3;
+  --fg-dim: #97a1b4;
+  --fg-faint: #5d6675;
+  --accent: #ff7043;
+  --accent-soft: #ffa183;
+  --good: #4ec9a5;
+  --bad: #e05561;
+  --mono: "Cascadia Mono", "Consolas", "DejaVu Sans Mono", "Courier New", monospace;
+  --sans: "Segoe UI", "Inter", "Helvetica Neue", Arial, sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+}
+
+body {
+  background: var(--bg);
+  background-image:
+    radial-gradient(ellipse 1400px 900px at 22% -10%, #16202e 0%, rgba(10,13,19,0) 62%),
+    radial-gradient(ellipse 1100px 700px at 96% 108%, #1c1a24 0%, rgba(10,13,19,0) 60%);
+  color: var(--fg);
+  font-family: var(--sans);
+  -webkit-font-smoothing: antialiased;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card {
+  width: 1920px;
+  height: 1080px;
+  padding: 96px 120px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+}
+
+.eyebrow {
+  font-size: 26px;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 600;
+  margin-bottom: 28px;
+}
+
+h1 {
+  font-size: 150px;
+  line-height: 1;
+  letter-spacing: -0.035em;
+  font-weight: 700;
+}
+
+h2 {
+  font-size: 66px;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-weight: 650;
+  margin-bottom: 44px;
+}
+
+.lede { font-size: 40px; line-height: 1.42; color: var(--fg-dim); max-width: 1500px; }
+.mono { font-family: var(--mono); }
+.accent { color: var(--accent); }
+.good { color: var(--good); }
+.bad { color: var(--bad); }
+.dim { color: var(--fg-dim); }
+.faint { color: var(--fg-faint); }
+.strike { text-decoration: line-through; text-decoration-thickness: 2px; }
+
+.rule {
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent) 0%, rgba(255,112,67,0.05) 70%, rgba(255,112,67,0) 100%);
+  margin: 40px 0;
+}
+
+.footer {
+  position: absolute;
+  left: 120px;
+  right: 120px;
+  bottom: 64px;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 26px;
+  color: var(--fg-faint);
+  letter-spacing: 0.06em;
+}

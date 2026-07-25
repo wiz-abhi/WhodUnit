@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Whodunit — the problem</title>
+<link rel="stylesheet" href="_base.css">
+<style>
+  .grind {
+    font-family: var(--mono);
+    font-size: 34px;
+    line-height: 1.85;
+    color: var(--fg-dim);
+    background: var(--bg2);
+    border: 2px solid var(--line);
+    border-left: 6px solid var(--accent);
+    border-radius: 10px;
+    padding: 34px 44px;
+    max-width: 1180px;
+  }
+  .grind .t { color: var(--fg-faint); }
+  .cols { display: flex; gap: 64px; align-items: flex-start; margin-top: 8px; }
+  .right { flex: 1; padding-top: 6px; }
+  table { border-collapse: collapse; width: 100%; font-size: 30px; }
+  th {
+    text-align: left; font-size: 22px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--fg-faint); font-weight: 600; padding-bottom: 16px;
+  }
+  td { padding: 15px 0; border-top: 2px solid var(--line); color: var(--fg); }
+  td.stop { color: var(--fg-dim); text-align: right; }
+  .punch {
+    margin-top: 46px;
+    font-size: 46px;
+    line-height: 1.32;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .punch .no { color: var(--bad); }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="eyebrow">The problem</div>
+  <h2>Root cause at 3am is a human grinding<br>filter permutations in a query builder.</h2>
+  <div class="cols">
+    <div class="grind">
+      <span class="t">03:14</span> add attribute &nbsp;→&nbsp; run &nbsp;→&nbsp; stare<br>
+      <span class="t">03:19</span> add attribute &nbsp;→&nbsp; run &nbsp;→&nbsp; stare<br>
+      <span class="t">03:26</span> remove attribute &nbsp;→&nbsp; run &nbsp;→&nbsp; stare<br>
+      <span class="t">03:41</span> ...
+    </div>
+    <div class="right">
+      <table>
+        <tr><th>prior art</th><th style="text-align:right">where it stops</th></tr>
+        <tr><td>Honeycomb BubbleUp</td><td class="stop">a ranking</td></tr>
+        <tr><td>Datadog Trace Patterns</td><td class="stop">a 1% sample</td></tr>
+        <tr><td>Chronosphere DDx</td><td class="stop">a verdict panel</td></tr>
+        <tr><td>Grafana <span class="mono">compare()</span></td><td class="stop">a ranking</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="punch">Every one of them ends the same way: a human reads the ranking,<br>then goes and writes the query <span class="no">by hand</span>.</div>
+  <div class="footer">
+    <span>SigNoz/signoz#1957 — “Enable a way to compare 2 sets of filtered spans” · pranay01 · Jan 2023 · still open</span>
+    <span></span>
+  </div>
+</div>
+</body>
+</html>

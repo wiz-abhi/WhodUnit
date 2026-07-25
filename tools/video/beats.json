@@ -1,0 +1,75 @@
+{
+  "_comment": "What each terminal beat actually runs. run_beat.py executes these for real against the live stack and stores the raw ANSI output plus the measured elapsed time under docs/video/raw/casts/. record_termcast.py then renders that recording offscreen. Nothing here is a mock: the bytes on screen are the bytes the program wrote.",
+  "beats": {
+    "b2": {
+      "title": "One scan, THE ELIMINATION BOARD",
+      "steps": [
+        {
+          "cmd": "uv run python tools/video/demo_explain.py --latest conditional_dep --cache docs/video/raw/explain-result.json --board",
+          "display_cmd": "uv run python tools/video/demo_explain.py --replay docs/video/raw/explain-result.json --board",
+          "spinner": "extract -> mine -> compile -> verify",
+          "hold": 6.0
+        }
+      ]
+    },
+    "b3": {
+      "title": "The flat baseline fails on the same cohort",
+      "steps": [
+        {
+          "cmd": "uv run python tools/video/demo_baseline.py --latest conditional_dep --compare docs/video/raw/explain-result.json",
+          "spinner": "one scan -> trace x feature matrix",
+          "hold": 6.0
+        }
+      ]
+    },
+    "b4": {
+      "title": "Compiled query + verification receipt",
+      "steps": [
+        {
+          "cmd": "uv run python tools/video/demo_explain.py --replay docs/video/raw/explain-result.json --receipt",
+          "hold": 8.0
+        }
+      ]
+    },
+    "b6": {
+      "title": "Arm it - and it fires",
+      "steps": [
+        {
+          "cmd": "uv run python tools/video/demo_explain.py --replay docs/video/raw/explain-result.json --quiet --arm --dashboard --permalink",
+          "hold": 3.0
+        },
+        {
+          "cmd": "uv run python tools/video/webhook_listener.py",
+          "spinner": "waiting for SigNoz to evaluate the rule (5m window, 30s frequency)",
+          "env": {"WHODUNIT_EXIT_ON_FIRE": "1"},
+          "timeout": 420,
+          "hold": 6.0
+        }
+      ]
+    },
+    "b7": {
+      "title": "Determinism - two live runs, one hash",
+      "steps": [
+        {
+          "cmd": "uv run python tools/video/demo_explain.py --latest conditional_dep --hash-only",
+          "spinner": "run 1 of 2: scan, mine the full lattice, compile, verify",
+          "hold": 2.0
+        },
+        {
+          "cmd": "uv run python tools/video/demo_explain.py --latest conditional_dep --hash-only",
+          "spinner": "run 2 of 2: same input, same seed, from scratch",
+          "hold": 8.0
+        }
+      ]
+    },
+    "b8": {
+      "title": "The repo and the one command that reproduces it",
+      "steps": [
+        {"cmd": "uv run python tools/video/show_readme.py", "hold": 3.0},
+        {"cmd": "foundryctl cast -f deploy/casting.yaml", "type_only": true, "hold": 3.0,
+         "note": "TYPED, NEVER RUN: the live stack already owns :8080 / :4318 (deploy/casting.yaml says so too)."},
+        {"cmd": "ls -l deploy", "hold": 6.0}
+      ]
+    }
+  }
+}

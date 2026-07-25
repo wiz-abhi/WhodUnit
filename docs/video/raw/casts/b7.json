@@ -1,0 +1,26 @@
+{
+  "id": "b7",
+  "title": "Determinism - two live runs, one hash",
+  "columns": 150,
+  "recorded_at": "2026-07-25T12:10:43",
+  "steps": [
+    {
+      "cmd": "uv run python tools/video/demo_explain.py --latest conditional_dep --hash-only",
+      "ansi": "\u001b[2mcohort\u001b[0m \u001b[1;36m61\u001b[0m bad  |  \u001b[1;36m739\u001b[0m healthy   \u001b[2menv\u001b[0m whodunit-demo   \u001b[2mscope\u001b[0m trace_id IN \u001b[1m(\u001b[0m\u001b[33m...\u001b[0m\u001b[1m)\u001b[0m \u001b[1;2m(\u001b[0m\u001b[2mone clickhouse_sql scan\u001b[0m\u001b[1;2m)\u001b[0m\r\n\u001b[2mcorpus\u001b[0m manifest-conditional_dep-s778-n800-afcf8155.json  seed \u001b[1;36m778\u001b[0m   \u001b[2mwindow\u001b[0m \u001b[1;92m11:00\u001b[0m-\u001b[1;92m11:09\u001b[0m\r\nverdict hash  95f8835759e2865ec90f17b45df7f1f74f9944484bad4f014e0f209826f91fb5\r\n",
+      "elapsed_s": 141.57,
+      "returncode": 0,
+      "note": "",
+      "spinner": "run 1 of 2: scan, mine the full lattice, compile, verify",
+      "hold": 2.0
+    },
+    {
+      "cmd": "uv run python tools/video/demo_explain.py --latest conditional_dep --hash-only",
+      "ansi": "\u001b[2mcohort\u001b[0m \u001b[1;36m61\u001b[0m bad  |  \u001b[1;36m739\u001b[0m healthy   \u001b[2menv\u001b[0m whodunit-demo   \u001b[2mscope\u001b[0m trace_id IN \u001b[1m(\u001b[0m\u001b[33m...\u001b[0m\u001b[1m)\u001b[0m \u001b[1;2m(\u001b[0m\u001b[2mone clickhouse_sql scan\u001b[0m\u001b[1;2m)\u001b[0m\r\n\u001b[2mcorpus\u001b[0m manifest-conditional_dep-s778-n800-afcf8155.json  seed \u001b[1;36m778\u001b[0m   \u001b[2mwindow\u001b[0m \u001b[1;92m11:00\u001b[0m-\u001b[1;92m11:09\u001b[0m\r\nverdict hash  95f8835759e2865ec90f17b45df7f1f74f9944484bad4f014e0f209826f91fb5\r\n",
+      "elapsed_s": 124.56,
+      "returncode": 0,
+      "note": "",
+      "spinner": "run 2 of 2: same input, same seed, from scratch",
+      "hold": 8.0
+    }
+  ]
+}

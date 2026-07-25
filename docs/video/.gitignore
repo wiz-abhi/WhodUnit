@@ -1,0 +1,23 @@
+# Raw capture footage is large (a single beat-2 take is ~250 MB of 1080p30).
+# The deliverables that belong in git are tools/video/manifest.json (the measured
+# timeline) and the small evidence files below, not the video itself.
+raw/*.mp4
+raw/*.webm
+raw/*.mkv
+demo-silent.mp4
+demo-*.mp4
+
+# Keep the evidence the manifest's numbers are derived from.
+!raw/explain-result.json
+!raw/permalink.txt
+!raw/webhook.log
+
+# Intro + final cut: all regenerable from tools/video/. The deliverables that belong
+# in git are the card HTML, tools/video/intro/intro-manifest.json, NARRATION-SCRIPT.md
+# and CAPTIONS.srt — not the rendered frames or the encodes.
+intro/intro.mp4
+intro/cards/*.png
+intro/segments/
+whodunit-final.mp4
+cut*.mp4
+.work/

@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Whodunit — the honest numbers</title>
+<link rel="stylesheet" href="_base.css">
+<style>
+  h2 { margin-bottom: 14px; }
+  .sub { font-size: 31px; color: var(--fg-dim); margin-bottom: 36px; }
+  table { border-collapse: collapse; width: 1470px; font-size: 29px; }
+  th {
+    text-align: left; font-size: 21px; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--fg-faint); font-weight: 600; padding: 0 26px 14px 0;
+  }
+  th.c, td.c { text-align: center; }
+  td { padding: 15px 26px 15px 0; border-top: 2px solid var(--line); }
+  td.s { font-family: var(--mono); color: var(--fg); }
+  td.got { font-weight: 650; }
+  .ok { color: var(--good); }
+  .no { color: var(--bad); }
+  tr.win td { background: rgba(255,112,67,0.07); }
+  .stats { display: flex; gap: 76px; margin-top: 40px; }
+  .stat .n { font-size: 62px; font-weight: 700; letter-spacing: -0.03em; }
+  .stat .l { font-size: 24px; color: var(--fg-dim); margin-top: 6px; letter-spacing: 0.05em; }
+  .caveat {
+    margin-top: 34px; font-size: 25px; color: var(--fg-faint); line-height: 1.5; max-width: 1600px;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="eyebrow">The honest numbers</div>
+  <h2>Six seeded faults, run live against the stack. 6 / 6.</h2>
+  <div class="sub">Three where a discriminator exists — and three where the only correct answer is to refuse to name one.</div>
+
+  <table>
+    <tr>
+      <th>scenario</th><th>ground truth</th><th>whodunit</th>
+      <th class="c">recall</th><th>flat baseline (BubbleUp-style)</th>
+    </tr>
+    <tr class="win">
+      <td class="s">conditional_dep</td><td class="dim">discriminator</td>
+      <td class="got">discriminator <span class="ok">✓</span></td><td class="c">1.00</td>
+      <td class="no">fails — precision 0.23</td>
+    </tr>
+    <tr>
+      <td class="s">new_edge</td><td class="dim">discriminator</td>
+      <td class="got">discriminator <span class="ok">✓</span></td><td class="c">1.00</td>
+      <td class="dim">ties (1.00 / 1.00)</td>
+    </tr>
+    <tr>
+      <td class="s">cache_bypass</td><td class="dim">discriminator</td>
+      <td class="got">discriminator <span class="ok">✓</span></td><td class="c">1.00</td>
+      <td class="dim">ties (1.00 / 1.00)</td>
+    </tr>
+    <tr>
+      <td class="s">retry_storm</td><td class="dim">abstain</td>
+      <td class="got">partial <span class="ok">✓</span></td><td class="c">—</td>
+      <td class="no">fails (0.21 / 0.99)</td>
+    </tr>
+    <tr>
+      <td class="s">decoys</td><td class="dim">abstain</td>
+      <td class="got">abstain <span class="ok">✓</span></td><td class="c">—</td>
+      <td class="no">fails (0.29 / 0.85)</td>
+    </tr>
+    <tr>
+      <td class="s">null_scenario</td><td class="dim">abstain</td>
+      <td class="got">abstain <span class="ok">✓</span></td><td class="c">—</td>
+      <td class="no">fails (0.14 / 0.77)</td>
+    </tr>
+  </table>
+
+  <div class="stats">
+    <div class="stat"><div class="n">89 = 89</div><div class="l">mined vs SigNoz · <span class="ok">MATCH</span></div></div>
+    <div class="stat"><div class="n">t+182s</div><div class="l">webhook caught firing</div></div>
+    <div class="stat"><div class="n">131</div><div class="l">tests</div></div>
+    <div class="stat"><div class="n">0</div><div class="l">LLM calls at runtime</div></div>
+  </div>
+
+  <div class="caveat">
+    benchmark/REPORT.md, generated live in 946.5s. Disclosed synthetic corpus — every trace id is <span class="mono">f(seed, index)</span>, ground truth from a machine-checkable manifest.
+    <span class="mono">retry_storm</span> is a cardinality fault the trace algebra cannot express; Whodunit abstains rather than inventing a culprit.
+  </div>
+</div>
+</body>
+</html>

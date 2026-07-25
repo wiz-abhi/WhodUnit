@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Whodunit — how it uses SigNoz</title>
+<link rel="stylesheet" href="_base.css">
+<style>
+  h2 { font-size: 62px; margin-bottom: 26px; }
+  .list { display: flex; flex-direction: column; gap: 0; }
+  .row {
+    display: grid;
+    grid-template-columns: 62px 250px 1fr;
+    align-items: baseline;
+    gap: 26px;
+    padding: 17px 0;
+    border-top: 2px solid var(--line);
+  }
+  .row:last-child { border-bottom: 2px solid var(--line); }
+  .tick { color: var(--good); font-size: 38px; line-height: 1; }
+  .surf { font-size: 34px; font-weight: 650; letter-spacing: -0.01em; }
+  .how { font-size: 28px; color: var(--fg-dim); line-height: 1.4; }
+  .how code { font-family: var(--mono); color: var(--accent-soft); font-size: 26px; }
+  .how b { color: var(--fg); font-weight: 600; }
+  .kicker {
+    margin-top: 30px; font-size: 31px; color: var(--fg-dim); line-height: 1.45;
+  }
+  .kicker b { color: var(--fg); font-weight: 600; }
+  .kicker .m { font-family: var(--mono); color: var(--accent-soft); }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="eyebrow">How it uses SigNoz</div>
+  <h2>All five surfaces, load-bearing — not decorative.</h2>
+
+  <div class="list">
+    <div class="row">
+      <div class="tick">✓</div><div class="surf">Traces</div>
+      <div class="how">ONE <code>clickhouse_sql</code> scan via <code>/api/v5/query_range</code> — span predicates, <code>parent_span_id</code> self-join edges, ancestor walks over raw 100%-sampled spans.</div>
+    </div>
+    <div class="row">
+      <div class="tick">✓</div><div class="surf">Logs</div>
+      <div class="how">Log features join <b>traces in the same ClickHouse</b> by <code>trace_id</code>, inside that same query. Impossible on Tempo + Loki — separate stores, no join.</div>
+    </div>
+    <div class="row">
+      <div class="tick">✓</div><div class="surf">Query Builder</div>
+      <div class="how">The finding compiles to a real <code>builder_trace_operator</code> envelope, and opens in <b>Trace Explorer</b> as a deep link you can edit.</div>
+    </div>
+    <div class="row">
+      <div class="tick">✓</div><div class="surf">Dashboards</div>
+      <div class="how">A native <b>Perses v6</b> panel, authored directly — matching traces over time, share of traffic, and the verification receipt.</div>
+    </div>
+    <div class="row">
+      <div class="tick">✓</div><div class="surf">Alerts</div>
+      <div class="how">The discriminator becomes an armed <b>v2alpha1</b> multi-threshold rule. Webhook delivery proved live: <span class="mono good">POST “firing” at t+182s</span>.</div>
+    </div>
+  </div>
+
+  <div class="kicker">
+    Plus <b>MCP + Foundry</b> — <span class="m">foundryctl cast -f deploy/casting.yaml</span>: the mandated compliance file <b>is</b> the installer.
+  </div>
+</div>
+</body>
+</html>

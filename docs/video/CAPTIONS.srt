@@ -1,0 +1,231 @@
+1
+00:00:00,300 --> 00:00:06,093
+This is Whodunit. Everyone can show you
+the difference between two sets of traces.
+
+2
+00:00:06,173 --> 00:00:08,242
+Only SigNoz can arm it.
+
+3
+00:00:10,300 --> 00:00:16,093
+Root cause at three a.m. is a human
+grinding filter permutations in a query
+
+4
+00:00:16,173 --> 00:00:21,139
+builder. BubbleUp, Trace Patterns, compare
+— they all show you the difference.
+
+5
+00:00:21,219 --> 00:00:23,701
+Then you type the query yourself.
+
+6
+00:00:25,300 --> 00:00:29,852
+Whodunit asks ClickHouse one question,
+then ranks seven thousand eight hundred
+
+7
+00:00:29,932 --> 00:00:34,483
+candidate patterns locally in Python —
+polars, hand-rolled FP-growth — and
+
+8
+00:00:34,563 --> 00:00:38,288
+compiles the winner into a real SigNoz
+trace-operator query.
+
+9
+00:00:38,368 --> 00:00:39,609
+No model involved.
+
+10
+00:00:41,300 --> 00:00:46,266
+It leans on five surfaces. One
+clickhouse-sql scan joins traces and logs
+
+11
+00:00:46,346 --> 00:00:51,311
+in the same database. The finding becomes
+a query-builder expression, a Trace
+
+12
+00:00:51,391 --> 00:00:55,529
+Explorer link, a Perses v6 panel, and an
+armed alert.
+
+13
+00:00:57,300 --> 00:01:01,024
+Six seeded faults, run live: six out of
+six.
+
+14
+00:01:01,104 --> 00:01:06,897
+Three discriminators found at full recall,
+and three where the only honest answer was
+
+15
+00:01:06,977 --> 00:01:08,177
+to abstain.
+
+16
+00:01:09,300 --> 00:01:13,852
+SigNoz's co-founder opened this issue
+three and a half years ago.
+
+17
+00:01:13,932 --> 00:01:17,656
+Compare two sets of filtered spans. It's
+still open.
+
+18
+00:01:17,736 --> 00:01:18,977
+Here's the implementation.
+
+19
+00:01:21,300 --> 00:01:25,438
+One question to ClickHouse. Seven thousand
+eight hundred candidate itemsets
+
+20
+00:01:25,518 --> 00:01:27,587
+enumerated locally, across thirty-six
+features.
+
+21
+00:01:27,667 --> 00:01:32,219
+Watch what the machine rejects. The
+payment-to-redis-retry edge on its own:
+
+22
+00:01:32,299 --> 00:01:37,264
+one point four times lift — it's in the
+healthy traces too.
+
+23
+00:01:37,344 --> 00:01:40,654
+Missing flag-service on its own: one point
+nine.
+
+24
+00:01:40,734 --> 00:01:46,941
+Also in both. Only the conjunction — that
+edge and no flag-service — separates the
+
+25
+00:01:47,021 --> 00:01:51,573
+cohorts, at nine times lift. Eighty-nine
+bad traces, zero healthy ones.
+
+26
+00:01:54,300 --> 00:01:59,266
+Same matrix, flat baseline — a proper
+BubbleUp-style z-test over every single
+
+27
+00:01:59,346 --> 00:02:03,483
+feature. Its top pick is precision zero
+point two three.
+
+28
+00:02:03,563 --> 00:02:09,357
+The fault needs two conditions at once,
+and no single predicate can see it.
+
+29
+00:02:14,300 --> 00:02:18,852
+No model wrote this. It's compiled into
+SigNoz's own trace-operator grammar:
+
+30
+00:02:18,932 --> 00:02:25,552
+leaves A, B and C, the expression A
+implies B and not C, returning spans from
+
+31
+00:02:25,632 --> 00:02:31,012
+A. Then Whodunit runs that query back
+against the live engine as a
+
+32
+00:02:31,092 --> 00:02:33,161
+count-distinct. It mined eighty-nine
+traces.
+
+33
+00:02:33,241 --> 00:02:38,620
+SigNoz returned eighty-nine. They agree —
+and if they hadn't, you'd see the
+
+34
+00:02:38,700 --> 00:02:40,355
+mismatch, not a paragraph.
+
+35
+00:02:44,300 --> 00:02:49,679
+That permalink opens the machine-written
+query in SigNoz's own Trace Explorer — all
+
+36
+00:02:49,759 --> 00:02:53,897
+three leaves and the operator, rendered in
+the real UI.
+
+37
+00:02:53,977 --> 00:02:57,288
+The result set collapses to the matched
+traces.
+
+38
+00:02:57,368 --> 00:03:03,161
+Open one, and the flame graph shows the
+shape: the retry is there, flag-service
+
+39
+00:03:03,241 --> 00:03:04,441
+isn't.
+
+40
+00:03:09,300 --> 00:03:14,679
+One flag arms it. The discriminator
+becomes a native v2alpha1 alert with warn
+
+41
+00:03:14,759 --> 00:03:20,552
+and critical thresholds. Replay the fault,
+and at t plus one eighty-two seconds the
+
+42
+00:03:20,632 --> 00:03:25,184
+webhook fires. Everyone else in this
+category stops at a panel.
+
+43
+00:03:25,264 --> 00:03:31,057
+None of them hand you back a query, a
+dashboard, and an armed tripwire.
+
+44
+00:03:34,300 --> 00:03:38,438
+Run it twice. Same input, same seed, same
+verdict hash.
+
+45
+00:03:38,518 --> 00:03:43,483
+There is no LLM anywhere in the runtime —
+this is deterministic.
+
+46
+00:03:43,563 --> 00:03:48,529
+The corpus is synthetic and disclosed;
+ground truth comes from a manifest.
+
+47
+00:03:49,300 --> 00:03:53,852
+Everyone can show you the difference. Only
+SigNoz can arm it.
+
+48
+00:03:53,932 --> 00:03:56,414
+One command reproduces the whole thing.
