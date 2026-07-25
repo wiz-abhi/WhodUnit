@@ -2,6 +2,12 @@
 
 **Deterministic structural root-cause analysis whose output is a SigNoz query you own.**
 
+> *Everyone can show you the difference between two sets of traces. Only SigNoz can arm it.*
+
+![Whodunit mines the structural discriminator, then compiles and verifies it as a SigNoz trace-operator query](docs/assets/hero.gif)
+
+<sub>Real run: 7,806 candidate itemsets enumerated in one scan → the conjunction `(payment ⇒ redis-retry) ∧ ¬ flag-service` survives at 13.1× lift → compiled to `(A ⇒ B) && NOT C` → **mined 61, SigNoz returned 61, MATCH**. No LLM in the runtime.</sub>
+
 <!-- Badges: CI wired in .github/workflows; placeholders until the repo is public. -->
 ![ci](https://img.shields.io/badge/ci-pending-lightgrey)
 ![python](https://img.shields.io/badge/python-3.11%2B-blue)
