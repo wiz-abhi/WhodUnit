@@ -441,7 +441,7 @@
           <p class="note">Rows marked <span style="color:var(--amber)">✗</span> are near-misses struck out: adding a duration bucket to the winning pair changes nothing (same 61 / 0), so they are dominated and pruned. Single-predicate candidates never even reach here — each appears in both cohorts.</p>
           <details class="shotbox">
             <summary>the same board, as the CLI actually printed it</summary>
-            <img src="assets/elimination-board.png" alt="The Whodunit CLI elimination board" loading="lazy" />
+            <img src="assets/elimination-board.png" alt="The Whodunit CLI elimination board" />
           </details>
         </section>
 
@@ -496,7 +496,7 @@
             <div class="permalink" id="permBox"></div>
             <a class="btn cyan" id="permOpen" href="#" target="_blank" rel="noopener" style="display:inline-block;margin-top:11px;text-decoration:none;">↗ Open in a real SigNoz UI</a>
             <p class="note">This is the exact link Whodunit emitted (from <code>docs/video/raw/permalink.txt</code>). It resolves against a running SigNoz at <b style="color:var(--cyan)">localhost:8080</b> — the dev stack the run was recorded on — so it opens a real Trace Explorer, not a mock.</p>
-            <div class="shot"><img src="assets/operator-probe.png" alt="Trace-operator query executing in the SigNoz Query Builder" loading="lazy" /><div class="cap">the compiled (A ⇒ B) &amp;&amp; NOT C running live in the SigNoz Query Builder</div></div>
+            <div class="shot"><img src="assets/operator-probe.png" alt="Trace-operator query executing in the SigNoz Query Builder" /><div class="cap">the compiled (A ⇒ B) &amp;&amp; NOT C running live in the SigNoz Query Builder</div></div>
           </div>
           <div class="tpane" data-t="alert">
             <div class="firing-pill"><span class="d"></span>FIRING · <span class="sev">critical</span> · caught at POST /whodunit (4,282 B)</div>
@@ -505,7 +505,7 @@
               <div class="json" id="webhookBox"></div>
             </details>
             <p class="note">Real captured webhook body from <code>docs/video/raw/webhook.log</code> — a v2alpha1 rule on the compiled discriminator delivered end-to-end.</p>
-            <div class="shot"><img src="assets/alert-firing.png" alt="The armed rule in SigNoz breaching both thresholds, and the delivered webhook body" loading="lazy" /><div class="cap">the armed rule breaching WARN + CRIT thresholds → the delivered webhook</div></div>
+            <div class="shot"><img src="assets/alert-firing.png" alt="The armed rule in SigNoz breaching both thresholds, and the delivered webhook body" /><div class="cap">the armed rule breaching WARN + CRIT thresholds → the delivered webhook</div></div>
           </div>
         </section>
 
@@ -538,7 +538,7 @@
           <p class="note">The flagship replay above is <b>seed 778</b> (61 bad traces). The benchmark aggregates six scenarios at their own seeds 101–106 — e.g. <code>conditional_dep</code> at seed 101 has 89 bad traces. Counts vary with seed; the invariants do not. Full table: <a href="https://github.com/wiz-abhi/WhodUnit/blob/main/benchmark/REPORT.md" target="_blank" rel="noopener">benchmark/REPORT.md</a>.</p>
           <details class="shotbox">
             <summary>the benchmark as the harness printed it</summary>
-            <img src="assets/benchmark.png" alt="The Whodunit six-scenario benchmark output" loading="lazy" />
+            <img src="assets/benchmark.png" alt="The Whodunit six-scenario benchmark output" />
           </details>
         </section>
 
