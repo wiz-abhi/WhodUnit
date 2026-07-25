@@ -15,6 +15,10 @@
 ![license](https://img.shields.io/badge/license-MIT-green)
 ![track](https://img.shields.io/badge/SigNoz%20hackathon-Track%202-orange)
 
+> **▶ Live replay:** step through the real seed-778 run in your browser —
+> `https://<username>-whodunit-replay.hf.space` *(placeholder; update after
+> deploying `replay/`, see [`replay/DEPLOY.md`](replay/DEPLOY.md)).*
+
 ---
 
 Point Whodunit at a set of failing traces. It auto-selects a case-control–matched

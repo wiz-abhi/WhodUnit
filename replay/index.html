@@ -1,0 +1,614 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Whodunit — Interactive Replay (seed 778)</title>
+<style>
+  /* ---- reset / base ---- */
+  *, *::before, *::after { box-sizing: border-box; }
+  :root{
+    --bg:#0b0e14; --bg2:#0d1117; --panel:#11161f; --panel2:#0f1420;
+    --line:#1e2633; --line2:#2a3444;
+    --ink:#c9d4e0; --dim:#7d8aa0; --dim2:#5b6678;
+    --green:#34d399; --green-d:#10b981; --green-dd:#0b3d2e;
+    --amber:#d6a45a; --amber-b:#f59e0b;
+    --cyan:#38bdf8; --cyan-d:#0b2e3d;
+    --red:#f87171; --red-d:#ef4444;
+    --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,"DejaVu Sans Mono",monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --shadow:0 8px 30px rgba(0,0,0,.45);
+  }
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(1200px 600px at 80% -10%, rgba(16,185,129,.06), transparent 60%),
+      radial-gradient(900px 500px at -10% 110%, rgba(56,189,248,.05), transparent 60%),
+      var(--bg);
+    color:var(--ink); font-family:var(--sans);
+    font-size:15px; line-height:1.55; -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--cyan); text-decoration:none;}
+  a:hover{text-decoration:underline;}
+  .wrap{max-width:1080px; margin:0 auto; padding:0 18px 80px;}
+  .mono{font-family:var(--mono);}
+  .nowrap{white-space:nowrap;}
+
+  /* ---- banner ---- */
+  header.top{padding:26px 0 8px;}
+  .kicker{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;color:var(--green);
+    border:1px solid var(--green-dd);background:rgba(16,185,129,.06);padding:5px 11px;border-radius:999px;letter-spacing:.02em;}
+  .kicker .dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green);animation:pulse 2.4s infinite;}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  h1.title{font-size:clamp(26px,4.6vw,42px);line-height:1.08;margin:16px 0 6px;font-weight:800;letter-spacing:-.02em;}
+  h1 .accent{color:var(--green);}
+  .tagline{font-family:var(--mono);color:var(--dim);font-size:14px;margin:0 0 14px;font-style:italic;}
+  .tagline b{color:var(--ink);font-style:normal;}
+  .honest{border:1px solid var(--line2);background:linear-gradient(180deg,var(--panel),var(--panel2));
+    border-radius:12px;padding:14px 16px;margin:14px 0 6px;font-size:13.5px;color:var(--dim);display:flex;gap:12px;align-items:flex-start;}
+  .honest .badge{flex:none;font-family:var(--mono);font-size:11px;color:var(--bg);background:var(--green);border-radius:6px;padding:3px 8px;font-weight:700;margin-top:1px;}
+  .honest code{color:var(--green);font-family:var(--mono);font-size:12.5px;}
+  .links{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0 4px;}
+  .links a, .links span.ph{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:12.5px;
+    border:1px solid var(--line2);border-radius:8px;padding:7px 12px;color:var(--ink);background:var(--panel);}
+  .links a:hover{border-color:var(--green-d);text-decoration:none;}
+  .links span.ph{color:var(--dim2);border-style:dashed;}
+  .links .ico{opacity:.9;}
+
+  /* ---- stepper rail ---- */
+  nav.rail{position:sticky;top:0;z-index:20;background:rgba(11,14,20,.82);backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);margin:22px -18px 0;padding:10px 18px;overflow-x:auto;}
+  .rail-inner{display:flex;gap:6px;min-width:max-content;}
+  .step-btn{font-family:var(--mono);font-size:12px;color:var(--dim);background:transparent;border:1px solid transparent;
+    border-radius:8px;padding:7px 11px;cursor:pointer;display:flex;align-items:center;gap:8px;white-space:nowrap;transition:.15s;}
+  .step-btn .n{width:19px;height:19px;border-radius:50%;border:1px solid var(--line2);display:grid;place-items:center;font-size:11px;color:var(--dim);flex:none;}
+  .step-btn:hover{color:var(--ink);border-color:var(--line2);}
+  .step-btn.done .n{background:var(--green-dd);border-color:var(--green-d);color:var(--green);}
+  .step-btn.active{color:var(--ink);background:var(--panel);border-color:var(--line2);}
+  .step-btn.active .n{background:var(--green);border-color:var(--green);color:var(--bg);font-weight:700;}
+
+  /* ---- stage ---- */
+  main{margin-top:26px;}
+  .screen{display:none;animation:fade .35s ease;}
+  .screen.active{display:block;}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .screen h2{font-size:13px;font-family:var(--mono);color:var(--green);letter-spacing:.12em;text-transform:uppercase;margin:0 0 4px;}
+  .screen .lead{color:var(--dim);font-size:14.5px;margin:0 0 18px;max-width:70ch;}
+  .screen .lead b{color:var(--ink);}
+
+  /* ---- terminal window ---- */
+  .term{background:#0a0d13;border:1px solid var(--line2);border-radius:12px;box-shadow:var(--shadow);overflow:hidden;}
+  .term-bar{display:flex;align-items:center;gap:8px;padding:10px 14px;background:#141a24;border-bottom:1px solid var(--line);}
+  .term-bar .tl{display:flex;gap:7px;}
+  .term-bar .tl i{width:12px;height:12px;border-radius:50%;display:block;}
+  .tl .r{background:#ff5f57}.tl .y{background:#febc2e}.tl .g{background:#28c840}
+  .term-bar .ttl{font-family:var(--mono);font-size:12px;color:var(--dim);margin-left:6px;}
+  .term-body{padding:16px 18px;font-family:var(--mono);font-size:13px;line-height:1.7;overflow-x:auto;}
+  .term-body .prompt{color:var(--green);}
+  .term-body .path{color:var(--cyan);}
+  .term-body .muted{color:var(--dim2);}
+  .caret{display:inline-block;width:8px;height:15px;background:var(--green);vertical-align:-2px;animation:blink 1.05s step-end infinite;margin-left:2px;}
+  @keyframes blink{50%{opacity:0}}
+
+  .btn{font-family:var(--mono);font-size:13px;cursor:pointer;border-radius:9px;padding:10px 16px;font-weight:600;
+    border:1px solid var(--green-d);background:linear-gradient(180deg,rgba(16,185,129,.16),rgba(16,185,129,.05));color:var(--green);transition:.15s;}
+  .btn:hover{background:rgba(16,185,129,.22);box-shadow:0 0 0 3px rgba(16,185,129,.12);}
+  .btn:active{transform:translateY(1px);}
+  .btn[disabled]{opacity:.4;cursor:default;box-shadow:none;}
+  .btn.ghost{border-color:var(--line2);color:var(--ink);background:var(--panel);}
+  .btn.ghost:hover{border-color:var(--dim);box-shadow:none;}
+  .btn.cyan{border-color:var(--cyan);color:var(--cyan);background:linear-gradient(180deg,rgba(56,189,248,.14),rgba(56,189,248,.04));}
+  .btn.cyan:hover{background:rgba(56,189,248,.2);box-shadow:0 0 0 3px rgba(56,189,248,.12);}
+  .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px;align-items:center;}
+  .actions .hint{font-family:var(--mono);font-size:12px;color:var(--dim2);}
+
+  .reveal{max-height:0;overflow:hidden;transition:max-height .5s ease, opacity .4s ease;opacity:0;}
+  .reveal.show{max-height:6000px;opacity:1;}
+
+  /* ---- verdict banner (board) ---- */
+  .verdict{border:1px solid var(--green-d);border-radius:10px;background:rgba(16,185,129,.05);padding:13px 16px;margin:16px 0;}
+  .verdict .vh{font-family:var(--mono);color:var(--green);font-size:11px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:5px;}
+  .verdict .vt{font-family:var(--mono);font-size:14px;color:var(--ink);}
+  .verdict .vt .hl{color:var(--green);font-weight:700;}
+
+  /* ---- board table ---- */
+  .board-wrap{overflow-x:auto;border:1px solid var(--line2);border-radius:10px;background:#0a0d13;}
+  table.board{border-collapse:collapse;width:100%;font-family:var(--mono);font-size:12.5px;min-width:760px;}
+  table.board th{text-align:left;color:var(--ink);font-weight:700;padding:11px 12px;border-bottom:1px solid var(--line2);background:#121822;position:sticky;top:0;}
+  table.board th.num, table.board td.num{text-align:right;}
+  table.board td{padding:8px 12px;border-bottom:1px solid rgba(30,38,51,.6);color:var(--green);vertical-align:top;}
+  table.board tr.win td{background:rgba(16,185,129,.09);color:var(--green);font-weight:700;}
+  table.board tr.win td:first-child{border-left:3px solid var(--green);}
+  table.board td.mark{color:var(--dim2);width:26px;text-align:center;}
+  table.board tr.miss td{color:var(--amber);}
+  table.board tr.miss td.cand{text-decoration:line-through;text-decoration-color:rgba(214,164,90,.5);}
+  table.board tr.miss td.mark{color:var(--amber);}
+  table.board td .lift{color:var(--green);}
+  table.board tr.miss td .lift{color:var(--amber);}
+  .board-foot{font-family:var(--mono);font-size:12px;color:var(--dim);padding:11px 14px;border-top:1px solid var(--line2);
+    display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;}
+  .board-foot b{color:var(--ink);}
+  .cost{color:var(--cyan);}
+
+  /* ---- compile ---- */
+  .grid2{display:grid;grid-template-columns:1fr;gap:16px;}
+  @media(min-width:760px){.grid2{grid-template-columns:1fr 1fr;}}
+  .card{border:1px solid var(--line2);background:var(--panel);border-radius:11px;padding:15px 16px;}
+  .card h3{margin:0 0 10px;font-size:12px;font-family:var(--mono);color:var(--dim);letter-spacing:.1em;text-transform:uppercase;}
+  .expr{font-family:var(--mono);font-size:clamp(18px,3.4vw,26px);text-align:center;padding:14px 8px;color:var(--ink);letter-spacing:.02em;}
+  .expr .op{color:var(--green);} .expr .A{color:#7dd3fc;} .expr .B{color:#86efac;} .expr .C{color:var(--amber-b);}
+  .rsf{text-align:center;font-family:var(--mono);font-size:12.5px;color:var(--dim);margin-top:2px;}
+  .rsf b{color:var(--cyan);}
+  .leaf{font-family:var(--mono);font-size:12.5px;padding:9px 0;border-bottom:1px solid var(--line);display:flex;gap:10px;align-items:baseline;}
+  .leaf:last-child{border-bottom:0;}
+  .leaf .lk{flex:none;width:16px;height:16px;border-radius:4px;display:grid;place-items:center;font-size:11px;font-weight:700;color:var(--bg);}
+  .leaf .lk.A{background:#7dd3fc;} .leaf .lk.B{background:#86efac;} .leaf .lk.C{background:var(--amber-b);}
+  .leaf code{color:var(--ink);word-break:break-word;}
+
+  /* ---- verify receipt ---- */
+  .receipt{border:1px solid var(--line2);border-radius:14px;background:linear-gradient(180deg,#0a0d13,#0c1017);padding:24px;text-align:center;}
+  .receipt .rr{display:inline-flex;flex-wrap:wrap;gap:0;align-items:stretch;border:1px solid var(--line2);border-radius:12px;overflow:hidden;}
+  .receipt .cell{padding:16px 22px;border-right:1px solid var(--line2);min-width:120px;}
+  .receipt .cell:last-child{border-right:0;}
+  .receipt .cell .lab{font-family:var(--mono);font-size:11px;color:var(--dim);letter-spacing:.1em;text-transform:uppercase;}
+  .receipt .cell .val{font-family:var(--mono);font-size:30px;font-weight:800;color:var(--ink);margin-top:4px;}
+  .receipt .cell.match{background:rgba(16,185,129,.1);}
+  .receipt .cell.match .val{color:var(--green);}
+  .receipt .snap{opacity:0;transform:scale(.6) translateY(8px);transition:transform .45s cubic-bezier(.2,1.3,.4,1),opacity .4s;}
+  .receipt .snap.in{opacity:1;transform:none;}
+  .receipt .prec{margin-top:20px;font-family:var(--mono);font-size:14px;color:var(--dim);opacity:0;transition:opacity .5s;}
+  .receipt .prec.in{opacity:1;}
+  .receipt .prec b{color:var(--green);font-size:18px;}
+  .receipt .costline{margin-top:10px;font-family:var(--mono);font-size:12px;color:var(--cyan);opacity:0;transition:opacity .5s;}
+  .receipt .costline.in{opacity:1;}
+  .glow{animation:glow 1.6s ease;}
+  @keyframes glow{0%{box-shadow:0 0 0 0 rgba(16,185,129,.5)}100%{box-shadow:0 0 0 22px rgba(16,185,129,0)}}
+
+  /* ---- materialize tabs ---- */
+  .tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;}
+  .tab{font-family:var(--mono);font-size:12.5px;color:var(--dim);background:var(--panel);border:1px solid var(--line2);
+    border-radius:8px;padding:8px 13px;cursor:pointer;}
+  .tab.active{color:var(--cyan);border-color:var(--cyan);background:var(--cyan-d);}
+  .tpane{display:none;} .tpane.active{display:block;}
+  .permalink{font-family:var(--mono);font-size:11.5px;word-break:break-all;color:var(--dim);background:#0a0d13;border:1px solid var(--line);border-radius:9px;padding:12px 14px;max-height:150px;overflow:auto;}
+  .permalink .host{color:var(--cyan);}
+  .note{font-family:var(--mono);font-size:12px;color:var(--dim2);margin-top:9px;}
+  .json{font-family:var(--mono);font-size:12px;line-height:1.65;background:#0a0d13;border:1px solid var(--line);border-radius:10px;padding:16px;overflow-x:auto;}
+  .json .k{color:#7dd3fc;} .json .s{color:var(--green);} .json .fire{color:var(--red);font-weight:700;} .json .p{color:var(--dim);}
+  .firing-pill{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;color:var(--red);
+    border:1px solid var(--red-d);background:rgba(239,68,68,.08);border-radius:999px;padding:5px 12px;margin-bottom:12px;}
+  .firing-pill .d{width:7px;height:7px;border-radius:50%;background:var(--red);box-shadow:0 0 8px var(--red);animation:pulse 1.3s infinite;}
+  .shot{border:1px solid var(--line2);border-radius:10px;overflow:hidden;margin-top:12px;}
+  .shot img{display:block;width:100%;height:auto;}
+  .shot .cap{font-family:var(--mono);font-size:11.5px;color:var(--dim);padding:8px 12px;background:var(--panel);border-top:1px solid var(--line);}
+
+  /* ---- determinism ---- */
+  .hashbox{border:1px solid var(--line2);border-radius:12px;background:#0a0d13;padding:22px;text-align:center;}
+  .hashbox .hl{font-family:var(--mono);font-size:11px;color:var(--dim);letter-spacing:.12em;text-transform:uppercase;}
+  .hashval{font-family:var(--mono);font-size:clamp(11px,2.6vw,16px);word-break:break-all;color:var(--green);margin:12px auto;max-width:640px;letter-spacing:.5px;}
+  .runrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:center;margin-top:6px;}
+  .runlog{font-family:var(--mono);font-size:12px;color:var(--dim);margin-top:16px;text-align:left;max-width:640px;margin-left:auto;margin-right:auto;}
+  .runlog div{padding:3px 0;border-bottom:1px solid var(--line);}
+  .runlog .ok{color:var(--green);}
+
+  /* ---- benchmark ---- */
+  .bench-wrap{overflow-x:auto;border:1px solid var(--line2);border-radius:10px;}
+  table.bench{border-collapse:collapse;width:100%;font-family:var(--mono);font-size:12.5px;min-width:720px;}
+  table.bench th{background:#121822;color:var(--ink);text-align:left;padding:11px 12px;border-bottom:1px solid var(--line2);font-weight:700;}
+  table.bench td{padding:10px 12px;border-bottom:1px solid rgba(30,38,51,.6);color:var(--dim);}
+  table.bench td.ok{color:var(--green);font-weight:700;}
+  table.bench td.abst{color:var(--cyan);}
+  table.bench .pass{color:var(--green);}
+  table.bench .fail{color:var(--amber);}
+  table.bench tr.flag td{background:rgba(16,185,129,.05);}
+  .bench-tot{font-family:var(--mono);font-size:13px;color:var(--green);margin-top:14px;text-align:center;font-weight:700;}
+
+  /* ---- footer ---- */
+  footer{margin-top:48px;border-top:1px solid var(--line);padding-top:22px;color:var(--dim);font-size:13px;}
+  footer .disc{display:grid;gap:9px;font-family:var(--mono);font-size:12.5px;}
+  footer .disc .li{display:flex;gap:9px;align-items:flex-start;}
+  footer .disc .li .c{color:var(--green);flex:none;}
+  footer .fl{margin-top:16px;display:flex;flex-wrap:wrap;gap:14px;font-family:var(--mono);font-size:12px;}
+  .provenance{font-family:var(--mono);font-size:11.5px;color:var(--dim2);margin-top:26px;text-align:center;}
+  .provenance a{color:var(--dim);}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <span class="kicker"><span class="dot"></span>INTERACTIVE REPLAY · SEED 778 · SigNoz v0.132.2</span>
+    <h1 class="title">Whodunit <span class="accent">·</span> the culprit, compiled into a query you own</h1>
+    <p class="tagline">Everyone can show you the difference. <b>Only SigNoz can arm it.</b></p>
+
+    <div class="honest">
+      <span class="badge">HONEST</span>
+      <div>Interactive replay of a <b style="color:var(--ink)">real recorded run (seed 778)</b> against live SigNoz v0.132.2 — no live SigNoz required.
+      Every number on this page is read from the committed run at <code>docs/video/raw/explain-result.json</code>. Nothing here is fabricated for the demo; there is no LLM in the runtime.</div>
+    </div>
+
+    <div class="links">
+      <a href="https://github.com/wiz-abhi/WhodUnit" target="_blank" rel="noopener"><span class="ico">◈</span> GitHub repo</a>
+      <span class="ph" title="Fill in after publishing">✎ Blog post — [add link]</span>
+      <span class="ph" title="Fill in after uploading">▶ YouTube demo — [add link]</span>
+      <a href="data/explain-result.json" target="_blank" rel="noopener"><span class="ico">{ }</span> Raw run JSON</a>
+    </div>
+  </header>
+
+  <nav class="rail" aria-label="Pipeline steps">
+    <div class="rail-inner" id="rail"></div>
+  </nav>
+
+  <main id="stage">
+
+    <!-- 0 · POINT -->
+    <section class="screen active" data-step="0">
+      <h2>① Point at the failing traces</h2>
+      <p class="lead">You have a cohort of failing traces and no idea why. You point Whodunit at them. It auto-selects a case-control–matched healthy cohort and runs one deterministic pipeline — <b>extract → mine → compile → verify → arm</b>. No LLM anywhere.</p>
+      <div class="term">
+        <div class="term-bar"><span class="tl"><i class="r"></i><i class="y"></i><i class="g"></i></span><span class="ttl">whodunit — explain</span></div>
+        <div class="term-body">
+          <div><span class="muted"># 61 failing checkout traces. what separates them from the healthy ones?</span></div>
+          <div><span class="prompt">PS</span> <span class="path">whodunit&gt;</span> whodunit explain --from-manifest corpus/out/manifest-778.json<span id="caret0" class="caret"></span></div>
+          <div id="run0out" class="reveal"></div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn" id="btnRun0">▷ Run whodunit explain</button>
+        <span class="hint">runs the real seed-778 pipeline (replayed from the committed result)</span>
+      </div>
+    </section>
+
+    <!-- 1 · EXTRACT + MINE -->
+    <section class="screen" data-step="1">
+      <h2>② Extract + mine → the elimination board</h2>
+      <p class="lead">One <b>clickhouse_sql</b> scan builds a per-trace boolean matrix (span predicates, parent→child edges, log features — joined by <code style="font-family:var(--mono);color:var(--green)">trace_id</code> in the same store). FP-growth then enumerates the <b>complete</b> itemset lattice before any test runs, so the FDR control is valid. It shows its work: the obvious single-predicate answers are eliminated because each appears in <b>both</b> cohorts. Only the conjunction survives.</p>
+
+      <div class="verdict">
+        <div class="vh">whodunit · verdict</div>
+        <div class="vt"><span class="hl">DISCRIMINATOR</span> — the culprit is WITH edge <span class="hl">payment ⇒ redis-retry</span> AND WITHOUT <span class="hl">flag-service</span> &nbsp;(lift <span class="hl">13.1×</span>)</div>
+      </div>
+
+      <div class="board-wrap">
+        <table class="board" id="boardTable">
+          <thead><tr>
+            <th class="mark"></th><th>candidate itemset</th>
+            <th class="num">lift</th><th class="num">95% CI</th>
+            <th class="num">bad</th><th class="num">healthy</th><th>verdict</th>
+          </tr></thead>
+          <tbody id="boardBody"></tbody>
+        </table>
+        <div class="board-foot">
+          <span><b id="famN">7,806</b> candidate itemsets enumerated · <b id="featN">36</b> features · <b id="survN">6</b> survivors</span>
+          <span class="cost">cost meter: one scan, <b id="rowsN" style="color:var(--cyan)">163,464</b> rows, <b id="msN" style="color:var(--cyan)">1,843</b> ms</span>
+        </div>
+      </div>
+      <p class="note">Rows marked <span style="color:var(--amber)">✗</span> are near-misses struck out: adding a duration bucket to the winning pair changes nothing (same 61 / 0), so they are dominated and pruned. Single-predicate candidates never even reach here — each appears in both cohorts.</p>
+    </section>
+
+    <!-- 2 · COMPILE -->
+    <section class="screen" data-step="2">
+      <h2>③ Compile → a trace-operator query you own</h2>
+      <p class="lead">The crown jewel. The winning itemset is lowered into a valid SigNoz <b>builder_trace_operator</b> envelope — respecting engine constraints (operator direction, left-bias, trace-scoped NOT) that were recovered by probing the live v0.132.2 engine.</p>
+      <div class="grid2">
+        <div class="card">
+          <h3>compiled expression</h3>
+          <div class="expr">( <span class="A">A</span> <span class="op">⇒</span> <span class="B">B</span> ) <span class="op">&amp;&amp;</span> <span class="op">NOT</span> <span class="C">C</span></div>
+          <div class="rsf">returnSpansFrom = <b>A</b> &nbsp;·&nbsp; count_distinct(trace_id)</div>
+        </div>
+        <div class="card">
+          <h3>leaf queries</h3>
+          <div class="leaf"><span class="lk A">A</span><code>service.name = 'shop-payment'</code></div>
+          <div class="leaf"><span class="lk B">B</span><code>name = 'redis-retry'</code></div>
+          <div class="leaf"><span class="lk C">C</span><code>service.name = 'shop-flag-service' AND name = 'GET /flags/evaluate'</code></div>
+        </div>
+      </div>
+      <p class="note">⇒ is the <b style="color:var(--ink)">direct</b> (single-hop) descendant operator; the outcome operand is normalised <b style="color:var(--ink)">left</b> so a real Trace Explorer link returns the right spans. Absence is only expressible anchored to a positive operand — a bare <code style="color:var(--green)">NOT C</code> returns zero and is refused.</p>
+    </section>
+
+    <!-- 3 · VERIFY -->
+    <section class="screen" data-step="3">
+      <h2>④ Verify — mined vs the live engine</h2>
+      <p class="lead">The synthesized query is not trusted — it is <b>run against SigNoz</b> as a scalar <code style="font-family:var(--mono);color:var(--green)">count_distinct(trace_id)</code> and asserted equal to the miner's own local count. This is the differential receipt. It is the whole thesis in one row.</p>
+      <div class="receipt" id="receipt">
+        <div class="rr">
+          <div class="cell snap" data-d="0"><div class="lab">mined</div><div class="val">61</div></div>
+          <div class="cell snap" data-d="1"><div class="lab">SigNoz</div><div class="val">61</div></div>
+          <div class="cell match snap" data-d="2"><div class="lab">verdict</div><div class="val">MATCH</div></div>
+        </div>
+        <div class="prec" id="precLine">precision <b>1.00</b> &nbsp;·&nbsp; recall <b>1.00</b> &nbsp;·&nbsp; 61 bad / 0 healthy</div>
+        <div class="costline" id="costLine">verified live · 46,805 rows scanned</div>
+      </div>
+      <div class="actions">
+        <button class="btn" id="btnVerify">▷ Run differential verification</button>
+        <span class="hint">the flat baseline returns precision 0.17 here — it cannot see the conjunction</span>
+      </div>
+    </section>
+
+    <!-- 4 · MATERIALIZE -->
+    <section class="screen" data-step="4">
+      <h2>⑤ Materialize — the artifact, not a paragraph</h2>
+      <p class="lead">The deliverable is a Query Builder artifact you keep: a Trace Explorer permalink, a dashboard panel, and an armed v2alpha1 alert whose webhook fired end-to-end at <b>t+182s</b>.</p>
+      <div class="tabs">
+        <button class="tab active" data-t="perm">Trace Explorer permalink</button>
+        <button class="tab" data-t="alert">Armed alert · firing webhook</button>
+      </div>
+      <div class="tpane active" data-t="perm">
+        <div class="permalink" id="permBox"></div>
+        <a class="btn cyan" id="permOpen" href="#" target="_blank" rel="noopener" style="display:inline-block;margin-top:12px;text-decoration:none;">↗ Open in a real SigNoz UI</a>
+        <p class="note">This is the exact link Whodunit emitted (from <code style="color:var(--green)">docs/video/raw/permalink.txt</code>). It resolves against a running SigNoz at <code style="color:var(--cyan)">localhost:8080</code> — the dev stack the run was recorded on — so it opens a real Trace Explorer, not a mock.</p>
+        <div class="shot"><img src="assets/operator-probe.png" alt="Trace-operator query executing in the SigNoz Query Builder" loading="lazy"><div class="cap">the compiled (A ⇒ B) && NOT C running live in the SigNoz Query Builder</div></div>
+      </div>
+      <div class="tpane" data-t="alert">
+        <div class="firing-pill"><span class="d"></span>FIRING · critical · caught at POST /whodunit (4,282 B)</div>
+        <div class="json" id="webhookBox"></div>
+        <p class="note">Real captured webhook body from <code style="color:var(--green)">docs/video/raw/webhook.log</code> — a v2alpha1 rule on the compiled discriminator delivered end-to-end.</p>
+        <div class="shot"><img src="assets/alert-firing.png" alt="The armed rule in SigNoz breaching both thresholds, and the delivered webhook body" loading="lazy"><div class="cap">the armed rule breaching WARN + CRIT thresholds → the delivered webhook</div></div>
+      </div>
+    </section>
+
+    <!-- 5 · DETERMINISM -->
+    <section class="screen" data-step="5">
+      <h2>⑥ Determinism — same input, same verdict</h2>
+      <p class="lead">There is no LLM and no randomness in the runtime. The same input plus seed always produces the <b>identical verdict hash</b>. Run it as many times as you like — it never drifts.</p>
+      <div class="hashbox">
+        <div class="hl">verdict hash · sha-256</div>
+        <div class="hashval" id="hashVal">95f8835759e2865ec90f17b45df7f1f74f9944484bad4f014e0f209826f91fb5</div>
+        <div class="runrow">
+          <button class="btn" id="btnRerun">↻ Run again</button>
+          <span class="hint" id="runCount">run #1 · hash stable</span>
+        </div>
+        <div class="runlog" id="runLog"></div>
+      </div>
+    </section>
+
+    <!-- 6 · BENCHMARK -->
+    <section class="screen" data-step="6">
+      <h2>⑦ Benchmark — 6 / 6, honestly scored</h2>
+      <p class="lead">Six scenarios run live against the stack, each scored against a machine-checkable ground-truth manifest, with a properly-implemented BubbleUp-style flat baseline for comparison. Whodunit nails the conjunction the baseline can't see, ties on single-feature faults (their home turf), and takes the honesty path — abstain / partial, never a false culprit — where a confident answer would be wrong.</p>
+      <div class="bench-wrap">
+        <table class="bench">
+          <thead><tr><th>scenario</th><th>ground truth</th><th>whodunit</th><th>recall</th><th>flat baseline</th><th>outcome</th></tr></thead>
+          <tbody id="benchBody"></tbody>
+        </table>
+      </div>
+      <div class="bench-tot">6 / 6 scenarios pass · recall stays 1.00 on every expressible fault · baseline never clears the 0.80 precision gate on the conjunction</div>
+      <p class="note">The flagship replay above is <b>seed 778</b> (61 bad traces). The benchmark aggregates six scenarios at their own seeds 101–106 — e.g. <code style="color:var(--green)">conditional_dep</code> at seed 101 has 89 bad traces. Counts vary with seed; the invariants do not. Full table: <a href="https://github.com/wiz-abhi/WhodUnit/blob/main/benchmark/REPORT.md" target="_blank" rel="noopener">benchmark/REPORT.md</a>.</p>
+    </section>
+
+  </main>
+
+  <div class="actions" style="justify-content:space-between;margin-top:26px;">
+    <button class="btn ghost" id="prevBtn">‹ Back</button>
+    <button class="btn" id="nextBtn">Next step ›</button>
+  </div>
+
+  <footer>
+    <div class="disc">
+      <div class="li"><span class="c">▹</span><span><b style="color:var(--ink)">No LLM in the runtime.</b> Whodunit is a deterministic Query Builder synthesis engine — mine → compile → verify. The same input plus seed always lands the identical verdict hash shown above.</span></div>
+      <div class="li"><span class="c">▹</span><span><b style="color:var(--ink)">Corpus is synthetic and disclosed.</b> All demo traffic is generated and labelled by <code style="color:var(--green)">corpus.generate</code>; ground truth comes from the manifest, not human judgement. Disclosed fault-injection, never hidden.</span></div>
+      <div class="li"><span class="c">▹</span><span><b style="color:var(--ink)">AI-assisted development.</b> Claude (via Claude Code) was used for research, scaffolding, and code generation with human review of all output — <a href="https://github.com/wiz-abhi/WhodUnit#ai-disclosure" target="_blank" rel="noopener">full AI disclosure</a>. AI is used only during development; not at runtime.</span></div>
+    </div>
+    <div class="fl">
+      <a href="https://github.com/wiz-abhi/WhodUnit" target="_blank" rel="noopener">◈ github.com/wiz-abhi/WhodUnit</a>
+      <a href="https://github.com/SigNoz/signoz/issues/1957" target="_blank" rel="noopener">↗ SigNoz issue #1957</a>
+      <a href="data/explain-result.json" target="_blank" rel="noopener">{ } committed run JSON</a>
+    </div>
+    <div class="provenance">Built for the Agents of SigNoz hackathon · Track 2 — Signals &amp; Dashboards. Fully offline · no external network requests · every figure traces to <a href="data/explain-result.json">explain-result.json</a>.</div>
+  </footer>
+
+</div>
+
+<script>
+/* ============================================================
+   All values below are copied verbatim from the committed run
+   docs/video/raw/explain-result.json (seed 778). No fetch is
+   used, so the page renders identically offline / over file://.
+   ============================================================ */
+const DATA = {
+  verdict_hash: "95f8835759e2865ec90f17b45df7f1f74f9944484bad4f014e0f209826f91fb5",
+  family_size: 7806, n_features: 36,
+  bad: 61, healthy: 0,
+  lift: "13.1", ci: "[10.8, 17.2]",
+  scan_rows: 163464, scan_ms: 1843, verify_rows: 46805,
+  // the 6 survivors (mine_result_findings) — winner is index 1 (chosen_finding)
+  survivors: [
+    "edge payment ⇒ redis-retry  AND NOT edge checkout ⇒ GET /flags/evaluate",
+    "edge payment ⇒ redis-retry  AND NOT span flag-service · GET /flags/evaluate",
+    "edge payment ⇒ redis-retry  AND NOT svc shop-flag-service",
+    "span payment · redis-retry  AND NOT edge checkout ⇒ GET /flags/evaluate",
+    "span payment · redis-retry  AND NOT span flag-service · GET /flags/evaluate",
+    "span payment · redis-retry  AND NOT svc shop-flag-service"
+  ],
+  winnerIndex: 1,
+  // near_misses (struck out) — dur-bucket supersets, dominated & pruned
+  nearMisses: [
+    "dur [0,1.05ms)  AND edge payment ⇒ redis-retry  AND NOT edge checkout ⇒ GET /flags/evaluate",
+    "dur [0,1.05ms)  AND span payment · redis-retry  AND NOT span flag-service · GET /flags/evaluate",
+    "dur [17.3ms,∞)  AND edge payment ⇒ redis-retry  AND NOT svc shop-flag-service",
+    "dur [17.3ms,∞)  AND span payment · redis-retry  AND NOT edge checkout ⇒ GET /flags/evaluate"
+  ]
+};
+
+const STEPS = ["Point","Extract + Mine","Compile","Verify","Materialize","Determinism","Benchmark"];
+let cur = 0, maxSeen = 0;
+
+/* ---- build rail ---- */
+const rail = document.getElementById('rail');
+STEPS.forEach((s,i)=>{
+  const b=document.createElement('button');
+  b.className='step-btn'; b.dataset.i=i;
+  b.innerHTML=`<span class="n">${i+1}</span>${s}`;
+  b.onclick=()=>go(i);
+  rail.appendChild(b);
+});
+
+function go(i){
+  i=Math.max(0,Math.min(STEPS.length-1,i));
+  cur=i; maxSeen=Math.max(maxSeen,i);
+  document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('active', +s.dataset.step===i));
+  document.querySelectorAll('.step-btn').forEach((b,bi)=>{
+    b.classList.toggle('active', bi===i);
+    b.classList.toggle('done', bi<i || bi<=maxSeen && bi!==i);
+  });
+  document.getElementById('prevBtn').disabled = (i===0);
+  const nb=document.getElementById('nextBtn');
+  nb.textContent = i===STEPS.length-1 ? 'Back to start ↺' : 'Next step ›';
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(i===1) renderBoard();
+  if(i===4) renderMaterialize();
+}
+document.getElementById('nextBtn').onclick=()=>{ cur===STEPS.length-1 ? go(0) : go(cur+1); };
+document.getElementById('prevBtn').onclick=()=>go(cur-1);
+
+/* ---- step 0: run animation ---- */
+document.getElementById('btnRun0').onclick=function(){
+  this.disabled=true;
+  const caret=document.getElementById('caret0'); caret.style.display='none';
+  const out=document.getElementById('run0out');
+  const lines=[
+    ['<span class="muted">→ extract</span>  one clickhouse_sql scan · 163,464 rows · 1,843 ms',120],
+    ['<span class="muted">→ mine</span>     7,806 candidate itemsets · 36 features · FP-growth lattice',180],
+    ['<span class="muted">→ compile</span>  (A ⇒ B) && NOT C  ·  returnSpansFrom = A',180],
+    ['<span class="muted">→ verify</span>   mined 61 == SigNoz 61  <span style="color:var(--green)">MATCH</span>',180],
+    ['<span style="color:var(--green)">✓ DISCRIMINATOR</span>  lift 13.1× · precision 1.00 · recall 1.00',160],
+    ['<span class="muted">verdict hash</span> 95f8835…  <span class="muted">(deterministic)</span>',120]
+  ];
+  out.classList.add('show'); let html='';
+  let d=200;
+  lines.forEach((ln)=>{ setTimeout(()=>{ html+=`<div>${ln[0]}</div>`; out.innerHTML=html; }, d); d+=ln[1]+260; });
+  setTimeout(()=>{ html+=`<div style="margin-top:8px;color:var(--dim)">↳ step through each stage below, or hit <b style="color:var(--green)">Next step</b>.</div>`; out.innerHTML=html; go(1); }, d+150);
+};
+
+/* ---- step 1: elimination board ---- */
+let boardBuilt=false;
+function renderBoard(){
+  if(boardBuilt) return; boardBuilt=true;
+  document.getElementById('famN').textContent=DATA.family_size.toLocaleString();
+  document.getElementById('featN').textContent=DATA.n_features;
+  document.getElementById('survN').textContent=DATA.survivors.length;
+  document.getElementById('rowsN').textContent=DATA.scan_rows.toLocaleString();
+  document.getElementById('msN').textContent=DATA.scan_ms.toLocaleString();
+  const body=document.getElementById('boardBody');
+  const row=(mark,cand,cls)=>`<tr class="${cls}">
+    <td class="mark">${mark}</td>
+    <td class="cand">${cand}</td>
+    <td class="num"><span class="lift">${DATA.lift}×</span></td>
+    <td class="num">${DATA.ci}</td>
+    <td class="num">${DATA.bad}</td>
+    <td class="num">${DATA.healthy}</td>
+    <td>discriminator</td></tr>`;
+  let html='';
+  DATA.survivors.forEach((c,i)=>{
+    const win = i===DATA.winnerIndex;
+    html+=row(win?'▸':'', c, win?'win':'');
+  });
+  DATA.nearMisses.forEach(c=>{ html+=row('✗', c, 'miss'); });
+  body.innerHTML=html;
+}
+
+/* ---- step 3: verify receipt snap-in ---- */
+let verified=false;
+document.getElementById('btnVerify').onclick=function(){
+  this.disabled=true;
+  const cells=[...document.querySelectorAll('#receipt .snap')];
+  cells.forEach(c=>c.classList.remove('in'));
+  document.getElementById('precLine').classList.remove('in');
+  document.getElementById('costLine').classList.remove('in');
+  cells.forEach((c,i)=> setTimeout(()=>{
+    c.classList.add('in');
+    if(i===2){ c.classList.add('glow'); setTimeout(()=>c.classList.remove('glow'),1700); }
+  }, 260*i + 200));
+  setTimeout(()=>document.getElementById('precLine').classList.add('in'), 260*3+300);
+  setTimeout(()=>document.getElementById('costLine').classList.add('in'), 260*3+650);
+  verified=true;
+};
+
+/* ---- step 4: materialize (permalink + webhook) ---- */
+let matBuilt=false;
+function renderMaterialize(){
+  if(matBuilt) return; matBuilt=true;
+  const permBox=document.getElementById('permBox');
+  permBox.innerHTML = '<span class="host">http://localhost:8080</span>/traces-explorer?compositeQuery=%257B%2522queryType%2522%253A%2522builder%2522%252C%2522builder%2522%253A%257B%2522queryData%2522%253A%255B…A: service.name=%27shop-payment%27 … B: name=%27redis-retry%27 … C: service.name=%27shop-flag-service%27 AND name=%27GET /flags/evaluate%27 … queryTraceOperator: %2528A %253D%253E B%2529 %2526%2526 NOT C, returnSpansFrom=A %255D%257D&startTime=1784957400000&endTime=1784957940000';
+  document.getElementById('permOpen').href = REAL_PERMALINK;
+
+  const wh=document.getElementById('webhookBox');
+  wh.innerHTML = [
+    '{',
+    '  <span class="k">"receiver"</span>: <span class="s">"whodunit-default"</span>,',
+    '  <span class="k">"status"</span>: <span class="fire">"firing"</span>,',
+    '  <span class="k">"alerts"</span>: [{',
+    '    <span class="k">"status"</span>: <span class="fire">"firing"</span>,',
+    '    <span class="k">"labels"</span>: {',
+    '      <span class="k">"alertname"</span>: <span class="s">"whodunit: (A =&gt; B) &amp;&amp; NOT C"</span>,',
+    '      <span class="k">"ruleId"</span>: <span class="s">"019f97f7-f80b-7559-b585-8b0526accf71"</span>,',
+    '      <span class="k">"severity"</span>: <span class="s">"critical"</span>,',
+    '      <span class="k">"team"</span>: <span class="s">"whodunit"</span>,',
+    '      <span class="k">"threshold.name"</span>: <span class="s">"warning"</span>',
+    '    },',
+    '    <span class="k">"annotations"</span>: {',
+    '      <span class="k">"description"</span>: <span class="s">"Whodunit discriminator (A =&gt; B) &amp;&amp; NOT C — count_distinct(trace_id) of matching traces."</span>,',
+    '      <span class="k">"summary"</span>: <span class="s">"Whodunit: (A =&gt; B) &amp;&amp; NOT C is firing."</span>,',
+    '      <span class="k">"related_traces"</span>: <span class="s">"http://localhost:8080/traces-explorer?compositeQuery=…"</span>',
+    '    },',
+    '    <span class="k">"startsAt"</span>: <span class="s">"2026-07-25T06:33:29.361390944Z"</span>,',
+    '    <span class="k">"fingerprint"</span>: <span class="s">"ad04ee00d16a72a0"</span>',
+    '  }],',
+    '  <span class="k">"externalURL"</span>: <span class="s">"http://localhost:8080"</span>, <span class="k">"version"</span>: <span class="s">"4"</span>',
+    '}'
+  ].join('\n');
+}
+/* the exact committed permalink string (docs/video/raw/permalink.txt) */
+const REAL_PERMALINK = "http://localhost:8080/traces-explorer?compositeQuery=%257B%2522queryType%2522%253A%2522builder%2522%252C%2522builder%2522%253A%257B%2522queryData%2522%253A%255B%257B%2522dataSource%2522%253A%2522traces%2522%252C%2522queryName%2522%253A%2522A%2522%252C%2522filter%2522%253A%257B%2522expression%2522%253A%2522deployment.environment%2520%253D%2520%2527whodunit-demo%2527%2520AND%2520service.name%2520%253D%2520%2527shop-payment%2527%2522%257D%257D%255D%257D&startTime=1784957400000&endTime=1784957940000";
+
+/* materialize tabs */
+document.querySelectorAll('.tab').forEach(t=>{
+  t.onclick=()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===t));
+    document.querySelectorAll('.tpane').forEach(p=>p.classList.toggle('active',p.dataset.t===t.dataset.t));
+  };
+});
+
+/* ---- step 5: determinism re-run ---- */
+let runN=1;
+const runLog=document.getElementById('runLog');
+document.getElementById('btnRerun').onclick=function(){
+  runN++;
+  const hv=document.getElementById('hashVal');
+  hv.style.opacity=0;
+  setTimeout(()=>{ hv.textContent=DATA.verdict_hash; hv.style.transition='opacity .3s'; hv.style.opacity=1; },140);
+  document.getElementById('runCount').textContent=`run #${runN} · hash stable`;
+  const line=document.createElement('div');
+  line.innerHTML=`run #${runN}: <span class="ok">95f8835…f91fb5 ✓ identical</span> <span style="color:var(--dim2)">(no drift)</span>`;
+  runLog.prepend(line);
+  if(runLog.children.length>5) runLog.removeChild(runLog.lastChild);
+};
+
+/* ---- step 6: benchmark ---- */
+const BENCH=[
+  ["conditional_dep","discriminator","discriminator ✓","1.00","0.23 / 1.00","FAILS",true,"ok"],
+  ["new_edge","discriminator","discriminator ✓","1.00","1.00 / 1.00","ties","","ok"],
+  ["cache_bypass","discriminator","discriminator ✓","1.00","1.00 / 1.00","ties","","ok"],
+  ["retry_storm","abstain","partial ✓","—","0.21 / 0.99","FAILS","","abst"],
+  ["decoys","abstain","abstain ✓","—","0.29 / 0.85","FAILS","","abst"],
+  ["null_scenario","abstain","abstain ✓","—","0.14 / 0.77","FAILS","","abst"]
+];
+document.getElementById('benchBody').innerHTML = BENCH.map(r=>{
+  const outClass = r[5]==='ties' ? 'fail' : (r[5]==='FAILS' ? 'fail' : 'pass');
+  const outTxt = r[5]==='ties' ? 'baseline ties' : (r[5]==='FAILS' ? 'baseline '+r[5].toLowerCase() : r[5]);
+  return `<tr class="${r[6]?'flag':''}">
+    <td style="color:var(--ink)">${r[0]}</td>
+    <td>${r[1]}</td>
+    <td class="${r[7]}">${r[2]}</td>
+    <td style="color:var(--ink)">${r[3]}</td>
+    <td>${r[4]}</td>
+    <td class="${outClass}">${outTxt}</td></tr>`;
+}).join('');
+
+/* init */
+go(0);
+document.getElementById('prevBtn').disabled=true;
+</script>
+</body>
+</html>

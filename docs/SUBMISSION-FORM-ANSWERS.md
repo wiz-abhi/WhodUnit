@@ -62,8 +62,12 @@ Foundry deployment, as required. (Note in README: the live dev stack occupies
 
 ### 7. Deployed link (optional)
 
-*(Leave blank — Whodunit is a CLI + engine, not a hosted service. The demo is the
-video + reproducible `foundryctl cast`.)*
+`https://<username>-whodunit-replay.hf.space` **[FILL IN after deploying `replay/` — a static, offline interactive replay of the real seed-778 run; steps: `replay/DEPLOY.md`]**
+
+*(Whodunit itself is a CLI + engine, not a hosted service; this deployed link is an
+interactive replay of the committed run — elimination board → compiled query →
+verification receipt → firing alert → determinism hash — hosted as a Hugging Face
+static Space. The full demo remains the video + reproducible `foundryctl cast`.)*
 
 ### 8. YouTube video demo link *
 
