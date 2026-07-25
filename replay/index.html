@@ -12,7 +12,7 @@
     --line:#1e2633; --line2:#2a3444;
     --ink:#c9d4e0; --dim:#7d8aa0; --dim2:#5b6678;
     --green:#34d399; --green-d:#10b981; --green-dd:#0b3d2e;
-    --amber:#d6a45a; --amber-b:#f59e0b;
+    --amber:#d6a45a; --amber-b:#f59e0b; --amber-dd:#3d2c0d;
     --cyan:#38bdf8; --cyan-d:#0b2e3d;
     --red:#f87171; --red-d:#ef4444;
     --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,"DejaVu Sans Mono",monospace;
@@ -34,16 +34,46 @@
   .mono{font-family:var(--mono);}
   .nowrap{white-space:nowrap;}
 
-  /* ---- banner ---- */
-  header.top{padding:26px 0 8px;}
+  /* ---- sticky shell (compact header + rail travel together) ---- */
+  .sticky-shell{position:sticky;top:0;z-index:30;background:rgba(11,14,20,.86);backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);box-shadow:0 6px 24px rgba(0,0,0,.28);}
+  .header-compact{max-width:1080px;margin:0 auto;padding:11px 18px;display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;}
+  .wordmark{display:inline-flex;align-items:center;gap:7px;font-weight:800;font-size:15px;color:var(--ink);letter-spacing:-.01em;}
+  .wordmark .lens{filter:none;}
+  .tagline-mini{font-family:var(--mono);font-size:12px;color:var(--dim);font-style:italic;flex:1 1 auto;min-width:180px;}
+  .tagline-mini b{color:var(--ink);font-style:normal;}
+  .pill-mini{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:11px;color:var(--green);
+    border:1px solid var(--green-dd);background:rgba(16,185,129,.07);padding:4px 10px;border-radius:999px;white-space:nowrap;flex:none;}
+  .pill-mini .dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 2.4s infinite;flex:none;}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  .header-links{display:flex;gap:8px;flex:none;}
+  .header-links a, .header-links span.ph{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:11.5px;
+    border:1px solid var(--line2);border-radius:7px;padding:5px 9px;color:var(--ink);background:var(--panel);white-space:nowrap;}
+  .header-links a:hover{border-color:var(--green-d);text-decoration:none;}
+  .header-links span.ph{color:var(--dim2);border-style:dashed;}
+  @media(max-width:640px){.tagline-mini{display:none;}}
+
+  /* ---- hero band ---- */
+  .hero{padding:28px 0 8px;}
   .kicker{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;color:var(--green);
     border:1px solid var(--green-dd);background:rgba(16,185,129,.06);padding:5px 11px;border-radius:999px;letter-spacing:.02em;}
   .kicker .dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green);animation:pulse 2.4s infinite;}
-  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
   h1.title{font-size:clamp(26px,4.6vw,42px);line-height:1.08;margin:16px 0 6px;font-weight:800;letter-spacing:-.02em;}
   h1 .accent{color:var(--green);}
   .tagline{font-family:var(--mono);color:var(--dim);font-size:14px;margin:0 0 14px;font-style:italic;}
   .tagline b{color:var(--ink);font-style:normal;}
+
+  /* ---- headline result chips ---- */
+  .chips{display:flex;flex-wrap:wrap;gap:10px;margin:6px 0 18px;}
+  .chip{display:flex;flex-direction:column;align-items:flex-start;gap:2px;border:1px solid var(--line2);
+    background:linear-gradient(180deg,var(--panel),var(--panel2));border-radius:10px;padding:9px 14px;box-shadow:var(--shadow);}
+  .chip .cv{font-family:var(--mono);font-weight:800;font-size:17px;color:var(--ink);letter-spacing:-.01em;}
+  .chip .cl{font-family:var(--mono);font-size:10.5px;color:var(--dim);letter-spacing:.08em;text-transform:uppercase;}
+  .chip.c-green{border-color:var(--green-dd);} .chip.c-green .cv{color:var(--green);}
+  .chip.c-amber{border-color:#5a4114;} .chip.c-amber .cv{color:var(--amber-b);}
+  .chip.c-blue{border-color:var(--cyan-d);} .chip.c-blue .cv{color:var(--cyan);}
+  .chip.c-dim .cv{color:var(--dim);}
+
   .honest{border:1px solid var(--line2);background:linear-gradient(180deg,var(--panel),var(--panel2));
     border-radius:12px;padding:14px 16px;margin:14px 0 6px;font-size:13.5px;color:var(--dim);display:flex;gap:12px;align-items:flex-start;}
   .honest .badge{flex:none;font-family:var(--mono);font-size:11px;color:var(--bg);background:var(--green);border-radius:6px;padding:3px 8px;font-weight:700;margin-top:1px;}
@@ -56,8 +86,8 @@
   .links .ico{opacity:.9;}
 
   /* ---- stepper rail ---- */
-  nav.rail{position:sticky;top:0;z-index:20;background:rgba(11,14,20,.82);backdrop-filter:blur(8px);
-    border-bottom:1px solid var(--line);margin:22px -18px 0;padding:10px 18px;overflow-x:auto;}
+  nav.rail{background:transparent;max-width:1080px;margin:0 auto;
+    border-bottom:none;padding:8px 18px 10px;overflow-x:auto;}
   .rail-inner{display:flex;gap:6px;min-width:max-content;}
   .step-btn{font-family:var(--mono);font-size:12px;color:var(--dim);background:transparent;border:1px solid transparent;
     border-radius:8px;padding:7px 11px;cursor:pointer;display:flex;align-items:center;gap:8px;white-space:nowrap;transition:.15s;}
@@ -212,15 +242,83 @@
   .provenance{font-family:var(--mono);font-size:11.5px;color:var(--dim2);margin-top:26px;text-align:center;}
   .provenance a{color:var(--dim);}
   .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);}
+
+  /* ---- footer badges ---- */
+  .fbadges{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;}
+  .fbadge{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;color:var(--green);
+    border:1px solid var(--green-dd);background:rgba(16,185,129,.06);border-radius:999px;padding:5px 11px;letter-spacing:.03em;}
+  .fbadge::before{content:"●";font-size:8px;}
+
+  /* ---- board: zebra rows for the plain survivor rows ---- */
+  table.board tbody tr:not(.win):not(.miss):nth-of-type(even) td{background:rgba(255,255,255,.025);}
+
+  /* ---- stage accent: verify = amber ---- */
+  section.screen[data-step="3"] h2{color:var(--amber-b);}
+  section.screen[data-step="3"] .lead b{color:var(--amber-b);}
+  .receipt{border-top:3px solid var(--amber-b);}
+  #btnVerify{border-color:var(--amber-b);color:var(--amber-b);background:linear-gradient(180deg,rgba(245,158,11,.16),rgba(245,158,11,.05));}
+  #btnVerify:hover{background:rgba(245,158,11,.22);box-shadow:0 0 0 3px rgba(245,158,11,.14);}
+  .receipt .cell.match .val::before{content:"✓ ";}
+
+  /* ---- stage accent: materialize = blue ---- */
+  section.screen[data-step="4"] h2{color:var(--cyan);}
+  .tpane[data-t="perm"] .permalink{border-top:3px solid var(--cyan);}
+
+  /* ---- alert firing card: amber pulse (severity keyword stays red) ---- */
+  .firing-pill{color:var(--amber-b);border-color:#5a4114;background:rgba(245,158,11,.09);}
+  .firing-pill .d{background:var(--amber-b);box-shadow:0 0 8px var(--amber-b);}
+  .firing-pill .sev{color:var(--red);font-weight:700;}
+  .tpane[data-t="alert"] .json{border-top:3px solid var(--amber-b);}
+
+  /* ---- collapsible webhook payload ---- */
+  details.jdetails{border:1px solid var(--line);border-radius:10px;background:#0a0d13;overflow:hidden;}
+  details.jdetails > summary{list-style:none;cursor:pointer;font-family:var(--mono);font-size:12px;color:var(--dim);
+    padding:11px 14px;display:flex;align-items:center;gap:8px;user-select:none;background:var(--panel);}
+  details.jdetails > summary::-webkit-details-marker{display:none;}
+  details.jdetails > summary::before{content:"▸";color:var(--amber-b);transition:transform .18s;}
+  details.jdetails[open] > summary::before{transform:rotate(90deg);}
+  details.jdetails > summary:hover{color:var(--ink);}
+  details.jdetails .json{border:0;border-radius:0;border-top:1px solid var(--line);}
+
+  /* ---- misc responsive polish ---- */
+  @media(max-width:480px){
+    .chip{padding:8px 11px;}
+    .chip .cv{font-size:15px;}
+    .header-links a, .header-links span.ph{padding:5px 7px;}
+  }
 </style>
 </head>
 <body>
+
+<div class="sticky-shell">
+  <div class="header-compact">
+    <a class="wordmark" href="#" onclick="return false;">🔎 <span>Whodunit</span></a>
+    <span class="tagline-mini">Everyone can show you the difference. <b>Only SigNoz can arm it.</b></span>
+    <span class="pill-mini"><span class="dot"></span>Interactive replay · seed 778</span>
+    <div class="header-links">
+      <a href="https://github.com/wiz-abhi/WhodUnit" target="_blank" rel="noopener">◈ GitHub</a>
+      <span class="ph" title="Fill in after publishing">✎ Blog</span>
+      <span class="ph" title="Fill in after uploading">▶ Video</span>
+    </div>
+  </div>
+  <nav class="rail" aria-label="Pipeline steps">
+    <div class="rail-inner" id="rail"></div>
+  </nav>
+</div>
+
 <div class="wrap">
 
-  <header class="top">
+  <section class="hero">
     <span class="kicker"><span class="dot"></span>INTERACTIVE REPLAY · SEED 778 · SigNoz v0.132.2</span>
     <h1 class="title">Whodunit <span class="accent">·</span> the culprit, compiled into a query you own</h1>
     <p class="tagline">Everyone can show you the difference. <b>Only SigNoz can arm it.</b></p>
+
+    <div class="chips">
+      <div class="chip c-green"><span class="cv">13.1×</span><span class="cl">lift</span></div>
+      <div class="chip c-green"><span class="cv">61 = 61</span><span class="cl">verify match</span></div>
+      <div class="chip c-blue"><span class="cv">6 / 6</span><span class="cl">benchmark</span></div>
+      <div class="chip c-dim"><span class="cv">0</span><span class="cl">LLM at runtime</span></div>
+    </div>
 
     <div class="honest">
       <span class="badge">HONEST</span>
@@ -234,11 +332,7 @@
       <span class="ph" title="Fill in after uploading">▶ YouTube demo — [add link]</span>
       <a href="data/explain-result.json" target="_blank" rel="noopener"><span class="ico">{ }</span> Raw run JSON</a>
     </div>
-  </header>
-
-  <nav class="rail" aria-label="Pipeline steps">
-    <div class="rail-inner" id="rail"></div>
-  </nav>
+  </section>
 
   <main id="stage">
 
@@ -341,8 +435,11 @@
         <div class="shot"><img src="assets/operator-probe.png" alt="Trace-operator query executing in the SigNoz Query Builder" loading="lazy"><div class="cap">the compiled (A ⇒ B) && NOT C running live in the SigNoz Query Builder</div></div>
       </div>
       <div class="tpane" data-t="alert">
-        <div class="firing-pill"><span class="d"></span>FIRING · critical · caught at POST /whodunit (4,282 B)</div>
-        <div class="json" id="webhookBox"></div>
+        <div class="firing-pill"><span class="d"></span>FIRING · <span class="sev">critical</span> · caught at POST /whodunit (4,282 B)</div>
+        <details class="jdetails" open>
+          <summary>webhook payload · docs/video/raw/webhook.log</summary>
+          <div class="json" id="webhookBox"></div>
+        </details>
         <p class="note">Real captured webhook body from <code style="color:var(--green)">docs/video/raw/webhook.log</code> — a v2alpha1 rule on the compiled discriminator delivered end-to-end.</p>
         <div class="shot"><img src="assets/alert-firing.png" alt="The armed rule in SigNoz breaching both thresholds, and the delivered webhook body" loading="lazy"><div class="cap">the armed rule breaching WARN + CRIT thresholds → the delivered webhook</div></div>
       </div>
@@ -385,6 +482,11 @@
   </div>
 
   <footer>
+    <div class="fbadges">
+      <span class="fbadge">0 LLM AT RUNTIME</span>
+      <span class="fbadge">DETERMINISTIC · SAME SEED = SAME HASH</span>
+      <span class="fbadge">OFFLINE-FIRST · NO NETWORK CALLS</span>
+    </div>
     <div class="disc">
       <div class="li"><span class="c">▹</span><span><b style="color:var(--ink)">No LLM in the runtime.</b> Whodunit is a deterministic Query Builder synthesis engine — mine → compile → verify. The same input plus seed always lands the identical verdict hash shown above.</span></div>
       <div class="li"><span class="c">▹</span><span><b style="color:var(--ink)">Corpus is synthetic and disclosed.</b> All demo traffic is generated and labelled by <code style="color:var(--green)">corpus.generate</code>; ground truth comes from the manifest, not human judgement. Disclosed fault-injection, never hidden.</span></div>
