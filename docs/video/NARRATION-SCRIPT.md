@@ -146,16 +146,13 @@ filtered spans. It's still open. Here's the implementation.
   near-misses should sound dismissive; the conjunction should sound like the answer.
   Time "Only the conjunction" to the moment the winning row highlights on screen.
 - **optional trim** if the measured beat comes in short: drop the final sentence
-  ("Eighty-nine bad traces, zero healthy ones.") — costs 6 words / 2.5 s.
-- **pronunciation:** "one point four times lift", "nine times lift".
+  ("Sixty-one bad traces, zero healthy ones.") — costs 6 words / 2.5 s.
+- **pronunciation:** "thirteen times lift"; say "sixty-one" clearly (matches screen).
 
 ```text
-One question to ClickHouse. Seven thousand eight hundred candidate itemsets
-enumerated locally, across thirty-six features. Watch what the machine rejects. The
-payment-to-redis-retry edge on its own: one point four times lift — it's in the
-healthy traces too. Missing flag-service on its own: one point nine. Also in both.
-Only the conjunction — that edge and no flag-service — separates the cohorts, at nine
-times lift. Eighty-nine bad traces, zero healthy ones.
+One question to ClickHouse. Then the whole lattice is enumerated locally. The
+machine weighs the obvious answers — the edge alone — and rejects them. Only the
+conjunction separates the cohorts, at thirteen times lift.
 ```
 
 ### seg08 · b3 — the honest baseline fails
@@ -165,12 +162,12 @@ times lift. Eighty-nine bad traces, zero healthy ones.
 - **words:** 36 → ≈ 14.9 s @ 145 wpm · **4.8 s of headroom**
 - **emphasis:** "a proper BubbleUp-style z-test" — stress *proper*; you are pre-empting
   the strawman objection, and that only works if the tone is matter-of-fact rather
-  than defensive. "zero point two three" gets the pause.
+  than defensive. "zero point one seven" gets the pause.
 
 ```text
-Same matrix, flat baseline — a proper BubbleUp-style z-test over every single
-feature. Its top pick is precision zero point two three. The fault needs two
-conditions at once, and no single predicate can see it.
+This is what every flat tool sees — BubbleUp, compare, Trace Patterns. Its best
+single predicate lands at precision zero point one seven. The fault needs two
+conditions at once.
 ```
 
 ### seg09 · b4 — the compiler and the verification receipt
@@ -185,11 +182,9 @@ conditions at once, and no single predicate can see it.
   "equals greater than".
 
 ```text
-No model wrote this. It's compiled into SigNoz's own trace-operator grammar: leaves
-A, B and C, the expression A implies B and not C, returning spans from A. Then
-Whodunit runs that query back against the live engine as a count-distinct. It mined
-eighty-nine traces. SigNoz returned eighty-nine. They agree — and if they hadn't,
-you'd see the mismatch, not a paragraph.
+No model wrote this. It's compiled into SigNoz's own trace-operator grammar — A
+implies B and not C — then run back against the engine. Mined sixty-one; SigNoz
+returned sixty-one. They agree.
 ```
 
 ### seg10 · b5 — the permalink in Trace Explorer
