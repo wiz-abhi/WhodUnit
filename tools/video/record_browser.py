@@ -212,16 +212,21 @@ def beat_b11(page: Page) -> None:
     while the panel swaps underneath them.
     """
     page.goto(f"{REPLAY}/app.html", wait_until="load")
-    page.wait_for_timeout(2500)                  # step 1 shell: top bar + rail
-    page.click("body")                           # focus the document for keys
-    page.wait_for_timeout(1800)
+    # No click anywhere: the app's handler is on `document` and the keys reach it
+    # through the default (body) focus, so nothing in the panel is ever hit by a
+    # stray pointer and no cursor appears in frame.
+    page.wait_for_timeout(4000)                  # step 1 shell: top bar + rail
 
     page.keyboard.press("ArrowRight")            # 2/7 Extract + Mine
-    page.wait_for_timeout(4200)                  # the elimination board
+    page.wait_for_timeout(4400)                  # the elimination board
     page.keyboard.press("ArrowRight")            # 3/7 Compile
-    page.wait_for_timeout(3000)
+    page.wait_for_timeout(3200)
     page.keyboard.press("ArrowRight")            # 4/7 Verify
-    page.wait_for_timeout(4800)                  # the 61 = 61 MATCH receipt
+    page.wait_for_timeout(1200)
+    # The receipt cells snap in on demand - that is the app being *used*, not a
+    # static page. The full reveal takes 260*3+650 ms.
+    page.click("#btnVerify")
+    page.wait_for_timeout(5000)                  # the 61 = 61 MATCH receipt
 
 
 BEATS = {"b1": beat_b1, "b5": beat_b5, "b6ui": beat_b6ui, "b8ui": beat_b8ui,

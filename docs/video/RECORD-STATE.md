@@ -8,7 +8,7 @@ pushed before the next one starts, so an interruption costs at most one phase.
 |---|---|---|--:|--:|---|
 | 1 | `b9`  | landing page scroll (`replay/index.html`) | ~46s | **46.10s** | **DONE** |
 | 2 | `b10` | abstention + the one it first got wrong (termcast) | ~32s | **32.93s** | **DONE** |
-| 3 | `b11` | the replay app (`replay/app.html`) | ~18s | — | PENDING |
+| 3 | `b11` | the replay app (`replay/app.html`) | ~18s | **18.00s** | **DONE** |
 | 4 | —     | re-cut: trims/manifest/assemble/script/captions | — | — | PENDING |
 
 New beat order for the v2 cut: `b1, b9, b2, b3, b4, b5, b6, b10, b7, b11, b8`.
@@ -43,6 +43,20 @@ and the re-run: `(A => B) && NOT (C => D)`, recall 1.0, precision 1.0,
 
 Rendered at `--font 22`: at 24 the 150-column rich panels land exactly on the
 1872 px content width and the last glyph column clips.
+
+## Phase 3 — `docs/video/raw/b11.mp4`, 18.00s
+
+`record_browser.py b11`: land on the app shell (step 1/7, top bar + left rail
++ footer progress), then `ArrowRight` x3 to the elimination board (2/7), the
+compiled trace-operator (3/7) and the verification receipt (4/7), where
+`#btnVerify` is pressed so the cells snap in — **mined 61 · SigNoz 61 · MATCH**,
+precision 1.00 / recall 1.00, 46,805 rows — and held for ~4s.
+
+The viewport never moves: `app.html` is a fixed 100vh shell whose
+`document.scrollHeight` equals `innerHeight` (probed: 1080 == 1080), and only
+`#panel` scrolls, so the frame is nailed while the panel swaps underneath.
+No pointer is used for navigation, so no cursor is in frame. Raw take 19.43s,
+ffmpeg-trimmed to `[0.4, 18.4]`.
 
 ## Notes
 
