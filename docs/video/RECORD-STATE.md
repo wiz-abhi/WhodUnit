@@ -99,3 +99,26 @@ trimming, so every real number in it survives. Silent captioned preview:
 - The landing/app beats are recorded against a **local** `python -m http.server 8099`
   serving `replay/`, byte-identical to the deployed Space.
 - Do not touch `b1`–`b8`.
+
+---
+
+# v3 sketch cut
+
+Two hand-drawn **animated** sketch beats are added, `b9` is trimmed, and the film is
+re-ordered. Same rule as above: each phase is committed and pushed before the next one
+starts, so an interruption costs at most one phase. **Resume at the first PENDING row.**
+
+New beat order (13 beats):
+`b9t, b1, s1, b2, b3, b4, s2, b5, b6, b10, b7, b11, b8`
+
+| phase | what | target | measured | status |
+|---|---|--:|--:|---|
+| 1 | `s1` — sketch "the fault, drawn" (animated xkcd frames) | ~24s | — | **PENDING** |
+| 2 | `s2` — sketch "one store, not three" | ~15s | — | **PENDING** |
+| 3 | trim `b9` -> `b9t` (~38s) + re-cut the 13-beat film | <5:00 | — | **PENDING** |
+| 4 | `docs/NARRATION-SCRIPT-v3.md` + captions + silent captioned preview | — | — | **PENDING** |
+
+The sketches are rendered by `tools/video/sketch/` as matplotlib `plt.xkcd()` PNG frame
+sequences (30fps) and encoded with ffmpeg — same palette and ink as
+`docs/assets/flow-pipeline.png` / `flow-signoz.png`. `b1`–`b11` are never modified;
+`b9t.mp4` is a new derived file.
