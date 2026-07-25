@@ -62,6 +62,21 @@
         }
       ]
     },
+    "b10": {
+      "title": "Abstention - and the one it first got wrong",
+      "steps": [
+        {
+          "cmd": "uv run python tools/video/demo_abstention.py --board",
+          "note": "reads benchmark/results.json - the record of the 946.5s live benchmark run, not a re-run",
+          "hold": 14.0
+        },
+        {
+          "cmd": "uv run python tools/video/demo_abstention.py --miss cache_bypass",
+          "note": "the scenario whodunit ABSTAINED on when a real answer existed - benchmark/ISSUES.md #2",
+          "hold": 12.4
+        }
+      ]
+    },
     "b8": {
       "title": "The repo and the one command that reproduces it",
       "steps": [
