@@ -113,7 +113,7 @@ New beat order (13 beats):
 
 | phase | what | target | measured | status |
 |---|---|--:|--:|---|
-| 1 | `s1` — sketch "the fault, drawn" (animated xkcd frames) | ~24s | — | **PENDING** |
+| 1 | `s1` — sketch "the fault, drawn" (animated xkcd frames) | ~24s | **23.70s** | **DONE** |
 | 2 | `s2` — sketch "one store, not three" | ~15s | — | **PENDING** |
 | 3 | trim `b9` -> `b9t` (~38s) + re-cut the 13-beat film | <5:00 | — | **PENDING** |
 | 4 | `docs/NARRATION-SCRIPT-v3.md` + captions + silent captioned preview | — | — | **PENDING** |
@@ -122,3 +122,35 @@ The sketches are rendered by `tools/video/sketch/` as matplotlib `plt.xkcd()` PN
 sequences (30fps) and encoded with ffmpeg — same palette and ink as
 `docs/assets/flow-pipeline.png` / `flow-signoz.png`. `b1`–`b11` are never modified;
 `b9t.mp4` is a new derived file.
+
+## v3 phase 1 — `docs/video/raw/s1.mp4`, 23.70s
+
+`tools/video/sketch/render_s1.py` (on `tools/video/sketch/_style.py`): 711 PNG frames
+at 1920x1080, 222 actually rendered and 489 held, encoded with
+`ffmpeg -framerate 30`. Not a still: elements ease in cumulatively over six stages.
+
+| t (s) | what appears |
+|--:|---|
+| 0.0 | title "the fault, drawn" (top-left), column divider |
+| 0.5–2.3 | **healthy** tree draws in node by node: `checkout → payment → redis` + `flag-service` |
+| 4.2–6.7 | **failing** tree: same root, `payment → redis-retry` in amber, then a dashed ghost `flag-service` with a hand-drawn ✗ and the caption "flag-service missing" |
+| 8.6–9.4 | amber rings on the retry edge on **both** sides + "the retry alone? also in healthy traces." |
+| 13.1–13.9 | blue dashed rings on the flag span on **both** sides + "no flag-service alone? also in healthy traces."; the amber pair dims |
+| 17.6–18.5 | a green box around **both** conditions, failing side only + **"only both at once — 13.1× lift, 61 bad / 0 healthy"** |
+| → 23.7 | hold |
+
+Style notes worth keeping (all in `_style.py`):
+
+- `plt.xkcd()` resolves to **Comic Sans MS** here — the font the two committed
+  `docs/assets/flow-*.png` actually rendered with. `DejaVu Sans` is appended as a
+  *fallback family* so `×` (and `⋈` in s2) are not tofu; `✗` is drawn as two strokes
+  rather than trusted to a glyph.
+- xkcd's 4 px white `withStroke` path effect is re-installed at **linewidth=0**, which
+  kills the halo around light text on dark cards without disabling the path wiggle.
+- Both the axes patch *and* the figure patch must opt out of the sketch filter
+  (`set_sketch_params(None)`), or the wiggle draws a hairline scribble around all four
+  frame edges — 414 stray white pixels per frame before the fix, 0 after.
+- Frames whose alpha vector is unchanged are **copied, not re-rendered**, so a hold is
+  byte-identical frames and the xkcd jitter cannot "boil" while nothing is moving.
+- Nothing is drawn below **y = 230 px**: `final_assemble.py` burns the narration
+  captions bottom-centred with a 112 px margin, and that band belongs to them.
