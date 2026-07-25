@@ -16,8 +16,8 @@
   },
   "crossfade_s": 0.3,
   "voice_lead_s": 0.3,
-  "cap_s": 270.0,
-  "predicted_total_s": 251.57,
+  "cap_s": 295.0,
+  "predicted_total_s": 288.57,
   "real_numbers": {
     "verdict": "discriminator",
     "expression": "(A => B) && NOT C",
@@ -50,6 +50,41 @@
   },
   "beats": [
     {
+      "id": "b9t",
+      "title": "The landing page (trimmed) - thesis, competitors, architecture, receipt",
+      "file": "docs/video/raw/b9t.mp4",
+      "sources": [
+        "docs/video/raw/b9t.mp4"
+      ],
+      "source_duration_s": 44.6,
+      "segments": [
+        {
+          "source": "docs/video/raw/b9t.mp4",
+          "start": 0.0,
+          "end": 44.6,
+          "seconds": 44.6
+        }
+      ],
+      "cut_duration_s": 44.6,
+      "timeline_start_s": 0.0,
+      "timeline_end_s": 44.6,
+      "on_screen": {
+        "winner_lift": 13.114754098360656,
+        "mined": 61,
+        "signoz": 61,
+        "match": true,
+        "expression": "(A => B) && NOT C",
+        "verdict_hash": "95f8835759e2865ec90f17b45df7f1f74f9944484bad4f014e0f209826f91fb5"
+      },
+      "narration": {
+        "window_start_s": 0.3,
+        "window_end_s": 44.6,
+        "seconds_available": 44.3,
+        "beat": "I'm Abhishek. This is Whodunit, built for the Agents of SigNoz hackathon - Track 2, Signals and Dashboards. When production breaks, every observability tool shows you the difference between the traces that failed and the ones that didn't. BubbleUp, Trace Patterns, Grafana's compare - they rank attributes and hand you a panel. Then a human re-types that finding into a query, at three in the morning. Whodunit closes that loop. One ClickHouse scan, mine the pattern that separates the cohorts, compile it into a real SigNoz query, verify it against the live engine, and arm it as an alert. Five stages, and no LLM anywhere."
+      },
+      "notes": "b9.mp4 re-trimmed to [1.0, 45.6] as docs/video/raw/b9t.mp4 (44.60s); b9.mp4 itself is untouched. 1.0s comes off the head (the hero sits static until the scroll starts at ~3.2s) and 0.5s off the tail (the proof hold runs from ~44s, so a full second of it survives). It opens the film now, so the whole crawl is kept: hero (13.1x / 61 = 61 / 6 of 6 / 0 LLM chips and the honest banner) -> the 'nobody hands you the query' competitor table -> the five deterministic stages -> the five SigNoz surfaces -> the hold on the compiled (A => B) && NOT C, the verdict hash, the 6/6 table and the cache_bypass loss-then-fix note."
+    },
+    {
       "id": "b1",
       "title": "The citation - SigNoz/signoz#1957, still open",
       "file": "docs/video/raw/b1.mp4",
@@ -66,51 +101,48 @@
         }
       ],
       "cut_duration_s": 12.0,
-      "timeline_start_s": 0.0,
-      "timeline_end_s": 12.0,
+      "timeline_start_s": 44.3,
+      "timeline_end_s": 56.3,
       "on_screen": {},
       "narration": {
-        "window_start_s": 0.3,
-        "window_end_s": 12.0,
+        "window_start_s": 44.6,
+        "window_end_s": 56.3,
         "seconds_available": 11.7,
-        "beat": "SigNoz's co-founder asked for this three and a half years ago - compare two sets of filtered spans. It's still open. Here's the implementation."
+        "beat": "And this isn't a problem I invented for a hackathon. SigNoz's co-founder asked for exactly this, three and a half years ago - still open."
       },
       "notes": "Title, #1957, Open badge, pranay01, Jan 2 2023 all legible before the scroll. Recorded headless with Playwright."
     },
     {
-      "id": "b9",
-      "title": "The landing page - thesis, competitors, architecture, receipt",
-      "file": "docs/video/raw/b9.mp4",
+      "id": "s1",
+      "title": "Sketch - the fault, drawn (why neither condition alone works)",
+      "file": "docs/video/raw/s1.mp4",
       "sources": [
-        "docs/video/raw/b9.mp4"
+        "docs/video/raw/s1.mp4"
       ],
-      "source_duration_s": 46.1,
+      "source_duration_s": 23.7,
       "segments": [
         {
-          "source": "docs/video/raw/b9.mp4",
+          "source": "docs/video/raw/s1.mp4",
           "start": 0.0,
-          "end": 46.1,
-          "seconds": 46.1
+          "end": 23.7,
+          "seconds": 23.7
         }
       ],
-      "cut_duration_s": 46.1,
-      "timeline_start_s": 11.7,
-      "timeline_end_s": 57.8,
+      "cut_duration_s": 23.7,
+      "timeline_start_s": 56.0,
+      "timeline_end_s": 79.7,
       "on_screen": {
         "winner_lift": 13.114754098360656,
-        "mined": 61,
-        "signoz": 61,
-        "match": true,
-        "expression": "(A => B) && NOT C",
-        "verdict_hash": "95f8835759e2865ec90f17b45df7f1f74f9944484bad4f014e0f209826f91fb5"
+        "support_bad": 61,
+        "support_healthy": 0
       },
       "narration": {
-        "window_start_s": 12.0,
-        "window_end_s": 57.8,
-        "seconds_available": 45.8,
-        "beat": "Every tool in this space shows you the difference between two cohorts of traces. BubbleUp, Trace Patterns, DDx, Grafana's compare - they rank attributes, and then a human types the query by hand. Whodunit closes that loop. One ClickHouse scan builds a feature matrix over traces and logs in the same store. FP-growth mines the whole lattice. The winner gets compiled into SigNoz's own trace-operator grammar, verified against the live engine, and armed as an alert. Five stages, and no LLM in any of them."
+        "window_start_s": 56.3,
+        "window_end_s": 79.7,
+        "seconds_available": 23.4,
+        "beat": "Here's the fault, drawn. A healthy checkout calls the flag service. A failing one retries redis, and the flag-service span is missing. But the retry alone shows up in healthy traces too. And plenty of healthy traces skip the flag check. Neither condition alone separates them - only both at once."
       },
-      "notes": "One unbroken programmatic crawl down replay/index.html at 1920x1080: hero (13.1x / 61 = 61 / 6 of 6 / 0 LLM chips and the honest banner) -> the 'nobody hands you the query' competitor table -> the five deterministic stages -> the five SigNoz surfaces -> a hold on the proof/receipt section. Served locally from replay/ on :8099, byte-identical to the deployed Space. Replaces the retired static intro cards."
+      "notes": "Rendered, not recorded: tools/video/sketch/render_s1.py draws 711 matplotlib plt.xkcd() frames at 1920x1080 and ffmpeg encodes them at 30fps. Same palette/ink as docs/assets/flow-pipeline.png. Progressive reveal: healthy trace tree -> failing trace tree (amber redis-retry edge, dashed ghost flag-service with an X) -> the retry circled on BOTH sides -> the missing flag circled on BOTH sides -> a green box around both conditions on the failing side only, with the seed-778 numbers 13.1x lift, 61 bad / 0 healthy."
     },
     {
       "id": "b2",
@@ -129,8 +161,8 @@
         }
       ],
       "cut_duration_s": 16.27,
-      "timeline_start_s": 57.5,
-      "timeline_end_s": 73.76,
+      "timeline_start_s": 79.4,
+      "timeline_end_s": 95.66,
       "on_screen": {
         "verdict": "discriminator",
         "family_size": 7806,
@@ -146,8 +178,8 @@
         "scan_rows_scanned": 163464
       },
       "narration": {
-        "window_start_s": 57.8,
-        "window_end_s": 73.76,
+        "window_start_s": 79.7,
+        "window_end_s": 95.66,
         "seconds_available": 15.96,
         "beat": "One question to ClickHouse. Then the whole lattice is enumerated locally. The machine weighs the obvious answers - the edge alone - and rejects them. Only the conjunction separates the cohorts, at thirteen times lift."
       },
@@ -170,15 +202,15 @@
         }
       ],
       "cut_duration_s": 13.83,
-      "timeline_start_s": 73.46,
-      "timeline_end_s": 87.29,
+      "timeline_start_s": 95.36,
+      "timeline_end_s": 109.19,
       "on_screen": {
         "precision": 1.0,
         "recall": 1.0
       },
       "narration": {
-        "window_start_s": 73.76,
-        "window_end_s": 87.29,
+        "window_start_s": 95.66,
+        "window_end_s": 109.19,
         "seconds_available": 13.53,
         "beat": "This is what every flat tool sees - BubbleUp, compare, Trace Patterns. Its best single predicate lands at precision zero point one seven. The fault needs two conditions at once."
       },
@@ -201,8 +233,8 @@
         }
       ],
       "cut_duration_s": 12.57,
-      "timeline_start_s": 86.99,
-      "timeline_end_s": 99.55,
+      "timeline_start_s": 108.89,
+      "timeline_end_s": 121.45,
       "on_screen": {
         "expression": "(A => B) && NOT C",
         "return_spans_from": "A",
@@ -220,12 +252,40 @@
         "verdict_hash": "95f8835759e2865ec90f17b45df7f1f74f9944484bad4f014e0f209826f91fb5"
       },
       "narration": {
-        "window_start_s": 87.29,
-        "window_end_s": 99.55,
+        "window_start_s": 109.19,
+        "window_end_s": 121.45,
         "seconds_available": 12.26,
         "beat": "No model wrote this. It's compiled into SigNoz's own grammar - A implies B, and not C - then run back against the engine. Mined sixty-one. SigNoz returned sixty-one."
       },
       "notes": "Leaves A/B/C, (A => B) && NOT C, returnSpansFrom A, then the differential receipt and the verdict hash."
+    },
+    {
+      "id": "s2",
+      "title": "Sketch - one store, not three (why it has to be SigNoz)",
+      "file": "docs/video/raw/s2.mp4",
+      "sources": [
+        "docs/video/raw/s2.mp4"
+      ],
+      "source_duration_s": 15.4,
+      "segments": [
+        {
+          "source": "docs/video/raw/s2.mp4",
+          "start": 0.0,
+          "end": 15.4,
+          "seconds": 15.4
+        }
+      ],
+      "cut_duration_s": 15.4,
+      "timeline_start_s": 121.15,
+      "timeline_end_s": 136.55,
+      "on_screen": {},
+      "narration": {
+        "window_start_s": 121.45,
+        "window_end_s": 136.55,
+        "seconds_available": 15.1,
+        "beat": "And this is why it has to be SigNoz. Traces and logs live in one ClickHouse, so a single scan joins them by trace ID. On Tempo plus Loki, that join doesn't exist."
+      },
+      "notes": "Rendered the same way (tools/video/sketch/render_s2.py, 462 frames). Three disconnected drums - Tempo/traces, Loki/logs, Prometheus/metrics - with the arrows between them struck out in red and captioned 'no join'; then one SigNoz - ClickHouse drum holding traces + logs + metrics with a JOIN ON trace_id arrow and 'one scan'. Closing line: one clickhouse_sql scan joins traces JOIN logs, impossible on three stores. on_screen is empty on purpose - the sketch quotes no run-specific counters."
     },
     {
       "id": "b5",
@@ -250,8 +310,8 @@
         }
       ],
       "cut_duration_s": 28.3,
-      "timeline_start_s": 99.25,
-      "timeline_end_s": 127.55,
+      "timeline_start_s": 136.25,
+      "timeline_end_s": 164.55,
       "on_screen": {
         "expression": "(A => B) && NOT C",
         "leaves": {
@@ -261,8 +321,8 @@
         }
       },
       "narration": {
-        "window_start_s": 99.55,
-        "window_end_s": 127.55,
+        "window_start_s": 136.55,
+        "window_end_s": 164.55,
         "seconds_available": 28.0,
         "beat": "That permalink opens the machine-written query in SigNoz's own Trace Explorer - all three leaves and the operator, rendered in the real UI. The result set collapses to the matched traces. Open one, and the flame graph shows the shape: payment retries redis, and flag-service never ran."
       },
@@ -298,14 +358,14 @@
         }
       ],
       "cut_duration_s": 30.97,
-      "timeline_start_s": 127.25,
-      "timeline_end_s": 158.21,
+      "timeline_start_s": 164.25,
+      "timeline_end_s": 195.21,
       "on_screen": {
         "expression": "(A => B) && NOT C"
       },
       "narration": {
-        "window_start_s": 127.55,
-        "window_end_s": 158.21,
+        "window_start_s": 164.55,
+        "window_end_s": 195.21,
         "seconds_available": 30.66,
         "beat": "One flag arms it. The discriminator becomes a native v2alpha1 alert with warning and critical thresholds. Replay the fault, and at t plus one eighty-two seconds the webhook fires - the rule ID in that payload is the rule the command just created. Everyone else in this category stops at a panel."
       },
@@ -328,12 +388,12 @@
         }
       ],
       "cut_duration_s": 32.93,
-      "timeline_start_s": 157.91,
-      "timeline_end_s": 190.84,
+      "timeline_start_s": 194.91,
+      "timeline_end_s": 227.84,
       "on_screen": {},
       "narration": {
-        "window_start_s": 158.21,
-        "window_end_s": 190.84,
+        "window_start_s": 195.21,
+        "window_end_s": 227.84,
         "seconds_available": 32.63,
         "beat": "Here's what matters more. Point it at a decoy - an attribute that tracks failure but doesn't cause it - and it abstains. Point it at a healthy system, it abstains again. Across six seeded faults, it never named a false culprit. And this one it first got wrong - it abstained where a real answer existed. I found the seam, fixed it, and left the original failure in the repo."
       },
@@ -356,14 +416,14 @@
         }
       ],
       "cut_duration_s": 25.4,
-      "timeline_start_s": 190.54,
-      "timeline_end_s": 215.94,
+      "timeline_start_s": 227.54,
+      "timeline_end_s": 252.94,
       "on_screen": {
         "verdict_hash": "95f8835759e2865ec90f17b45df7f1f74f9944484bad4f014e0f209826f91fb5"
       },
       "narration": {
-        "window_start_s": 190.84,
-        "window_end_s": 215.94,
+        "window_start_s": 227.84,
+        "window_end_s": 252.94,
         "seconds_available": 25.1,
         "beat": "Run it twice. Same input, same seed, same verdict hash. There is no LLM anywhere in the runtime - this is deterministic. The corpus is synthetic and disclosed; ground truth comes from a manifest."
       },
@@ -386,8 +446,8 @@
         }
       ],
       "cut_duration_s": 18.0,
-      "timeline_start_s": 215.64,
-      "timeline_end_s": 233.64,
+      "timeline_start_s": 252.64,
+      "timeline_end_s": 270.64,
       "on_screen": {
         "mined": 61,
         "signoz": 61,
@@ -397,8 +457,8 @@
         "verify_rows_scanned": 46805
       },
       "narration": {
-        "window_start_s": 215.94,
-        "window_end_s": 233.64,
+        "window_start_s": 252.94,
+        "window_end_s": 270.64,
         "seconds_available": 17.7,
         "beat": "And you don't need my machine to check any of it. The whole run is stepped through in the browser - the board, the compiled query, the receipt, the hash - hosted, no install."
       },
@@ -421,22 +481,22 @@
         }
       ],
       "cut_duration_s": 18.23,
-      "timeline_start_s": 233.34,
-      "timeline_end_s": 251.57,
+      "timeline_start_s": 270.34,
+      "timeline_end_s": 288.57,
       "on_screen": {},
       "narration": {
-        "window_start_s": 233.64,
-        "window_end_s": 251.57,
+        "window_start_s": 270.64,
+        "window_end_s": 288.57,
         "seconds_available": 17.93,
-        "beat": "Everyone can show you the difference. Only SigNoz can arm it. One command reproduces the whole thing - casting file and lock, committed."
+        "beat": "Everyone can show you the difference. Only SigNoz can arm it. Everything's on GitHub - one command reproduces the whole run, casting file and lock committed."
       },
       "notes": "foundryctl cast is typed but deliberately not run - the live stack already owns :8080 / :4318. casting.yaml.lock is committed next to it."
     }
   ],
   "assembled": {
     "file": "docs/video/demo-silent.mp4",
-    "measured_total_s": 251.63,
+    "measured_total_s": 288.63,
     "crossfade_s": 0.3,
-    "cap_s": 270.0
+    "cap_s": 295.0
   }
 }

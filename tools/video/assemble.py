@@ -9,7 +9,7 @@ themselves are joined with 0.3 s crossfades.
     uv run python tools/video/assemble.py
 
 Writes ``docs/video/demo-silent.mp4`` and prints the measured total, which must
-come in at or under the 4:30 cap.
+come in at or under the 4:55 cap.
 """
 from __future__ import annotations
 
@@ -22,10 +22,11 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[2]
 MANIFEST = REPO / "tools" / "video" / "manifest.json"
 OUT = REPO / "docs" / "video" / "demo-silent.mp4"
-# 4:30. The demo cut IS the whole film now - the static intro cards are retired
-# and the landing beat b9 opens it - so this guards the 5:00 submission cap with
-# ~30s of margin rather than the old intro+demo split's 2:50.
-CAP_S = 270.0
+# 4:55. The demo cut IS the whole film - the static intro cards are retired and the
+# trimmed landing beat b9t opens it - so this guards the 5:00 submission cap directly.
+# Raised from 4:30 for the v3 sketch cut, which adds s1 (23.70s) and s2 (15.40s) to
+# the 11-beat v2 order; the assembled film lands at 4:48.6 with ~11s to spare.
+CAP_S = 295.0
 XFADE = 0.3
 FPS = 30
 
@@ -123,9 +124,9 @@ def main() -> int:
           f"   [expected {naive:.2f}s]")
     if total > CAP_S:
         over = total - CAP_S
-        print(f"   OVER the 4:30 cap by {over:.2f}s - trim the manifest segments")
+        print(f"   OVER the 4:55 cap by {over:.2f}s - trim the manifest segments")
         return 1
-    print(f"   under the 4:30 cap by {CAP_S - total:.2f}s")
+    print(f"   under the 4:55 cap by {CAP_S - total:.2f}s")
 
     # persist the measured cut durations back into the manifest
     man["assembled"] = {

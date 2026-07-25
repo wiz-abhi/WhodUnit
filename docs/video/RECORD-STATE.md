@@ -115,7 +115,7 @@ New beat order (13 beats):
 |---|---|--:|--:|---|
 | 1 | `s1` — sketch "the fault, drawn" (animated xkcd frames) | ~24s | **23.70s** | **DONE** |
 | 2 | `s2` — sketch "one store, not three" | ~15s | **15.40s** | **DONE** |
-| 3 | trim `b9` -> `b9t` (~38s) + re-cut the 13-beat film | <5:00 | — | **PENDING** |
+| 3 | trim `b9` -> `b9t` + re-cut the 13-beat film | <5:00 | **288.63s** | **DONE** |
 | 4 | `docs/NARRATION-SCRIPT-v3.md` + captions + silent captioned preview | — | — | **PENDING** |
 
 The sketches are rendered by `tools/video/sketch/` as matplotlib `plt.xkcd()` PNG frame
@@ -170,3 +170,34 @@ Style notes worth keeping (all in `_style.py`):
 | → 15.4 | hold |
 
 `⋈` comes from the DejaVu fallback family; the ✗ is two hand-drawn strokes.
+
+## v3 phase 3 — `b9t` + the 13-beat re-cut, `docs/video/demo-silent.mp4` at 288.63s (4:48.6)
+
+**`b9t.mp4` is 44.60s, not the ~38s the plan asked for — deliberately.** seg01's copy is
+116 words ≈ 48.0s at 145 wpm, which is longer than the *untrimmed* b9 (46.10s), so the
+"trim b9t less rather than cut the words" instruction bottoms out: no trim at all still
+overruns. Both levers had to move. b9 was cut to `[1.0, 45.6]` — 1.0s off the head (the
+hero is static until the scroll starts at ~3.2s; measured frame-diff 0.3–1.6 there vs
+~11 once it moves) and 0.5s off the tail (the proof hold begins at ~44s, so a full second
+of it survives) — and seg01 was trimmed to 104 words. Trimming to 38s would have forced
+seg01 down to ~91 words. `b9.mp4` is untouched.
+
+| seg | beat | starts | window |
+|---|---|--:|--:|
+| 01 | **b9t landing (trimmed)** | 0.00 | **44.60** |
+| 02 | b1 citation | 44.30 | 12.00 |
+| 03 | **s1 sketch — the fault, drawn** | 56.00 | **23.70** |
+| 04 | b2 board | 79.40 | 16.27 |
+| 05 | b3 baseline | 95.36 | 13.83 |
+| 06 | b4 receipt | 108.89 | 12.57 |
+| 07 | **s2 sketch — one store, not three** | 121.15 | **15.40** |
+| 08 | b5 permalink | 136.25 | 28.30 |
+| 09 | b6 arm it | 164.25 | 30.97 |
+| 10 | b10 abstention | 194.91 | 32.93 |
+| 11 | b7 determinism | 227.54 | 25.40 |
+| 12 | b11 replay | 252.64 | 18.00 |
+| 13 | b8 close | 270.34 | 18.23 |
+
+Every duration is ffprobe-measured. Predicted 288.57s, assembled **288.63s** — **11.37s
+under the 5:00 submission cap**. `assemble.py` / `make_manifest.py` cap raised
+4:30 -> **4:55** (270 -> 295s), which now guards the submission limit directly.

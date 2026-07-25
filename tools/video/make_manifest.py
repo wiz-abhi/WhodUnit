@@ -131,7 +131,7 @@ def main() -> int:
         "stack": spec.get("stack"),
         "crossfade_s": XFADE,
         "voice_lead_s": VOICE_LEAD,
-        "cap_s": 270.0,
+        "cap_s": 295.0,
         "predicted_total_s": total,
         "real_numbers": nums,
         "beats": beats,

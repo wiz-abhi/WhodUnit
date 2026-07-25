@@ -1,6 +1,6 @@
 {
   "_comment": "EDITABLE spec consumed by make_manifest.py. Each segment is [start_s, end_s] into the beat's source capture, or [start_s, end_s, 'other-file.mp4'] to pull that segment from a different raw take. Durations in manifest.json are MEASURED with ffprobe, never copied from here.",
-  "_order": "v2 cut, 11 beats: b1, b9, b2, b3, b4, b5, b6, b10, b7, b11, b8. The static intro cards (docs/video/intro/intro.mp4) are RETIRED - the landing beat b9 opens the film instead.",
+  "_order": "v3 sketch cut, 13 beats: b9t, b1, s1, b2, b3, b4, s2, b5, b6, b10, b7, b11, b8. b9 is replaced by the trimmed b9t (and opens the film); s1 and s2 are rendered hand-drawn sketch beats, not captures - see tools/video/sketch/. b9.mp4 and b1-b11 are never modified.",
   "corpus": {
     "fault": "conditional_dep",
     "seed": 778,
@@ -17,27 +17,13 @@
   },
   "beats": [
     {
-      "id": "b1",
-      "title": "The citation - SigNoz/signoz#1957, still open",
-      "source": "b1.mp4",
-      "segments": [
-        [
-          1.0,
-          13.0
-        ]
-      ],
-      "on_screen": [],
-      "narration": "SigNoz's co-founder asked for this three and a half years ago - compare two sets of filtered spans. It's still open. Here's the implementation.",
-      "notes": "Title, #1957, Open badge, pranay01, Jan 2 2023 all legible before the scroll. Recorded headless with Playwright."
-    },
-    {
-      "id": "b9",
-      "title": "The landing page - thesis, competitors, architecture, receipt",
-      "source": "b9.mp4",
+      "id": "b9t",
+      "title": "The landing page (trimmed) - thesis, competitors, architecture, receipt",
+      "source": "b9t.mp4",
       "segments": [
         [
           0.0,
-          46.1
+          44.6
         ]
       ],
       "on_screen": [
@@ -48,8 +34,40 @@
         "expression",
         "verdict_hash"
       ],
-      "narration": "Every tool in this space shows you the difference between two cohorts of traces. BubbleUp, Trace Patterns, DDx, Grafana's compare - they rank attributes, and then a human types the query by hand. Whodunit closes that loop. One ClickHouse scan builds a feature matrix over traces and logs in the same store. FP-growth mines the whole lattice. The winner gets compiled into SigNoz's own trace-operator grammar, verified against the live engine, and armed as an alert. Five stages, and no LLM in any of them.",
-      "notes": "One unbroken programmatic crawl down replay/index.html at 1920x1080: hero (13.1x / 61 = 61 / 6 of 6 / 0 LLM chips and the honest banner) -> the 'nobody hands you the query' competitor table -> the five deterministic stages -> the five SigNoz surfaces -> a hold on the proof/receipt section. Served locally from replay/ on :8099, byte-identical to the deployed Space. Replaces the retired static intro cards."
+      "narration": "I'm Abhishek. This is Whodunit, built for the Agents of SigNoz hackathon - Track 2, Signals and Dashboards. When production breaks, every observability tool shows you the difference between the traces that failed and the ones that didn't. BubbleUp, Trace Patterns, Grafana's compare - they rank attributes and hand you a panel. Then a human re-types that finding into a query, at three in the morning. Whodunit closes that loop. One ClickHouse scan, mine the pattern that separates the cohorts, compile it into a real SigNoz query, verify it against the live engine, and arm it as an alert. Five stages, and no LLM anywhere.",
+      "notes": "b9.mp4 re-trimmed to [1.0, 45.6] as docs/video/raw/b9t.mp4 (44.60s); b9.mp4 itself is untouched. 1.0s comes off the head (the hero sits static until the scroll starts at ~3.2s) and 0.5s off the tail (the proof hold runs from ~44s, so a full second of it survives). It opens the film now, so the whole crawl is kept: hero (13.1x / 61 = 61 / 6 of 6 / 0 LLM chips and the honest banner) -> the 'nobody hands you the query' competitor table -> the five deterministic stages -> the five SigNoz surfaces -> the hold on the compiled (A => B) && NOT C, the verdict hash, the 6/6 table and the cache_bypass loss-then-fix note."
+    },
+    {
+      "id": "b1",
+      "title": "The citation - SigNoz/signoz#1957, still open",
+      "source": "b1.mp4",
+      "segments": [
+        [
+          1.0,
+          13.0
+        ]
+      ],
+      "on_screen": [],
+      "narration": "And this isn't a problem I invented for a hackathon. SigNoz's co-founder asked for exactly this, three and a half years ago - still open.",
+      "notes": "Title, #1957, Open badge, pranay01, Jan 2 2023 all legible before the scroll. Recorded headless with Playwright."
+    },
+    {
+      "id": "s1",
+      "title": "Sketch - the fault, drawn (why neither condition alone works)",
+      "source": "s1.mp4",
+      "segments": [
+        [
+          0.0,
+          23.7
+        ]
+      ],
+      "on_screen": [
+        "winner_lift",
+        "support_bad",
+        "support_healthy"
+      ],
+      "narration": "Here's the fault, drawn. A healthy checkout calls the flag service. A failing one retries redis, and the flag-service span is missing. But the retry alone shows up in healthy traces too. And plenty of healthy traces skip the flag check. Neither condition alone separates them - only both at once.",
+      "notes": "Rendered, not recorded: tools/video/sketch/render_s1.py draws 711 matplotlib plt.xkcd() frames at 1920x1080 and ffmpeg encodes them at 30fps. Same palette/ink as docs/assets/flow-pipeline.png. Progressive reveal: healthy trace tree -> failing trace tree (amber redis-retry edge, dashed ghost flag-service with an X) -> the retry circled on BOTH sides -> the missing flag circled on BOTH sides -> a green box around both conditions on the failing side only, with the seed-778 numbers 13.1x lift, 61 bad / 0 healthy."
     },
     {
       "id": "b2",
@@ -116,6 +134,20 @@
       ],
       "narration": "No model wrote this. It's compiled into SigNoz's own grammar - A implies B, and not C - then run back against the engine. Mined sixty-one. SigNoz returned sixty-one.",
       "notes": "Leaves A/B/C, (A => B) && NOT C, returnSpansFrom A, then the differential receipt and the verdict hash."
+    },
+    {
+      "id": "s2",
+      "title": "Sketch - one store, not three (why it has to be SigNoz)",
+      "source": "s2.mp4",
+      "segments": [
+        [
+          0.0,
+          15.4
+        ]
+      ],
+      "on_screen": [],
+      "narration": "And this is why it has to be SigNoz. Traces and logs live in one ClickHouse, so a single scan joins them by trace ID. On Tempo plus Loki, that join doesn't exist.",
+      "notes": "Rendered the same way (tools/video/sketch/render_s2.py, 462 frames). Three disconnected drums - Tempo/traces, Loki/logs, Prometheus/metrics - with the arrows between them struck out in red and captioned 'no join'; then one SigNoz - ClickHouse drum holding traces + logs + metrics with a JOIN ON trace_id arrow and 'one scan'. Closing line: one clickhouse_sql scan joins traces JOIN logs, impossible on three stores. on_screen is empty on purpose - the sketch quotes no run-specific counters."
     },
     {
       "id": "b5",
@@ -225,7 +257,7 @@
         ]
       ],
       "on_screen": [],
-      "narration": "Everyone can show you the difference. Only SigNoz can arm it. One command reproduces the whole thing - casting file and lock, committed.",
+      "narration": "Everyone can show you the difference. Only SigNoz can arm it. Everything's on GitHub - one command reproduces the whole run, casting file and lock committed.",
       "notes": "foundryctl cast is typed but deliberately not run - the live stack already owns :8080 / :4318. casting.yaml.lock is committed next to it."
     }
   ]
