@@ -132,7 +132,7 @@ initially *lost*, because a benchmark that only reports wins isn't a benchmark:
 
 | scenario | ground truth | whodunit | flat baseline |
 |---|---|---|---|
-| `conditional_dep` | discriminator | **discriminator** ✓ | fails (0.17/1.00) |
+| `conditional_dep` | discriminator | **discriminator** ✓ | fails (0.23/1.00) |
 | `new_edge` | discriminator | **discriminator** ✓ | ties (1.00/1.00) |
 | `cache_bypass` | discriminator | **discriminator** ✓ | ties (1.00/1.00) |
 | `retry_storm` | abstain | **partial** ✓ | fails |
