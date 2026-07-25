@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Build CAPTIONS.srt from docs/video/NARRATION-SCRIPT.md + the measured timelines.
+"""Build CAPTIONS.srt from docs/NARRATION-SCRIPT-v3.md + the measured timelines.
 
 The narration markdown is the single source of truth for caption *text*: every
 ``## segNN · ...`` heading owns one fenced ``text`` block, and that block's words are
@@ -35,7 +35,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parent.parent.parent  # tools/video/captions -> tools/video -> tools -> repo
 
-SCRIPT_MD = REPO / "docs" / "NARRATION-SCRIPT-v2.md"
+SCRIPT_MD = REPO / "docs" / "NARRATION-SCRIPT-v3.md"
 INTRO_MANIFEST = REPO / "tools" / "video" / "intro" / "intro-manifest.json"
 DEMO_MANIFEST = REPO / "tools" / "video" / "manifest.json"
 DEFAULT_OUT = REPO / "docs" / "video" / "CAPTIONS.srt"
@@ -52,18 +52,21 @@ DANGLERS = {"—", "–", "-", ":", ";", ","}  # noqa: RUF001
 # Segment order. Intro segments are keyed by intro-manifest card key; demo segments by
 # the beat id the capture tooling uses.
 #
-# v2 cut: the five static intro cards are RETIRED — the recorded landing-page beat
-# (b9) opens the film instead — so INTRO_SEGMENTS is empty and every segNN maps to a
-# recorded beat. Keeping the intro machinery (rather than deleting it) means an intro
-# can be reinstated by listing its card keys here again.
+# v3 sketch cut: the five static intro cards stay RETIRED — the trimmed landing-page beat
+# (b9t) opens the film — so INTRO_SEGMENTS is empty and every segNN maps to a beat.
+# Keeping the intro machinery (rather than deleting it) means an intro can be reinstated
+# by listing its card keys here again. s1/s2 are rendered sketch beats
+# (tools/video/sketch/), not captures, but they are beats like any other here.
 INTRO_SEGMENTS: list[str] = []
-DEMO_SEGMENTS = ["b1", "b9", "b2", "b3", "b4", "b5", "b6", "b10", "b7", "b11", "b8"]
+DEMO_SEGMENTS = ["b9t", "b1", "s1", "b2", "b3", "b4", "s2",
+                 "b5", "b6", "b10", "b7", "b11", "b8"]
 
 # docs/DEMO-RUNBOOK.md timing budget — used only until tools/video/manifest.json exists.
 FALLBACK_BEATS: dict[str, float] = {
     "b1": 12.0, "b2": 33.0, "b3": 20.0, "b4": 30.0,
     "b5": 25.0, "b6": 25.0, "b7": 15.0, "b8": 10.0,
-    "b9": 46.0, "b10": 32.0, "b11": 18.0,
+    "b9": 46.0, "b9t": 44.6, "b10": 32.0, "b11": 18.0,
+    "s1": 23.7, "s2": 15.4,
 }
 
 
@@ -367,7 +370,7 @@ def main() -> int:
         seg.text = texts.get(seg.seg_id, "")
         seg.words = seg.text.split()
         if not seg.text:
-            warnings.append(f"{seg.seg_id}: no narration block in NARRATION-SCRIPT.md")
+            warnings.append(f"{seg.seg_id}: no narration block in {SCRIPT_MD.name}")
 
     rc = report(segments, warnings)
     if args.check:

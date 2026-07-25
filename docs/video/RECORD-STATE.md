@@ -116,7 +116,7 @@ New beat order (13 beats):
 | 1 | `s1` — sketch "the fault, drawn" (animated xkcd frames) | ~24s | **23.70s** | **DONE** |
 | 2 | `s2` — sketch "one store, not three" | ~15s | **15.40s** | **DONE** |
 | 3 | trim `b9` -> `b9t` + re-cut the 13-beat film | <5:00 | **288.63s** | **DONE** |
-| 4 | `docs/NARRATION-SCRIPT-v3.md` + captions + silent captioned preview | — | — | **PENDING** |
+| 4 | `docs/NARRATION-SCRIPT-v3.md` + captions + silent captioned preview | — | **51 cues / 288.63s** | **DONE** |
 
 The sketches are rendered by `tools/video/sketch/` as matplotlib `plt.xkcd()` PNG frame
 sequences (30fps) and encoded with ffmpeg — same palette and ink as
@@ -201,3 +201,50 @@ seg01 down to ~91 words. `b9.mp4` is untouched.
 Every duration is ffprobe-measured. Predicted 288.57s, assembled **288.63s** — **11.37s
 under the 5:00 submission cap**. `assemble.py` / `make_manifest.py` cap raised
 4:30 -> **4:55** (270 -> 295s), which now guards the submission limit directly.
+
+## v3 phase 4 — narration v3, captions, preview
+
+`docs/NARRATION-SCRIPT-v3.md` is the new source of truth (13 segments, every window
+ffprobe-measured off `tools/video/manifest.json`). `docs/NARRATION-SCRIPT-v2.md` now
+carries a SUPERSEDED banner, exactly like v1 does.
+
+- `build_captions.py`: `SCRIPT_MD` -> `docs/NARRATION-SCRIPT-v3.md`, `DEMO_SEGMENTS` ->
+  the 13-beat order, `FALLBACK_BEATS` gains `b9t` / `s1` / `s2`.
+- `final_assemble.py`: docstring + comments now say v3 / b9t / `seg01..seg13`.
+
+**Captions: 51 cues, no overruns, every segment `measured`.** Headroom by segment:
+seg01 +1.3, seg02 +1.4, seg03 +2.3, seg04 +1.5, seg05 +1.1, seg06 **+0.3 (tightest,
+pre-existing)**, seg07 +1.4, seg08 +8.6, seg09 +3.4, seg10 +3.3, seg11 +11.0,
+seg12 +3.6, seg13 +7.2.
+
+**Narration trimmed (2 of 13 segments, no number or claim lost):**
+
+- **seg01** (b9t) — the brief's draft ran 116 words ≈ 48.0s against a beat whose *maximum*
+  possible length is 46.10s, so it could not fit at any trim of b9. Cut to **104 words
+  ≈ 43.0s**: dropped "Here's the problem it solves.", "by hand,", and the "and" in "Five
+  stages, and no LLM anywhere"; "can show you" -> "shows you"; "the two cohorts" -> "the
+  cohorts"; "verify that query against" -> "verify it against"; opening re-punctuated.
+  Kept: the name, **Track 2, Signals and Dashboards**, all three competitors, "at three in
+  the morning", all five stages, "no LLM anywhere".
+- **seg02** (b1) — draft 28 words ≈ 11.6s against 12.00s (+0.1s, an overrun in practice).
+  Cut to **25 words** by dropping "own" and collapsing "The issue is still open." to
+  "— still open." Kept: **co-founder**, **three and a half years ago**, **still open**.
+
+seg03 (s1), seg07 (s2) and seg13 (b8) are the brief's texts verbatim and all fit.
+
+Silent captioned preview: `docs/video/demo-captioned-preview.mp4`, **288.633s (4:48.6)**.
+Spot-checked at t=74s and t=133s: the burned caption band sits clear of both sketches
+(nothing is drawn below y=230 in s1/s2), and the "only both at once" caption lands with
+the green box. `docs/video/whodunit-final.mp4` was also re-rendered silent — `audio/`
+still holds no wavs, so it was a silent preview before this too.
+
+## v3 notes
+
+- `s1.mp4`, `s2.mp4` and `b9t.mp4` are force-added (`git add -f`) past
+  `docs/video/.gitignore`, like b9/b10/b11 were. The sketches are cheap to regenerate:
+  `uv run --with matplotlib python tools/video/sketch/render_s1.py` (matplotlib is not a
+  project dependency — `--with` keeps it out of `pyproject.toml` and `uv.lock`).
+- The 5:00 submission cap has **11.37s** of margin. Anything added from here has to come
+  out of seg11/b7 (+11.0s of narration headroom) or seg08/b5 (+8.6s), which are the two
+  beats whose picture runs well past their voice.
+- Do not touch `b1`–`b11`. `b9t` is derived from `b9`; `b9.mp4` is still in the tree.

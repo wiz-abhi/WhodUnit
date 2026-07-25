@@ -2,11 +2,11 @@
 """Assemble the Whodunit submission video: demo + narration + burned captions.
 
     docs/video/demo-silent.mp4        (assembled from the recorded beats)
-  + audio/seg01.wav .. audio/seg11.wav (recorded by a human, per docs/NARRATION-SCRIPT-v2.md)
+  + audio/seg01.wav .. audio/seg13.wav (recorded by a human, per docs/NARRATION-SCRIPT-v3.md)
   -> docs/video/whodunit-final.mp4    (1080p H.264 + AAC, captions burned in)
 
-The v2 cut has no intro half: the five static cards are retired and the recorded
-landing-page beat (b9) opens the film. ``--intro FILE`` prepends one anyway.
+The v3 cut has no intro half: the five static cards are retired and the trimmed
+landing-page beat (b9t) opens the film. ``--intro FILE`` prepends one anyway.
 
 What it does, in order:
 
@@ -46,8 +46,8 @@ sys.path.insert(0, str(HERE / "captions"))
 
 from build_captions import SCRIPT_MD, load_timeline, parse_script  # noqa: E402
 
-# The v2 cut retires the five static intro cards - the recorded landing-page beat
-# (b9) opens the film - so there is no intro half by default. Pass --intro to put
+# The v3 cut retires the five static intro cards - the trimmed landing-page beat
+# (b9t) opens the film - so there is no intro half by default. Pass --intro to put
 # one back; the concat below simply skips it when it is absent.
 INTRO: Path | None = None
 DEMO = REPO / "docs" / "video" / "demo-silent.mp4"
@@ -62,7 +62,8 @@ WIDTH, HEIGHT, FPS = 1920, 1080, 30
 # (BorderStyle=4 + BackColour &H50000000 -> ~69% opaque; ASS alpha is inverted, 00 is
 # fully opaque), bottom-centred (Alignment=2)
 # with a 112px bottom margin so it clears both the intro cards' footer line and a
-# terminal's last line.
+# terminal's last line. The two rendered sketch beats draw nothing below y=230px for
+# exactly this reason.
 #
 # The style is applied by rewriting the ASS rather than via `subtitles=force_style`,
 # because an SRT converts to an ASS whose PlayRes is 384x288 — libass then scales every

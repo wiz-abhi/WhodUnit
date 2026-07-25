@@ -1,5 +1,15 @@
 # Whodunit — narration script (v2, 4:11.6 cut)
 
+> ## ⚠️ SUPERSEDED — do not record from this file
+>
+> This is the v2 script for the retired 11-beat cut (`b1, b9, b2, b3, b4, b5, b6, b10, b7,
+> b11, b8`, 251.63s). The shipped cut is the 13-beat v3 sketch cut:
+> **[`docs/NARRATION-SCRIPT-v3.md`](NARRATION-SCRIPT-v3.md)** — it opens on the trimmed
+> landing beat `b9t` and adds the two hand-drawn sketch beats `s1` and `s2`. v3 is what
+> `tools/video/captions/build_captions.py` and `final_assemble.py` read.
+> Kept only as the record of the earlier cut.
+
+
 > **Status:** LOCKED — all eleven beats are shot and cut. Supersedes
 > `docs/video/NARRATION-SCRIPT.md`. Every window below is `[MEASURED]` with ffprobe off
 > `tools/video/manifest.json`; no target durations remain. Beat order is

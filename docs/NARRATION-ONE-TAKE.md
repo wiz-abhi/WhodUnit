@@ -1,8 +1,13 @@
 # 🎙️ Whodunit — one-take recording script
 
-**Read this top to bottom in a single recording.** I'll split it into the 11 segments
-automatically and sync each one to its beat. Total speech ≈ 3 min 20 s; with the pauses,
-expect a file around **4 minutes**.
+**Read this top to bottom in a single recording.** I'll split it into the 13 segments
+automatically and sync each one to its beat. Total speech ≈ 4 min 2 s; with the pauses,
+expect a file around **4 min 45 s**.
+
+> This is the **v3 sketch cut** (13 beats, 4:48.6). It matches
+> `docs/NARRATION-SCRIPT-v3.md` word for word — that file is the source of truth for the
+> burned captions, so don't paraphrase. Two of the beats (segments **3** and **7**) are
+> hand-drawn animated sketches, not screen recordings.
 
 ---
 
@@ -48,10 +53,18 @@ certain beats enthusiastic.
 
 ## 1
 
-*Land on "still open" — that's the whole reason the project exists. No triumph in the voice.*
+*The longest one — 44 seconds of picture, so you have room. Your name and the track go by
+quickly; the weight is on "at three in the morning". Pause after "morning". The five stages
+are a list, don't sing them. Hit "no LLM anywhere" cleanly — it's the claim people doubt.*
 
-> SigNoz's co-founder asked for this three and a half years ago — compare two sets of
-> filtered spans. It's still open. Here's the implementation.
+> I'm Abhishek. This is Whodunit, built for the Agents of SigNoz hackathon — Track 2,
+> Signals and Dashboards. When production breaks, every observability tool shows you the
+> difference between the traces that failed and the ones that didn't. BubbleUp, Trace
+> Patterns, Grafana's compare — they rank attributes and hand you a panel. Then a human
+> re-types that finding into a query, at three in the morning. Whodunit closes that loop.
+> One ClickHouse scan, mine the pattern that separates the cohorts, compile it into a real
+> SigNoz query, verify it against the live engine, and arm it as an alert. Five stages,
+> no LLM anywhere.
 
 ## ⏸ pause 3s
 
@@ -59,21 +72,31 @@ certain beats enthusiastic.
 
 ## 2
 
-*The longest one. Slight pause after "by hand" — that's the problem statement. Hit "no LLM in
-any of them" cleanly; it's the claim people will doubt.*
+*Land on "still open" — that's the whole reason the project exists. No triumph in the voice;
+it's a fact you're pointing at.*
 
-> Every tool in this space shows you the difference between two cohorts of traces. BubbleUp,
-> Trace Patterns, DDx, Grafana's compare — they rank attributes, and then a human types the
-> query by hand. Whodunit closes that loop. One ClickHouse scan builds a feature matrix over
-> traces and logs in the same store. FP-growth mines the whole lattice. The winner gets
-> compiled into SigNoz's own trace-operator grammar, verified against the live engine, and
-> armed as an alert. Five stages, and no LLM in any of them.
+> And this isn't a problem I invented for a hackathon. SigNoz's co-founder asked for exactly
+> this, three and a half years ago — still open.
 
 ## ⏸ pause 3s
 
 ---
 
 ## 3
+
+*Over the hand-drawn sketch. Slow and explanatory — the one beat where you're teaching, not
+proving. Let each "also in healthy traces" sit for a beat. "Only both at once" is the payoff.*
+
+> Here's the fault, drawn. A healthy checkout calls the flag service. A failing one retries
+> redis, and the flag-service span is missing. But the retry alone shows up in healthy traces
+> too. And plenty of healthy traces skip the flag check. Neither condition alone separates
+> them — only both at once.
+
+## ⏸ pause 3s
+
+---
+
+## 4
 
 *The near-misses sound dismissive; "only the conjunction" is the answer landing.*
 
@@ -85,7 +108,7 @@ any of them" cleanly; it's the claim people will doubt.*
 
 ---
 
-## 4
+## 5
 
 *Stress "every flat tool" — you're pre-empting "isn't this just BubbleUp?". Matter-of-fact, not
 defensive. Small pause before the number.*
@@ -97,7 +120,7 @@ defensive. Small pause before the number.*
 
 ---
 
-## 5
+## 6
 
 *Open cold on "No model wrote this" — no run-up. Say the expression as "A implies B, and not C"
 — never "equals greater than". **This is the tightest segment — keep it moving.***
@@ -109,7 +132,19 @@ defensive. Small pause before the number.*
 
 ---
 
-## 6
+## 7
+
+*Over the second hand-drawn sketch — the "why SigNoz" beat, and the judges' actual question.
+An architectural fact, not a pitch. Drop the pitch slightly on the last sentence and stop.*
+
+> And this is why it has to be SigNoz. Traces and logs live in one ClickHouse, so a single
+> scan joins them by trace ID. On Tempo plus Loki, that join doesn't exist.
+
+## ⏸ pause 3s
+
+---
+
+## 8
 
 *"The real UI" is the point — this isn't a mock. Slow down on the last clause.*
 
@@ -122,7 +157,7 @@ defensive. Small pause before the number.*
 
 ---
 
-## 7
+## 9
 
 *"The rule ID in that payload is the rule the command just created" is the proof it's real —
 say it deliberately. The last sentence is the thesis; land it.*
@@ -136,7 +171,7 @@ say it deliberately. The last sentence is the thesis; land it.*
 
 ---
 
-## 8
+## 10
 
 *The most important segment in the video. Deliver it plainly — no apology, no bragging. The
 last sentence is the line judges remember.*
@@ -150,7 +185,7 @@ last sentence is the line judges remember.*
 
 ---
 
-## 9
+## 11
 
 *"No LLM anywhere in the runtime" is the differentiator in an AI hackathon. Say the last
 sentence as a disclosure, not a defence. **Lots of headroom — take this one slowly.***
@@ -163,7 +198,7 @@ sentence as a disclosure, not a defence. **Lots of headroom — take this one sl
 
 ---
 
-## 10
+## 12
 
 *"You don't need my machine" is the point — it answers "can I actually try this?".*
 
@@ -174,12 +209,13 @@ sentence as a disclosure, not a defence. **Lots of headroom — take this one sl
 
 ---
 
-## 11
+## 13
 
-*Slow down. This is the tagline; let it sit. Small beat of silence before "One command".*
+*Slow down. This is the tagline; let it sit. Small beat of silence before "Everything's on
+GitHub".*
 
-> Everyone can show you the difference. Only SigNoz can arm it. One command reproduces the
-> whole thing — casting file and lock, committed.
+> Everyone can show you the difference. Only SigNoz can arm it. Everything's on GitHub — one
+> command reproduces the whole run, casting file and lock committed.
 
 ---
 
@@ -195,7 +231,7 @@ sentence as a disclosure, not a defence. **Lots of headroom — take this one sl
 Save the file and tell me where it is — e.g. *"recorded at `audio/full-take.m4a`"*.
 
 I'll then:
-1. Split it into 11 segments on the silence gaps
+1. Split it into 13 segments on the silence gaps
 2. Verify each segment against its expected duration (so a bad split can't slip through)
 3. If you re-took any segment, keep the last clean version
 4. Lay each segment onto its beat at the right offset
@@ -216,5 +252,6 @@ a re-read of one segment is a 20-second fix.
 | `clickhouse_sql` | "ClickHouse S-Q-L" |
 | `0.17` | "zero point one seven" |
 | `t+182s` | "t plus one eighty-two seconds" |
+| `trace_id` | "trace ID" |
 | DDx | "D-D-X" |
 | FP-growth | "F-P growth" |
