@@ -1,3 +1,12 @@
+<!--
+Blog screenshots live in this repo at docs/blog/images/ and are embedded below via
+raw.githubusercontent.com URLs. They render ONLY once the repo is PUBLIC. On Medium,
+paste each raw URL on its own line and Medium re-hosts it; or use Medium's image
+upload and drag the matching PNG from docs/blog/images/ for guaranteed retina
+crispness. Every PNG is >=2560px wide (deviceScaleFactor=2) so it stays sharp on
+Medium's ~1400px retina column.
+-->
+
 # Whodunit: compiling a root-cause finding back into a SigNoz query you own
 
 > Draft for the hackathon submission blog. Target platform: Dev.to / Hashnode.
@@ -106,8 +115,9 @@ mined      89 traces
 SigNoz     89 traces   ✓ MATCH   recall 1.00   162,057 rows scanned
 ```
 
-[SCREENSHOT: `whodunit explain` terminal showing the elimination board with the two
-single-predicate near-misses struck through and the conjunction surviving]
+![The whodunit explain elimination board: the winning conjunction survives at lift 13.1x while every single-predicate near-miss is eliminated.](https://raw.githubusercontent.com/wiz-abhi/WhodUnit/main/docs/blog/images/elimination-board.png)
+
+*The elimination board from a live `whodunit explain --board` run: 7,806 candidate itemsets enumerated, and the conjunction `edge__shop_payment__redis_retry AND NOT shop-flag-service` is the only survivor — lift 13.1x, 61 bad traces, 0 healthy. Every single-predicate near-miss above it was struck out.*
 
 The flat baseline — a properly-implemented BubbleUp-style z-test over every single
 feature, not a strawman — runs on the *same* matrix and returns
@@ -142,7 +152,9 @@ miner's own near-misses at a tied lift-CI floor. Re-run: compiled
 160/160. The original failing result is preserved in `benchmark/ISSUES.md` #2,
 because finding that seam is exactly the kind of thing this project exists to surface.
 
-[SCREENSHOT: benchmark REPORT.md aggregate table rendered]
+![Whodunit benchmark aggregate table: 6/6 scenarios pass, with the flat baseline failing on conditional_dep, retry_storm, decoys and null_scenario.](https://raw.githubusercontent.com/wiz-abhi/WhodUnit/main/docs/blog/images/benchmark.png)
+
+*The aggregate table rendered from `benchmark/REPORT.md`: 6/6 pass, each row showing Whodunit's verdict against the flat baseline's precision/recall on the same matrix.*
 
 ## The refusal path is a feature
 
@@ -178,8 +190,9 @@ receipt is for:
 4. **`clickhouse_sql` ignores the envelope time window.** A 3-minute window and a
    1-year window return byte-identical rows; the SQL must carry its own time predicate.
 
-[SCREENSHOT: probe output showing `rootWrap => childOp` = 0 vs `rootWrap -> childOp`
-= 20]
+![Engine probe: rootWrap => childOp returns 0 (direct, single hop) while rootWrap -> childOp returns 20 (indirect, any depth).](https://raw.githubusercontent.com/wiz-abhi/WhodUnit/main/docs/blog/images/operator-probe.png)
+
+*Recovering the reversed operator mapping on v0.132.2: the 2-hop `rootWrap => childOp` returns 0 (`=>` is the direct, single-hop descendant) while `rootWrap -> childOp` returns 20 (`->` is the any-depth one) — the opposite of the intuitive reading.*
 
 Each of these becomes upstream material: documentation PRs for the operator mapping and
 `NOT` semantics, a one-case fix for `prepareParamsForTraces`, and an issue for the time
@@ -198,7 +211,9 @@ t+0–180s 25 matching bad traces emitted (query_range confirms count_distinct =
 t+182s   WEBHOOK POST /whodunit   status "firing", critical tier   ← the tripwire trips
 ```
 
-[SCREENSHOT: SigNoz alert firing + the captured webhook JSON body]
+![The armed whodunit alert in SigNoz breaching both thresholds, with the captured firing webhook body below it.](https://raw.githubusercontent.com/wiz-abhi/WhodUnit/main/docs/blog/images/alert-firing.png)
+
+*The armed `(A => B) && NOT C` rule in SigNoz's own Alerts UI — T1 `count_distinct(trace_id)` spiking above both the warning and critical thresholds — and the real webhook body it delivered end-to-end: status "firing", critical tier.*
 
 Datadog would require a *billed custom metric* that only emits after a trace completes;
 Tempo's TraceQL alerting is behind an experimental not-for-production flag. Here the
