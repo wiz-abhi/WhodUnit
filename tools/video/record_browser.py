@@ -11,6 +11,13 @@ typed into the live login form — nothing is ever written to a committed file.
     python tools/video/record_browser.py b5     # the permalink in Trace Explorer
     python tools/video/record_browser.py b6ui   # the armed rule in Alerts
     python tools/video/record_browser.py b8ui   # the repo README
+    python tools/video/record_browser.py b9     # the landing page (needs :8099)
+    python tools/video/record_browser.py b11    # the replay app (needs :8099)
+
+b9/b11 read the replay site from a LOCAL static server, byte-identical to the
+deployed Space and immune to its cold starts:
+
+    python -m http.server 8099        # run from replay/
 
 Needs the OTel/Playwright interpreter:
     C:\\Users\\abhis\\Desktop\\OSS\\Signoz\\warmup-agent\\.venv\\Scripts\\python.exe
@@ -32,6 +39,7 @@ from playwright.sync_api import Page, sync_playwright
 REPO = Path(__file__).resolve().parents[2]
 RAW = REPO / "docs" / "video" / "raw"
 SIGNOZ = os.environ.get("SIGNOZ_URL", "http://localhost:8080")
+REPLAY = os.environ.get("REPLAY_URL", "http://localhost:8099")
 VIEWPORT = {"width": 1920, "height": 1080}
 
 
@@ -162,7 +170,62 @@ def beat_b8ui(page: Page) -> None:
     page.wait_for_timeout(3000)
 
 
-BEATS = {"b1": beat_b1, "b5": beat_b5, "b6ui": beat_b6ui, "b8ui": beat_b8ui}
+def beat_b9(page: Page) -> None:
+    """The landing page: thesis, the competitor table, the pipeline, the receipt.
+
+    A single unbroken crawl down replay/index.html. Each stop is
+    scroll-then-dwell so narration can land on the section it is describing;
+    the page's own CSS ``animation-timeline: view()`` reveal rides the scroll,
+    so the fades are the site's, not the editor's.
+    """
+    page.goto(f"{REPLAY}/index.html", wait_until="load")
+    # The page sets html{scroll-behavior:smooth}, which would make every
+    # incremental scrollTo() its own easing animation and fight the crawl.
+    page.evaluate("() => { document.documentElement.style.scrollBehavior = 'auto'; }")
+    page.wait_for_timeout(2200)                  # fonts + first paint settle
+
+    # (target_y, scroll_seconds, dwell_seconds) - offsets measured off the
+    # rendered 1920x1080 page, not guessed.
+    plan = [
+        (520, 3.0, 2.2),     # hero: headline, result chips, the honest banner
+        (1660, 3.0, 2.2),    # "nobody hands you the query" - the competitor table
+        (2100, 2.5, 1.85),   # ... its rows
+        (2620, 3.0, 2.2),    # five deterministic stages - the pipeline flow
+        (3020, 2.5, 1.85),   # ... the stage cards
+        (3755, 3.0, 2.2),    # the five SigNoz surfaces
+        (4200, 2.5, 1.85),   # ... the surface list
+        (5095, 3.0, 2.2),    # the proof / receipt section
+        (5600, 2.5, 3.2),    # ... 61 = 61, and the 6/6 benchmark table
+    ]
+    page.wait_for_timeout(600)                   # hold the hero before moving
+    for y, secs, dwell in plan:
+        smooth_scroll(page, y, secs, steps=int(secs * 60))
+        page.wait_for_timeout(int(dwell * 1000))
+
+
+def beat_b11(page: Page) -> None:
+    """The replay app: land on the shell, then arrow through to the receipt.
+
+    Driven with ArrowRight so the footage shows the app's own keyboard nav, and
+    deliberately never scrolls: app.html is a fixed 100vh shell (document height
+    == viewport height), so the top bar and the left rail stay nailed in place
+    while the panel swaps underneath them.
+    """
+    page.goto(f"{REPLAY}/app.html", wait_until="load")
+    page.wait_for_timeout(2500)                  # step 1 shell: top bar + rail
+    page.click("body")                           # focus the document for keys
+    page.wait_for_timeout(1800)
+
+    page.keyboard.press("ArrowRight")            # 2/7 Extract + Mine
+    page.wait_for_timeout(4200)                  # the elimination board
+    page.keyboard.press("ArrowRight")            # 3/7 Compile
+    page.wait_for_timeout(3000)
+    page.keyboard.press("ArrowRight")            # 4/7 Verify
+    page.wait_for_timeout(4800)                  # the 61 = 61 MATCH receipt
+
+
+BEATS = {"b1": beat_b1, "b5": beat_b5, "b6ui": beat_b6ui, "b8ui": beat_b8ui,
+         "b9": beat_b9, "b11": beat_b11}
 
 
 def main() -> int:
