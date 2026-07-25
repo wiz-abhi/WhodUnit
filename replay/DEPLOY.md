@@ -21,10 +21,11 @@ No HF token needed; everything happens in the browser.
 4. Click **Create Space**.
 5. Open the **Files** tab → **Add file** → **Upload files**.
 6. Drag in the **contents of this `replay/` directory** (not the folder itself):
-   - `index.html`
+   - `index.html`  ← the landing page (the Space entry point)
+   - `app.html`    ← the interactive replay
    - `README.md`  ← its YAML front-matter tells the Space it's a static site
    - `data/` (explain-result.json, webhook.log, permalink.txt)
-   - `assets/` (the four PNGs)
+   - `assets/` (the PNGs + hero.gif + the two flow diagrams)
 
    > You can drag whole folders; HF preserves `data/` and `assets/` paths, which
    > is what `index.html` references. Keep the structure identical.
@@ -44,7 +45,7 @@ e.g. `https://wiz-abhi-whodunit-replay.hf.space`. The Space page itself is
 ```bash
 # from the repo root
 git clone https://huggingface.co/spaces/<username>/whodunit-replay hf-space
-cp -r replay/index.html replay/README.md replay/data replay/assets hf-space/
+cp -r replay/index.html replay/app.html replay/README.md replay/data replay/assets hf-space/
 cd hf-space
 git add .
 git commit -m "Whodunit interactive replay (seed 778)"
@@ -79,7 +80,8 @@ Put the resulting URL in **field 7 (Deployed link)** of the submission form and 
 the "Live replay" link near the top of the repo `README.md` (both currently marked
 as placeholders).
 
-Sanity check once live: open the URL, click **Run whodunit explain**, step to
+Sanity check once live: open the URL, click **Launch the replay →**, click
+**Run whodunit explain**, step to
 **Verify** and confirm the receipt snaps to `mined 61 · SigNoz 61 · MATCH`, and on
 **Determinism** hit **Run again** — the hash must stay
 `95f8835759e2865ec90f17b45df7f1f74f9944484bad4f014e0f209826f91fb5`.
