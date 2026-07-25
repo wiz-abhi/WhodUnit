@@ -114,7 +114,7 @@ New beat order (13 beats):
 | phase | what | target | measured | status |
 |---|---|--:|--:|---|
 | 1 | `s1` — sketch "the fault, drawn" (animated xkcd frames) | ~24s | **23.70s** | **DONE** |
-| 2 | `s2` — sketch "one store, not three" | ~15s | — | **PENDING** |
+| 2 | `s2` — sketch "one store, not three" | ~15s | **15.40s** | **DONE** |
 | 3 | trim `b9` -> `b9t` (~38s) + re-cut the 13-beat film | <5:00 | — | **PENDING** |
 | 4 | `docs/NARRATION-SCRIPT-v3.md` + captions + silent captioned preview | — | — | **PENDING** |
 
@@ -154,3 +154,19 @@ Style notes worth keeping (all in `_style.py`):
   byte-identical frames and the xkcd jitter cannot "boil" while nothing is moving.
 - Nothing is drawn below **y = 230 px**: `final_assemble.py` burns the narration
   captions bottom-centred with a 112 px margin, and that band belongs to them.
+
+## v3 phase 2 — `docs/video/raw/s2.mp4`, 15.40s
+
+`tools/video/sketch/render_s2.py`, same kit: 462 frames, 190 rendered / 272 held.
+
+| t (s) | what appears |
+|--:|---|
+| 0.0 | title "one store, not three", divider |
+| 0.5–1.8 | three grey drums draw in: **Tempo** (traces), **Loki** (logs), **Prometheus** (metrics) |
+| 2.3–3.5 | dashed arrows between them, each struck through with a red ✗, then "no join" |
+| 5.3–7.7 | one green drum **SigNoz · ClickHouse** holding "traces + logs + metrics", a green `JOIN ON trace_id` arrow inside it, then "one scan" |
+| 9.6 | **"one clickhouse_sql scan joins traces ⋈ logs — impossible on three stores"** |
+| 12.3 | the three-store column eases back to 45% opacity — the answer is the thing lit |
+| → 15.4 | hold |
+
+`⋈` comes from the DejaVu fallback family; the ✗ is two hand-drawn strokes.
