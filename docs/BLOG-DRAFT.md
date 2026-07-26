@@ -53,14 +53,18 @@ uniformly every product stops at the same place:
 
 *Every one of them ends at the same wall: a ranking a human then re-types by hand.*
 
-| Product | What it does | Where it stops |
-|---|---|---|
-| Honeycomb BubbleUp | ranks flat attribute distributions, selection vs baseline | flat only; no structure; no executable output |
-| Datadog Trace Patterns | groups spans by structure into recurring patterns | runs on a 1% sample, excluded from monitor evaluation |
-| Datadog APM Recommendations | zero-config N+1 / retry detection | a recommendation card, not a query |
-| Chronosphere DDx, Lightstep Change Intelligence | baseline-vs-deviation attribution | closed source; verdict panel only |
-| Grafana Traces Drilldown `compare()` | selection vs baseline attribute differences | ranks attributes; no alertable artifact |
-| TraceContrast (ICSE 2024) | contrast sequential pattern mining | a paper; offline; no emitted query |
+- **Honeycomb BubbleUp** ranks flat attribute distributions, selection vs baseline —
+  *flat only; no structure, and no executable output.*
+- **Datadog Trace Patterns** groups spans by structure into recurring patterns —
+  *runs on a 1% sample, explicitly excluded from monitor evaluation.*
+- **Datadog APM Recommendations** does zero-config N+1 / retry detection —
+  *and gives you a recommendation card, not a query.*
+- **Chronosphere DDx** and **Lightstep Change Intelligence** do baseline-vs-deviation
+  attribution — *closed source, verdict panel only.*
+- **Grafana Traces Drilldown `compare()`** surfaces selection-vs-baseline attribute
+  differences — *ranks attributes; produces no alertable artifact.*
+- **TraceContrast (ICSE 2024)** does contrast sequential pattern mining —
+  *a paper; offline; no emitted query.*
 
 Every one of them ends the same way: a human reads a ranking, then goes and writes the
 query by hand. **Everyone can show you the difference. Nobody hands you the query.**
@@ -159,14 +163,9 @@ Across all six benchmark scenarios (two expressible faults, one trace-scoped abs
 three abstain-cases), Whodunit now passes 6/6 — but the most useful row is the one it
 initially *lost*, because a benchmark that only reports wins isn't a benchmark:
 
-| scenario | ground truth | whodunit | flat baseline |
-|---|---|---|---|
-| `conditional_dep` | discriminator | **discriminator** ✓ | fails (0.23/1.00) |
-| `new_edge` | discriminator | **discriminator** ✓ | ties (1.00/1.00) |
-| `cache_bypass` | discriminator | **discriminator** ✓ | ties (1.00/1.00) |
-| `retry_storm` | abstain | **partial** ✓ | fails |
-| `decoys` | abstain | **abstain** ✓ | fails |
-| `null_scenario` | abstain | **abstain** ✓ | fails |
+![Six benchmark scenarios. Three where a real discriminator exists — conditional_dep, new_edge, cache_bypass — all found by Whodunit; the flat baseline fails on conditional_dep at 0.23 precision and ties on the two single-feature faults. Three where abstaining is the right answer — retry_storm (partial), decoys and null_scenario (abstain) — where the flat baseline fails at 0.21, 0.29 and 0.14. Six out of six, and never a false culprit.](https://raw.githubusercontent.com/wiz-abhi/WhodUnit/main/docs/blog/images/sketch-benchmark.png)
+
+*Full numbers, per-scenario, in [`benchmark/REPORT.md`](https://github.com/wiz-abhi/WhodUnit/blob/main/benchmark/REPORT.md).*
 
 On `new_edge` and `cache_bypass` (single-feature faults) the flat baseline *ties* —
 those are its home turf, they don't need conjunction mining, and I say so. And
