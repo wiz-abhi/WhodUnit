@@ -1,7 +1,7 @@
 <!--
 PUBLISHING NOTES
-- Screenshots use RELATIVE paths (blog/images/*.png) so they render in GitHub's preview
-  whether the repo is public or private.
+- The repo is PUBLIC, so screenshots use absolute raw.githubusercontent.com URLs.
+  These render on GitHub AND survive a copy-paste / import into Medium.
 - When pasting into Medium / Dev.to / Hashnode: use the editor's image upload and drag
   the matching PNG from docs/blog/images/. Every PNG is >=2560px wide
   (deviceScaleFactor=2) so it stays retina-sharp on Medium's ~1400px column. Do NOT
@@ -49,7 +49,7 @@ half-answers around it. That gap is the shape of Whodunit.
 The "compare two cohorts of spans" problem is well-trodden. What's striking is how
 uniformly every product stops at the same place:
 
-![Six products — Honeycomb BubbleUp, Datadog Trace Patterns, Datadog APM Recommendations, Chronosphere DDx and Lightstep, Grafana compare(), TraceContrast — each drawn as a line that stops dead at a red dashed wall labelled 'a human re-types the finding as a query, at 3 a.m.'. Only Whodunit's line crosses the wall, ending at 'a SigNoz query you own'.](blog/images/sketch-wall.png)
+![Six products — Honeycomb BubbleUp, Datadog Trace Patterns, Datadog APM Recommendations, Chronosphere DDx and Lightstep, Grafana compare(), TraceContrast — each drawn as a line that stops dead at a red dashed wall labelled 'a human re-types the finding as a query, at 3 a.m.'. Only Whodunit's line crosses the wall, ending at 'a SigNoz query you own'.](https://raw.githubusercontent.com/wiz-abhi/WhodUnit/main/docs/blog/images/sketch-wall.png)
 
 *Every one of them ends at the same wall: a ranking a human then re-types by hand.*
 
@@ -79,7 +79,7 @@ always yields the same verdict hash.
 extract → mine → compile → verify → materialize
 ```
 
-![The Whodunit pipeline: extract (one scan) → mine (FP-growth + FDR) → compile (trace-operator) → verify (mined == SigNoz?) → materialize (query · panel · alert).](blog/images/sketch-pipeline.png)
+![The Whodunit pipeline: extract (one scan) → mine (FP-growth + FDR) → compile (trace-operator) → verify (mined == SigNoz?) → materialize (query · panel · alert).](https://raw.githubusercontent.com/wiz-abhi/WhodUnit/main/docs/blog/images/sketch-pipeline.png)
 
 *The five stages. `verify` is the one that makes the rest trustworthy: a mismatch is reported, never hidden.*
 
@@ -93,7 +93,7 @@ store). A case-control matcher picks the healthy cohort matched on the axis the
 selection was made along, so the discriminator can never just be the selection axis —
 the failure mode that makes "duration > X" separate perfectly and explain nothing.
 
-![Three separate stores — Tempo, Loki, Prometheus — with the joins between them crossed out, versus one SigNoz ClickHouse containing traces, logs and metrics with JOIN ON trace_id.](blog/images/sketch-one-store.png)
+![Three separate stores — Tempo, Loki, Prometheus — with the joins between them crossed out, versus one SigNoz ClickHouse containing traces, logs and metrics with JOIN ON trace_id.](https://raw.githubusercontent.com/wiz-abhi/WhodUnit/main/docs/blog/images/sketch-one-store.png)
 
 *Why this has to be SigNoz: traces and logs sit in one ClickHouse, so a single scan joins them on `trace_id`. On a Tempo + Loki + Prometheus stack that join doesn't exist to make.*
 
@@ -118,7 +118,7 @@ below.
 **Materialize.** Trace Explorer permalink, native v6 dashboard panel, armed v2alpha1
 alert.
 
-![Whodunit sits between SigNoz's read surfaces and write surfaces: it reads ClickHouse (traces + logs, one scan) and /api/v5 (differential verify), and writes a Trace Explorer permalink, a Perses v6 dashboard panel, and a v2alpha1 alert with a webhook.](blog/images/sketch-signoz.png)
+![Whodunit sits between SigNoz's read surfaces and write surfaces: it reads ClickHouse (traces + logs, one scan) and /api/v5 (differential verify), and writes a Trace Explorer permalink, a Perses v6 dashboard panel, and a v2alpha1 alert with a webhook.](https://raw.githubusercontent.com/wiz-abhi/WhodUnit/main/docs/blog/images/sketch-signoz.png)
 
 *All five surfaces, in one loop — read from ClickHouse and `/api/v5`, write back a query, a panel, and a tripwire. Foundry's `casting.yaml` stands the whole stack up, MCP server included, in one command.*
 
@@ -129,7 +129,7 @@ Here is the flagship `conditional_dep` scenario end to end. The seeded fault is
 the feature-flag service is unreachable. It's engineered so *healthy traffic never
 contains the conjunction* — every single predicate appears in **both** cohorts.
 
-![Two trace trees side by side. Healthy: checkout → payment → redis, plus a flag-service span. Failing: checkout → payment → redis-retry with the flag-service span missing. The retry is ringed on both sides, the missing flag is ringed on both sides, and only the failing tree gets a box around both conditions together.](blog/images/sketch-fault.png)
+![Two trace trees side by side. Healthy: checkout → payment → redis, plus a flag-service span. Failing: checkout → payment → redis-retry with the flag-service span missing. The retry is ringed on both sides, the missing flag is ringed on both sides, and only the failing tree gets a box around both conditions together.](https://raw.githubusercontent.com/wiz-abhi/WhodUnit/main/docs/blog/images/sketch-fault.png)
 
 *The fault, drawn — and why it's hard. Ring the retry: it's in healthy traces too. Ring the missing flag-service: also in healthy traces. Neither condition alone separates the cohorts. Only both at once, which is exactly the regime a flat attribute ranking cannot reach.*
 
@@ -144,7 +144,7 @@ mined      61 traces
 SigNoz     61 traces   ✓ MATCH   recall 1.00   163,464 rows scanned
 ```
 
-![The whodunit explain elimination board: the winning conjunction survives at lift 13.1x while every single-predicate near-miss is eliminated.](blog/images/elimination-board.png)
+![The whodunit explain elimination board: the winning conjunction survives at lift 13.1x while every single-predicate near-miss is eliminated.](https://raw.githubusercontent.com/wiz-abhi/WhodUnit/main/docs/blog/images/elimination-board.png)
 
 *The elimination board from a live `whodunit explain --board` run: 7,806 candidate itemsets enumerated, and the conjunction `edge__shop_payment__redis_retry AND NOT shop-flag-service` is the only survivor — lift 13.1x, 61 bad traces, 0 healthy. Every single-predicate near-miss above it was struck out.*
 
@@ -181,7 +181,7 @@ miner's own near-misses at a tied lift-CI floor. Re-run: compiled
 160/160. The original failing result is preserved in `benchmark/ISSUES.md` #2,
 because finding that seam is exactly the kind of thing this project exists to surface.
 
-![Whodunit benchmark aggregate table: 6/6 scenarios pass, with the flat baseline failing on conditional_dep, retry_storm, decoys and null_scenario.](blog/images/benchmark.png)
+![Whodunit benchmark aggregate table: 6/6 scenarios pass, with the flat baseline failing on conditional_dep, retry_storm, decoys and null_scenario.](https://raw.githubusercontent.com/wiz-abhi/WhodUnit/main/docs/blog/images/benchmark.png)
 
 *The aggregate table rendered from `benchmark/REPORT.md`: 6/6 pass, each row showing Whodunit's verdict against the flat baseline's precision/recall on the same matrix.*
 
@@ -225,7 +225,7 @@ for:
    1-year window returned byte-identical rows, so the SQL must carry its own time
    predicate — which is why the benchmark scopes by explicit trace-id sets.
 
-![Engine probe: rootWrap => childOp returns 0 (direct, single hop) while rootWrap -> childOp returns 20 (indirect, any depth).](blog/images/operator-probe.png)
+![Engine probe: rootWrap => childOp returns 0 (direct, single hop) while rootWrap -> childOp returns 20 (indirect, any depth).](https://raw.githubusercontent.com/wiz-abhi/WhodUnit/main/docs/blog/images/operator-probe.png)
 
 *The `=>` (direct, single-hop) vs `->` (any-depth) distinction on v0.132.2: `rootWrap => childOp` (2 hops) returns 0 while `rootWrap -> childOp` returns 20. I had coded it backwards; the differential receipt is what surfaced it.*
 
@@ -247,7 +247,7 @@ t+0–180s 25 matching bad traces emitted (query_range confirms count_distinct =
 t+182s   WEBHOOK POST /whodunit   status "firing", critical tier   ← the tripwire trips
 ```
 
-![The armed whodunit alert in SigNoz breaching both thresholds, with the captured firing webhook body below it.](blog/images/alert-firing.png)
+![The armed whodunit alert in SigNoz breaching both thresholds, with the captured firing webhook body below it.](https://raw.githubusercontent.com/wiz-abhi/WhodUnit/main/docs/blog/images/alert-firing.png)
 
 *The armed `(A => B) && NOT C` rule in SigNoz's own Alerts UI — T1 `count_distinct(trace_id)` spiking above both the warning and critical thresholds — and the real webhook body it delivered end-to-end: status "firing", critical tier.*
 
