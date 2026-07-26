@@ -46,15 +46,15 @@ dashboard panel, and alert. No LLM in the runtime.)*
 > spans"), opened by co-founder pranay01 in January 2023 and still open, answered with
 > an executable artifact rather than a panel. There is no LLM anywhere in the runtime;
 > the same input plus seed always produces the same verdict hash. On a six-scenario
-> fault-injection benchmark run live against the stack it passes 5/6, nailing the
+> fault-injection benchmark run live against the stack it passes 6/6 — nailing the
 > flagship conjunctive fault a flat baseline (precision 0.23) cannot see, and taking a
-> calibrated abstain/partial — never a false culprit — on the three scenarios where a
+> calibrated abstain/partial (never a false culprit) on the three scenarios where a
 > confident answer would be wrong. Tagline: "Everyone can show you the difference. Only
 > SigNoz can arm it."
 
 ### 6. GitHub link *
 
-`https://github.com/<user>/whodunit` **[FILL IN before submitting]**
+`https://github.com/wiz-abhi/WhodUnit`
 
 Repo includes `deploy/casting.yaml` and `deploy/casting.yaml.lock` for reproducible
 Foundry deployment, as required. (Note in README: the live dev stack occupies
@@ -121,12 +121,12 @@ armed alert firing → determinism hash), and learnings (the four engine finding
 > itself accountable to SigNoz's own answer. Building this deep surfaced four
 > undocumented/misdocumented engine semantics (the `=>`/`->` mapping is reversed on
 > v0.132.2; `NOT` is trace-scoped; operator alert deep links are built from a leaf
-> filter; `clickhouse_sql` ignores the envelope time window), each of which becomes an
-> upstream PR/issue.
+> filter; `clickhouse_sql` ignores the envelope time window), each logged with a live
+> repro in `benchmark/ISSUES.md` and worth filing upstream.
 
 ### 10. Project blog link *
 
-`https://dev.to/<user>/<slug>` **[FILL IN — new blog, per `docs/BLOG-DRAFT.md`]**
+`https://medium.com/@abhishekg8318/whodunit-compiling-a-root-cause-finding-back-into-a-signoz-query-you-own-d83bece7f422`
 
 *(New blog written for this hackathon project; the pre-event warm-up blog does not
 qualify.)*
