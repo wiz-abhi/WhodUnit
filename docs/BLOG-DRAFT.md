@@ -261,8 +261,9 @@ metric-materialisation step.
 The honest ceiling: the algebra has no per-trace cardinality qualifier. An N+1 pattern
 — "cart-service made 47 SELECTs instead of 1" — is *provably inexpressible*;
 `cart => SELECT` matches the 1-child baseline and the 47-child regression identically.
-Whodunit refuses to fake it, and I'm filing an upstream proposal for a repetition
-qualifier: `A =>{n>10} B`. Owning that wall is the point, not hiding it.
+Whodunit refuses to fake it. The obvious upstream ask is a repetition qualifier —
+something like `A =>{n>10} B` — which would make this whole class expressible. Owning
+that wall is the point, not hiding it.
 
 ## Method honesty
 
@@ -290,7 +291,8 @@ proves it.
   you discover engine semantics honestly.
 - Abstention and refusal are features. A tool that always finds a culprit is worse than
   useless during an incident.
-- Building deep on someone's engine teaches you things their docs don't say — and the
-  right response is a PR, not a workaround.
+- Building deep on someone's engine teaches you things its docs don't say — and the
+  honest response is to encode the constraint, document why, and refuse loudly when a
+  finding can't be expressed, rather than paper over it.
 
-Repo, demo video, and the two upstream PRs are linked below.
+The repo, the live replay, and the demo video are linked at the top.
