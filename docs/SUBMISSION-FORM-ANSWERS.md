@@ -125,12 +125,16 @@ callable as MCP tools (whodunit_explain / _compile / _verify).
 
 The part I'm proudest of: every compiled query is checked back against
 /api/v5/query_range as a count_distinct(trace_id). Whodunit doesn't just query SigNoz —
-it refuses to trust its own answer until SigNoz agrees. Building this deep also surfaced
-four real engine quirks, each logged with a live repro in benchmark/ISSUES.md:
-- => and -> are reversed on v0.132.2,
-- a bare NOT is trace-scoped (returns nothing on its own),
-- operator alert deep-links are built from a leaf filter,
-- clickhouse_sql ignores the query time window.
+it refuses to trust its own answer until SigNoz agrees. That same loop taught me the
+operator semantics the hard way: => is single-hop and -> is any-depth (I had coded them
+backwards, and the receipt caught it); a bare NOT is trace-scoped and returns nothing on
+its own, so the compiler only emits absence as a conjunct like A && NOT C; and
+clickhouse_sql expects the SQL to carry its own time predicate rather than applying the
+request window. Most of these turned out to be documented or working-as-intended once I
+understood them — the compiler just encodes each correctly. The one thing that still
+looks like a real upstream edge is that a fired operator-alert's "related traces" link
+resolves to a leaf filter instead of the operator (prepareParamsForTraces doesn't
+type-switch), which is why Whodunit ships its own correct Trace Explorer permalink.
 
 ### 10. Project blog link *
 
@@ -156,6 +160,11 @@ don't trust myself until the two numbers match — turned out to be the best des
 decision in the project. It's what moves you from "here's a probably-right query" to
 "here's a query SigNoz just agreed with."
 
-Best part: I'm leaving with four engine findings I logged with repros and want to take
-upstream. Building on the platform, hitting real walls, and being able to hand the
-maintainers a repro for each — that's about the best outcome a hackathon can have.
+The nicest surprise was how much reading the platform closely paid off. Most of the
+"walls" I hit turned out to be documented or working-as-intended once I understood the
+operator semantics — the real win was building on them correctly instead of papering
+over them. There's one rough edge I'd still want to raise (a fired operator-alert's
+"related traces" link resolves to a leaf filter, not the operator); I have a live repro,
+and I'd check it against the issue tracker before filing in case it's already known.
+Building deep on someone's engine, hitting real edges, and being able to hand back a
+concrete repro — that's about the best outcome a hackathon can have.
