@@ -1,249 +1,367 @@
 1
-00:00:00,300 --> 00:00:06,507
+00:00:00,000 --> 00:00:03,240
 I'm Abhishek. This is Whodunit, built for
-the Agents of SigNoz hackathon — Track 2,
 
 2
-00:00:06,587 --> 00:00:11,139
-Signals and Dashboards. When production
-breaks, every observability tool shows you
+00:00:03,280 --> 00:00:04,880
+the Agents of SigNoz hackathon —
 
 3
-00:00:11,219 --> 00:00:16,184
-the difference between the traces that
-failed and the ones that didn't.
+00:00:04,920 --> 00:00:07,040
+Track 2, Signals and Dashboards.
 
 4
-00:00:16,264 --> 00:00:20,816
-BubbleUp, Trace Patterns, Grafana's
-compare — they rank attributes and hand
+00:00:07,900 --> 00:00:09,720
+When production breaks, every observability
 
 5
-00:00:20,896 --> 00:00:27,517
-you a panel. Then a human re-types that
-finding into a query, at three in the
+00:00:09,760 --> 00:00:11,740
+tool shows you the difference between the
 
 6
-00:00:27,597 --> 00:00:32,562
-morning. Whodunit closes that loop. One
-ClickHouse scan, mine the pattern that
+00:00:11,780 --> 00:00:14,660
+traces that failed and the ones that didn't.
 
 7
-00:00:32,642 --> 00:00:38,435
-separates the cohorts, compile it into a
-real SigNoz query, verify it against the
+00:00:15,230 --> 00:00:17,700
+BubbleUp, Trace Patterns, Grafana's compare
 
 8
-00:00:38,515 --> 00:00:43,894
-live engine, and arm it as an alert. Five
-stages, no LLM anywhere.
+00:00:17,920 --> 00:00:20,300
+— they rank attributes and hand you a panel.
 
 9
-00:00:44,600 --> 00:00:48,738
-And this isn't a problem I invented for a
-hackathon.
+00:00:20,940 --> 00:00:23,160
+Then a human re-types that finding into a
 
 10
-00:00:48,818 --> 00:00:54,611
-SigNoz's co-founder asked for exactly
-this, three and a half years ago — still
+00:00:23,200 --> 00:00:24,840
+query, at three in the morning.
 
 11
-00:00:54,691 --> 00:00:55,891
-open.
+00:00:25,760 --> 00:00:26,980
+Whodunit closes that loop.
 
 12
-00:00:56,300 --> 00:01:00,852
-Here's the fault, drawn. A healthy
-checkout calls the flag service.
+00:00:27,420 --> 00:00:29,780
+One ClickHouse scan, mine the pattern that
 
 13
-00:01:00,932 --> 00:01:05,483
-A failing one retries redis, and the
-flag-service span is missing.
+00:00:29,820 --> 00:00:32,460
+separates the cohorts, compile it into a
 
 14
-00:01:05,563 --> 00:01:09,701
-But the retry alone shows up in healthy
-traces too.
+00:00:32,500 --> 00:00:34,800
+real SigNoz query, verify it against the
 
 15
-00:01:09,781 --> 00:01:13,506
-And plenty of healthy traces skip the flag
-check.
+00:00:34,840 --> 00:00:37,520
+live engine, and arm it as an alert.
 
 16
-00:01:13,586 --> 00:01:17,723
-Neither condition alone separates them —
-only both at once.
+00:00:37,810 --> 00:00:39,920
+Five stages, no LLM anywhere.
 
 17
-00:01:19,700 --> 00:01:24,252
-One question to ClickHouse. Then the whole
-lattice is enumerated locally.
+00:00:44,220 --> 00:00:47,560
+And this isn't a problem I invented for a
 
 18
-00:01:24,332 --> 00:01:30,125
-The machine weighs the obvious answers —
-the edge alone — and rejects them.
+00:00:47,600 --> 00:00:50,680
+hackathon. SigNoz's co-founder asked for
 
 19
-00:01:30,205 --> 00:01:34,343
-Only the conjunction separates the
-cohorts, at thirteen times lift.
+00:00:50,720 --> 00:00:54,770
+exactly this, three and a half years ago —
 
 20
-00:01:35,660 --> 00:01:40,626
-This is what every flat tool sees —
-BubbleUp, compare, Trace Patterns.
+00:00:54,920 --> 00:00:57,480
+still open. Here's the fault, drawn.
 
 21
-00:01:40,706 --> 00:01:45,257
-Its best single predicate lands at
-precision zero point one seven.
+00:00:58,540 --> 00:01:00,620
+A healthy checkout calls the flag service.
 
 22
-00:01:45,337 --> 00:01:48,234
-The fault needs two conditions at once.
+00:01:01,300 --> 00:01:03,940
+A failing one retries redis, and the
 
 23
-00:01:49,190 --> 00:01:55,397
-No model wrote this. It's compiled into
-SigNoz's own grammar — A implies B, and
+00:01:04,240 --> 00:01:05,460
+flag-service span is missing.
 
 24
-00:01:55,477 --> 00:02:00,029
-not C — then run back against the engine.
-Mined sixty-one.
+00:01:05,920 --> 00:01:08,200
+But the retry alone shows up in healthy
 
 25
-00:02:00,109 --> 00:02:01,350
-SigNoz returned sixty-one.
+00:01:08,240 --> 00:01:11,820
+traces too. And plenty of healthy traces
 
 26
-00:02:01,450 --> 00:02:08,484
-And this is why it has to be SigNoz.
-Traces and logs live in one ClickHouse, so
+00:01:11,860 --> 00:01:12,960
+skip the flag check.
 
 27
-00:02:08,564 --> 00:02:15,185
-a single scan joins them by trace ID. On
-Tempo plus Loki, that join doesn't exist.
+00:01:13,580 --> 00:01:15,600
+Neither condition alone separates them —
 
 28
-00:02:16,550 --> 00:02:21,929
-That permalink opens the machine-written
-query in SigNoz's own Trace Explorer — all
+00:01:15,640 --> 00:01:20,320
+only both at once. One question to
 
 29
-00:02:22,009 --> 00:02:26,147
-three leaves and the operator, rendered in
-the real UI.
+00:01:20,820 --> 00:01:22,600
+ClickHouse. Then the whole lattice is
 
 30
-00:02:26,227 --> 00:02:29,538
-The result set collapses to the matched
-traces.
+00:01:22,640 --> 00:01:23,860
+enumerated locally.
 
 31
-00:02:29,618 --> 00:02:34,997
-Open one, and the flame graph shows the
-shape: payment retries redis, and
+00:01:24,780 --> 00:01:27,840
+The machine weighs the obvious answers —
 
 32
-00:02:35,077 --> 00:02:36,318
-flag-service never ran.
+00:01:28,060 --> 00:01:29,820
+the edge alone — and rejects them.
 
 33
-00:02:44,550 --> 00:02:49,516
-One flag arms it. The discriminator
-becomes a native v2alpha1 alert with
+00:01:30,240 --> 00:01:32,460
+Only the conjunction separates the cohorts,
 
 34
-00:02:49,596 --> 00:02:54,975
-warning and critical thresholds. Replay
-the fault, and at t plus one eighty-two
+00:01:32,680 --> 00:01:35,330
+at thirteen times lift.
 
 35
-00:02:55,055 --> 00:03:02,089
-seconds the webhook fires — the rule ID in
-that payload is the rule the command just
+00:01:36,180 --> 00:01:38,633
+This is what every flat tool sees —
 
 36
-00:03:02,169 --> 00:03:06,307
-created. Everyone else in this category
-stops at a panel.
+00:01:38,907 --> 00:01:40,880
+BubbleUp, compare, Trace Patterns.
 
 37
-00:03:06,387 --> 00:03:12,180
-None of them hand you back a query, a
-dashboard, and an armed tripwire.
+00:01:41,490 --> 00:01:44,460
+Its best single predicate lands at precision
 
 38
-00:03:15,210 --> 00:03:21,417
-Here's what matters more. Point it at a
-decoy — an attribute that tracks failure
+00:01:44,864 --> 00:01:46,256
+zero point one seven.
 
 39
-00:03:21,497 --> 00:03:28,118
-but doesn't cause it — and it abstains.
-Point it at a healthy system, it abstains
+00:01:46,480 --> 00:01:48,840
+The fault needs two conditions at once.
 
 40
-00:03:28,198 --> 00:03:32,749
-again. Across six seeded faults, it never
-named a false culprit.
+00:01:49,620 --> 00:01:50,720
+No model wrote this.
 
 41
-00:03:32,829 --> 00:03:39,036
-And this one it first got wrong — it
-abstained where a real answer existed.
+00:01:50,820 --> 00:01:53,530
+It's compiled into SigNoz's own grammar —
 
 42
-00:03:39,116 --> 00:03:44,909
-I found the seam, fixed it, and left the
-original failure in the repo.
+00:01:53,600 --> 00:01:56,020
+A implies B, and not C —
 
 43
-00:03:47,840 --> 00:03:51,978
-Run it twice. Same input, same seed, same
-verdict hash.
+00:01:56,240 --> 00:01:57,680
+then run back against the engine.
 
 44
-00:03:52,058 --> 00:03:57,023
-There is no LLM anywhere in the runtime —
-this is deterministic.
+00:01:58,180 --> 00:02:01,400
+Mined sixty-one. SigNoz returned sixty-one.
 
 45
-00:03:57,103 --> 00:04:02,069
-The corpus is synthetic and disclosed;
-ground truth comes from a manifest.
+00:02:01,600 --> 00:02:04,340
+And this is why it has to be SigNoz.
 
 46
-00:04:12,940 --> 00:04:17,492
-And you don't need my machine to check any
-of it.
+00:02:05,060 --> 00:02:10,060
+Traces and logs live in one ClickHouse, so a
 
 47
-00:04:17,572 --> 00:04:23,779
-The whole run is stepped through in the
-browser — the board, the compiled query,
+00:02:12,460 --> 00:02:12,860
+single scan joins them by trace ID.
 
 48
-00:04:23,859 --> 00:04:27,169
-the receipt, the hash — hosted, no
-install.
+00:02:12,460 --> 00:02:16,180
+On Tempo plus Loki, that join doesn't exist.
 
 49
-00:04:30,640 --> 00:04:35,192
-Everyone can show you the difference. Only
-SigNoz can arm it.
+00:02:16,940 --> 00:02:18,760
+That permalink opens the machine-written
 
 50
-00:04:35,272 --> 00:04:40,651
-Everything's on GitHub — one command
-reproduces the whole run, casting file and
+00:02:18,800 --> 00:02:21,600
+query in SigNoz's own Trace Explorer —
 
 51
-00:04:40,731 --> 00:04:41,931
-lock committed.
+00:02:21,840 --> 00:02:24,600
+all three leaves and the operator, rendered
+
+52
+00:02:24,640 --> 00:02:28,400
+in the real UI. The result set collapses to
+
+53
+00:02:28,440 --> 00:02:29,540
+the matched traces.
+
+54
+00:02:30,120 --> 00:02:32,940
+Open one, and the flame graph shows the
+
+55
+00:02:32,980 --> 00:02:36,300
+shape: payment retries redis, and
+
+56
+00:02:36,580 --> 00:02:37,780
+flag-service never ran.
+
+57
+00:02:44,380 --> 00:02:47,660
+One flag arms it. The discriminator becomes
+
+58
+00:02:47,700 --> 00:02:52,020
+a native v2alpha1 alert with warning and
+
+59
+00:02:52,060 --> 00:02:53,160
+critical thresholds.
+
+60
+00:02:53,810 --> 00:02:57,413
+Replay the fault, and at t plus one
+
+61
+00:02:57,667 --> 00:03:01,540
+eighty-two seconds the webhook fires —
+
+62
+00:03:01,780 --> 00:03:04,540
+the rule ID in that payload is the rule the
+
+63
+00:03:04,580 --> 00:03:05,680
+command just created.
+
+64
+00:03:06,400 --> 00:03:08,600
+Everyone else in this category stops at a
+
+65
+00:03:08,640 --> 00:03:13,640
+panel. None of them hand you back a query, a
+
+66
+00:03:14,000 --> 00:03:15,340
+dashboard, and an armed tripwire.
+
+67
+00:03:15,380 --> 00:03:16,540
+Here's what matters more.
+
+68
+00:03:16,940 --> 00:03:18,327
+Point it at a decoy —
+
+69
+00:03:18,373 --> 00:03:21,040
+an attribute that tracks failure but doesn't
+
+70
+00:03:21,080 --> 00:03:22,820
+cause it — and it abstains.
+
+71
+00:03:23,340 --> 00:03:26,300
+Point it at a healthy system, it abstains
+
+72
+00:03:26,700 --> 00:03:30,640
+again. Across six seeded faults, it never
+
+73
+00:03:30,680 --> 00:03:31,940
+named a false culprit.
+
+74
+00:03:31,980 --> 00:03:36,980
+And this one it first got wrong —
+
+75
+00:03:37,100 --> 00:03:40,780
+it abstained where a real answer existed.
+
+76
+00:03:42,300 --> 00:03:44,920
+I found the seam, fixed it, and left the
+
+77
+00:03:44,960 --> 00:03:47,260
+original failure in the repo.
+
+78
+00:03:48,320 --> 00:03:51,120
+Run it twice. Same input, same seed, same
+
+79
+00:03:51,160 --> 00:03:53,840
+verdict hash. There is no LLM anywhere in
+
+80
+00:03:53,880 --> 00:03:55,900
+the runtime — this is deterministic.
+
+81
+00:03:56,980 --> 00:03:59,100
+The corpus is synthetic and disclosed;
+
+82
+00:04:00,960 --> 00:04:02,860
+ground truth comes from a manifest.
+
+83
+00:04:13,720 --> 00:04:16,780
+And you don't need my machine to check any
+
+84
+00:04:16,820 --> 00:04:20,240
+of it. The whole run is stepped through in
+
+85
+00:04:20,280 --> 00:04:23,160
+the browser — the board, the compiled query,
+
+86
+00:04:23,900 --> 00:04:25,920
+the receipt, the hash —
+
+87
+00:04:25,960 --> 00:04:27,440
+hosted, no install.
+
+88
+00:04:30,920 --> 00:04:33,580
+Everyone can show you the difference.
+
+89
+00:04:34,100 --> 00:04:35,660
+Only SigNoz can arm it.
+
+90
+00:04:36,420 --> 00:04:38,020
+Everything's on GitHub —
+
+91
+00:04:38,180 --> 00:04:40,460
+one command reproduces the whole run,
+
+92
+00:04:40,960 --> 00:04:42,820
+casting file and lock committed.
