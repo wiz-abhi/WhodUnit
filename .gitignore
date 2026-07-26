@@ -33,3 +33,7 @@ pours/
 Thumbs.db
 .idea/
 .vscode/
+
+# large narration sources (kept locally)
+audio/full-take.*
+audio/_*.wav

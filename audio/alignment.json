@@ -1,0 +1,119 @@
+[
+ {
+  "seg": 1,
+  "start": 0.0,
+  "end": 39.62,
+  "dur": 39.62,
+  "coverage": 0.943,
+  "tokens": 106,
+  "text": "I'm Abhishek. This is Whodunit, built for the Agents"
+ },
+ {
+  "seg": 2,
+  "start": 40.4,
+  "end": 51.14,
+  "dur": 10.74,
+  "coverage": 0.926,
+  "tokens": 27,
+  "text": "And this isn't a problem I invented for a hackathon."
+ },
+ {
+  "seg": 3,
+  "start": 53.74,
+  "end": 74.96,
+  "dur": 21.22,
+  "coverage": 0.885,
+  "tokens": 52,
+  "text": "Here's the fault, drawn. A healthy checkout calls th"
+ },
+ {
+  "seg": 4,
+  "start": 76.34,
+  "end": 90.4,
+  "dur": 14.06,
+  "coverage": 0.879,
+  "tokens": 33,
+  "text": "One question to ClickHouse. Then the whole lattice i"
+ },
+ {
+  "seg": 5,
+  "start": 92.14,
+  "end": 106.3,
+  "dur": 14.16,
+  "coverage": 0.828,
+  "tokens": 29,
+  "text": "This is what every flat tool sees \u2014 BubbleUp, compar"
+ },
+ {
+  "seg": 6,
+  "start": 108.54,
+  "end": 119.6,
+  "dur": 11.06,
+  "coverage": 0.774,
+  "tokens": 31,
+  "text": "No model wrote this. It's compiled into SigNoz's own"
+ },
+ {
+  "seg": 7,
+  "start": 122.98,
+  "end": 137.86,
+  "dur": 14.88,
+  "coverage": 0.971,
+  "tokens": 34,
+  "text": "And this is why it has to be SigNoz. Traces and logs"
+ },
+ {
+  "seg": 8,
+  "start": 139.96,
+  "end": 161.02,
+  "dur": 21.06,
+  "coverage": 0.837,
+  "tokens": 49,
+  "text": "That permalink opens the machine-written query in Si"
+ },
+ {
+  "seg": 9,
+  "start": 162.6,
+  "end": 194.64,
+  "dur": 32.04,
+  "coverage": 0.848,
+  "tokens": 66,
+  "text": "One flag arms it. The discriminator becomes a native"
+ },
+ {
+  "seg": 10,
+  "start": 197.24,
+  "end": 229.08,
+  "dur": 31.84,
+  "coverage": 0.914,
+  "tokens": 70,
+  "text": "Here's what matters more. Point it at a decoy \u2014 an a"
+ },
+ {
+  "seg": 11,
+  "start": 230.52,
+  "end": 245.4,
+  "dur": 14.88,
+  "coverage": 0.879,
+  "tokens": 33,
+  "text": "Run it twice. Same input, same seed, same verdict ha"
+ },
+ {
+  "seg": 12,
+  "start": 245.4,
+  "end": 259.7,
+  "dur": 14.3,
+  "coverage": 0.515,
+  "tokens": 33,
+  "text": "And you don't need my machine to check any of it. Th"
+ },
+ {
+  "seg": 13,
+  "start": 261.66,
+  "end": 273.66,
+  "dur": 12.0,
+  "coverage": 0.962,
+  "tokens": 26,
+  "text": "Everyone can show you the difference. Only SigNoz ca"
+ }
+]
