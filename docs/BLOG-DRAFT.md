@@ -50,6 +50,10 @@ half-answers around it. That gap is the shape of Whodunit.
 The "compare two cohorts of spans" problem is well-trodden. What's striking is how
 uniformly every product stops at the same place:
 
+![Six products — Honeycomb BubbleUp, Datadog Trace Patterns, Datadog APM Recommendations, Chronosphere DDx and Lightstep, Grafana compare(), TraceContrast — each drawn as a line that stops dead at a red dashed wall labelled 'a human re-types the finding as a query, at 3 a.m.'. Only Whodunit's line crosses the wall, ending at 'a SigNoz query you own'.](blog/images/sketch-wall.png)
+
+*Every one of them ends at the same wall: a ranking a human then re-types by hand.*
+
 | Product | What it does | Where it stops |
 |---|---|---|
 | Honeycomb BubbleUp | ranks flat attribute distributions, selection vs baseline | flat only; no structure; no executable output |
@@ -76,6 +80,10 @@ always yields the same verdict hash.
 extract → mine → compile → verify → materialize
 ```
 
+![The Whodunit pipeline: extract (one scan) → mine (FP-growth + FDR) → compile (trace-operator) → verify (mined == SigNoz?) → materialize (query · panel · alert).](blog/images/sketch-pipeline.png)
+
+*The five stages. `verify` is the one that makes the rest trustworthy: a mismatch is reported, never hidden.*
+
 **Extract.** One `clickhouse_sql` scan builds a per-`trace_id` boolean feature matrix:
 span predicates (latency bucketed from raw `duration_nano`, *not* the coarse
 18-boundary `signoz_latency.bucket`), parent→child edges via a self-join on
@@ -85,6 +93,10 @@ that is physically impossible on Tempo+Loki (separate stores) and on Datadog (no
 store). A case-control matcher picks the healthy cohort matched on the axis the
 selection was made along, so the discriminator can never just be the selection axis —
 the failure mode that makes "duration > X" separate perfectly and explain nothing.
+
+![Three separate stores — Tempo, Loki, Prometheus — with the joins between them crossed out, versus one SigNoz ClickHouse containing traces, logs and metrics with JOIN ON trace_id.](blog/images/sketch-one-store.png)
+
+*Why this has to be SigNoz: traces and logs sit in one ClickHouse, so a single scan joins them on `trace_id`. On a Tempo + Loki + Prometheus stack that join doesn't exist to make.*
 
 **Mine.** FP-growth enumerates the *complete* itemset lattice — singles, conjunctions,
 and absences (a `NOT` feature is a complement column) — **before** any statistical test
@@ -107,12 +119,20 @@ below.
 **Materialize.** Trace Explorer permalink, native v6 dashboard panel, armed v2alpha1
 alert.
 
+![Whodunit sits between SigNoz's read surfaces and write surfaces: it reads ClickHouse (traces + logs, one scan) and /api/v5 (differential verify), and writes a Trace Explorer permalink, a Perses v6 dashboard panel, and a v2alpha1 alert with a webhook.](blog/images/sketch-signoz.png)
+
+*All five surfaces, in one loop — read from ClickHouse and `/api/v5`, write back a query, a panel, and a tripwire. Foundry's `casting.yaml` stands the whole stack up, MCP server included, in one command.*
+
 ## The real numbers
 
 Here is the flagship `conditional_dep` scenario end to end. The seeded fault is
 `(shop-payment => redis-retry) && NOT shop-flag-service`: bad traces retry Redis while
 the feature-flag service is unreachable. It's engineered so *healthy traffic never
 contains the conjunction* — every single predicate appears in **both** cohorts.
+
+![Two trace trees side by side. Healthy: checkout → payment → redis, plus a flag-service span. Failing: checkout → payment → redis-retry with the flag-service span missing. The retry is ringed on both sides, the missing flag is ringed on both sides, and only the failing tree gets a box around both conditions together.](blog/images/sketch-fault.png)
+
+*The fault, drawn — and why it's hard. Ring the retry: it's in healthy traces too. Ring the missing flag-service: also in healthy traces. Neither condition alone separates the cohorts. Only both at once, which is exactly the regime a flat attribute ranking cannot reach.*
 
 ```
 7,806 candidate itemsets enumerated  →  36 features
