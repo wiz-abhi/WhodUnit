@@ -6,7 +6,6 @@ PUBLISHING NOTES
   the matching PNG from docs/blog/images/. Every PNG is >=2560px wide
   (deviceScaleFactor=2) so it stays retina-sharp on Medium's ~1400px column. Do NOT
   screenshot-of-a-screenshot.
-- Fill in the [VIDEO] placeholder below once the YouTube link exists.
 -->
 
 # Whodunit: compiling a root-cause finding back into a SigNoz query you own
@@ -25,7 +24,7 @@ PUBLISHING NOTES
 
 - 💻 **Code:** [github.com/wiz-abhi/WhodUnit](https://github.com/wiz-abhi/WhodUnit)
 - ▶️ **Try it live (no install):** [wiz-abhi-whodunit-replay.static.hf.space](https://wiz-abhi-whodunit-replay.static.hf.space) — step through the real recorded run in your browser
-- 🎬 **Demo video:** `[VIDEO — add YouTube link]`
+- 🎬 **Demo video (4:38):** [youtu.be/myZlRwcpHIA](https://youtu.be/myZlRwcpHIA)
 
 ---
 

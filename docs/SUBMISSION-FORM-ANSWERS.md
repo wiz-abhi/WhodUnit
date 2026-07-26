@@ -71,7 +71,14 @@ static Space. The full demo remains the video + reproducible `foundryctl cast`.)
 
 ### 8. YouTube video demo link *
 
-`https://youtu.be/<id>` **[FILL IN — ≤3:00, per `docs/DEMO-RUNBOOK.md`]**
+**https://youtu.be/myZlRwcpHIA** — 4:38, captioned. Covers all four requested beats:
+about the project (0:00), tech stack + architecture (0:00–1:19, incl. two hand-drawn
+architecture sketches), the live demo (1:19–4:01), and learning & growth (3:10 — the
+benchmark scenario it first got wrong, diagnosed and fixed in the open).
+
+*Note on length: the form suggests ≤3 minutes. This runs 4:38 because the intro covers
+the required "about / tech stack / architecture" beats before the demo starts. Chapters
+are set on the video so any section can be jumped to directly.*
 
 Covers: the project (issue #1957 → mine/compile/verify/arm), tech stack and
 architecture (five-stage pipeline over ClickHouse + v5 Query Builder), a live demo
