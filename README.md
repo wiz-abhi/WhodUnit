@@ -1,8 +1,11 @@
-# 🔎 Whodunit
+<p align="center">
+  <img src="docs/assets/logo.png" alt="Whodunit — root cause that compiles into a SigNoz query you own" width="860">
+</p>
 
-**Deterministic structural root-cause analysis whose output is a SigNoz query you own.**
-
-> *Everyone can show you the difference between two sets of traces. Only SigNoz can arm it.*
+<p align="center">
+  <b>Deterministic structural root-cause analysis whose output is a SigNoz query you own.</b><br>
+  <i>Everyone can show you the difference between two sets of traces. Only SigNoz can arm it.</i>
+</p>
 
 ![Whodunit mines the structural discriminator, then compiles and verifies it as a SigNoz trace-operator query](docs/assets/hero.gif)
 
