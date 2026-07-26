@@ -1,21 +1,31 @@
 <!--
-Blog screenshots live in this repo at docs/blog/images/ and are embedded below via
-raw.githubusercontent.com URLs. They render ONLY once the repo is PUBLIC. On Medium,
-paste each raw URL on its own line and Medium re-hosts it; or use Medium's image
-upload and drag the matching PNG from docs/blog/images/ for guaranteed retina
-crispness. Every PNG is >=2560px wide (deviceScaleFactor=2) so it stays sharp on
-Medium's ~1400px retina column.
+PUBLISHING NOTES
+- Screenshots use RELATIVE paths (blog/images/*.png) so they render in GitHub's preview
+  whether the repo is public or private.
+- When pasting into Medium / Dev.to / Hashnode: use the editor's image upload and drag
+  the matching PNG from docs/blog/images/. Every PNG is >=2560px wide
+  (deviceScaleFactor=2) so it stays retina-sharp on Medium's ~1400px column. Do NOT
+  screenshot-of-a-screenshot.
+- Fill in the [VIDEO] placeholder below once the YouTube link exists.
 -->
 
 # Whodunit: compiling a root-cause finding back into a SigNoz query you own
 
 > Draft for the hackathon submission blog. Target platform: Dev.to / Hashnode.
-> ~1,500 words. Publish publicly; embed the demo video near the top.
+> Publish publicly.
 
 **Title options (none overclaim):**
 1. *Whodunit: compiling a root-cause finding back into a SigNoz query you own*
 2. *Everyone shows you the difference. I taught the machine to hand you the query.*
 3. *Mining, compiling, and verifying a trace-operator query against live SigNoz*
+
+---
+
+**Built for the [Agents of SigNoz](https://www.wemakedevs.org/hackathons/signoz) hackathon — Track 2, Signals & Dashboards.**
+
+- 💻 **Code:** [github.com/wiz-abhi/WhodUnit](https://github.com/wiz-abhi/WhodUnit)
+- ▶️ **Try it live (no install):** [wiz-abhi-whodunit-replay.static.hf.space](https://wiz-abhi-whodunit-replay.static.hf.space) — step through the real recorded run in your browser
+- 🎬 **Demo video:** `[VIDEO — add YouTube link]`
 
 ---
 
@@ -115,7 +125,7 @@ mined      61 traces
 SigNoz     61 traces   ✓ MATCH   recall 1.00   163,464 rows scanned
 ```
 
-![The whodunit explain elimination board: the winning conjunction survives at lift 13.1x while every single-predicate near-miss is eliminated.](https://raw.githubusercontent.com/wiz-abhi/WhodUnit/main/docs/blog/images/elimination-board.png)
+![The whodunit explain elimination board: the winning conjunction survives at lift 13.1x while every single-predicate near-miss is eliminated.](blog/images/elimination-board.png)
 
 *The elimination board from a live `whodunit explain --board` run: 7,806 candidate itemsets enumerated, and the conjunction `edge__shop_payment__redis_retry AND NOT shop-flag-service` is the only survivor — lift 13.1x, 61 bad traces, 0 healthy. Every single-predicate near-miss above it was struck out.*
 
@@ -152,7 +162,7 @@ miner's own near-misses at a tied lift-CI floor. Re-run: compiled
 160/160. The original failing result is preserved in `benchmark/ISSUES.md` #2,
 because finding that seam is exactly the kind of thing this project exists to surface.
 
-![Whodunit benchmark aggregate table: 6/6 scenarios pass, with the flat baseline failing on conditional_dep, retry_storm, decoys and null_scenario.](https://raw.githubusercontent.com/wiz-abhi/WhodUnit/main/docs/blog/images/benchmark.png)
+![Whodunit benchmark aggregate table: 6/6 scenarios pass, with the flat baseline failing on conditional_dep, retry_storm, decoys and null_scenario.](blog/images/benchmark.png)
 
 *The aggregate table rendered from `benchmark/REPORT.md`: 6/6 pass, each row showing Whodunit's verdict against the flat baseline's precision/recall on the same matrix.*
 
@@ -196,7 +206,7 @@ for:
    1-year window returned byte-identical rows, so the SQL must carry its own time
    predicate — which is why the benchmark scopes by explicit trace-id sets.
 
-![Engine probe: rootWrap => childOp returns 0 (direct, single hop) while rootWrap -> childOp returns 20 (indirect, any depth).](https://raw.githubusercontent.com/wiz-abhi/WhodUnit/main/docs/blog/images/operator-probe.png)
+![Engine probe: rootWrap => childOp returns 0 (direct, single hop) while rootWrap -> childOp returns 20 (indirect, any depth).](blog/images/operator-probe.png)
 
 *The `=>` (direct, single-hop) vs `->` (any-depth) distinction on v0.132.2: `rootWrap => childOp` (2 hops) returns 0 while `rootWrap -> childOp` returns 20. I had coded it backwards; the differential receipt is what surfaced it.*
 
@@ -218,7 +228,7 @@ t+0–180s 25 matching bad traces emitted (query_range confirms count_distinct =
 t+182s   WEBHOOK POST /whodunit   status "firing", critical tier   ← the tripwire trips
 ```
 
-![The armed whodunit alert in SigNoz breaching both thresholds, with the captured firing webhook body below it.](https://raw.githubusercontent.com/wiz-abhi/WhodUnit/main/docs/blog/images/alert-firing.png)
+![The armed whodunit alert in SigNoz breaching both thresholds, with the captured firing webhook body below it.](blog/images/alert-firing.png)
 
 *The armed `(A => B) && NOT C` rule in SigNoz's own Alerts UI — T1 `count_distinct(trace_id)` spiking above both the warning and critical thresholds — and the real webhook body it delivered end-to-end: status "firing", critical tier.*
 
