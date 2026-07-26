@@ -8,6 +8,7 @@ synthetic matrix, so ``whodunit explain`` runs the real pipeline offline.
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 import pytest
@@ -19,6 +20,25 @@ from .conftest import EDGE_NAME, FakeClient, build_synthetic_matrix
 
 runner = CliRunner()
 
+_ANSI = re.compile(r"\x1b\[[0-9;]*[A-Za-z]")
+
+
+def _help_text(*args: str) -> str:
+    """`--help` output rendered at a fixed width with colour off.
+
+    Rich lays help out to the terminal width and interleaves ANSI codes. On a CI
+    runner (80 columns, no TTY) long option names wrap mid-string, so a plain
+    substring assertion passes locally and fails there. Pinning COLUMNS and
+    stripping ANSI keeps these assertions about the CLI rather than the terminal.
+    """
+    result = runner.invoke(
+        cli.app,
+        [*args, "--help"],
+        env={"COLUMNS": "200", "TERM": "dumb", "NO_COLOR": "1"},
+    )
+    assert result.exit_code == 0, result.output
+    return _ANSI.sub("", result.output)
+
 
 @pytest.fixture
 def offline(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -29,18 +49,16 @@ def offline(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def test_help() -> None:
-    result = runner.invoke(cli.app, ["--help"])
-    assert result.exit_code == 0
-    assert "explain" in result.output
-    assert "conformance" in result.output
+    out = _help_text()
+    assert "explain" in out
+    assert "conformance" in out
 
 
 def test_explain_help() -> None:
-    result = runner.invoke(cli.app, ["explain", "--help"])
-    assert result.exit_code == 0
-    assert "--bad-filter" in result.output
-    assert "--from-manifest" in result.output
-    assert "--arm" in result.output
+    out = _help_text("explain")
+    assert "--bad-filter" in out
+    assert "--from-manifest" in out
+    assert "--arm" in out
 
 
 def test_explain_requires_exactly_one_source(offline: None) -> None:
