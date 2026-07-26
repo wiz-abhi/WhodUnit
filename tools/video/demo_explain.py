@@ -33,14 +33,13 @@ REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO / "benchmark"))
 
 from _console import make_console, status  # noqa: E402
+from pipeline_scoped import all_trace_ids, explain_scoped  # noqa: E402
 
 from whodunit.cli import render  # noqa: E402
 from whodunit.extract import ScanConfig  # noqa: E402
 from whodunit.mine import MineConfig  # noqa: E402
 from whodunit.pipeline import load_materializer  # noqa: E402
 from whodunit.signoz_client import SigNozClient  # noqa: E402
-
-from pipeline_scoped import all_trace_ids, explain_scoped  # noqa: E402
 
 ENVIRONMENT = "whodunit-demo"
 
@@ -232,7 +231,7 @@ def _materialize(console, client, result, a) -> None:
     if a.arm:
         console.print(
             f"[green]armed alert[/] "
-            f"{mat.arm_alert(result.compiled, rule_name=title, warn_threshold=1.0, crit_threshold=5.0, channel_webhook_url=a.webhook_url)}"
+            f"{mat.arm_alert(result.compiled, rule_name=title, warn_threshold=1.0, crit_threshold=5.0, channel_webhook_url=a.webhook_url)}"  # noqa: E501
         )
 
 

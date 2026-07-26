@@ -137,10 +137,10 @@ def ansi_to_html(text: str) -> list[str]:
             elif c in (38, 48):
                 key = "fg" if c == 38 else "bg"
                 if i + 1 < len(codes) and codes[i + 1] == 5:
-                    state[key] = _xterm256(codes[i + 2]); i += 2
+                    state[key] = _xterm256(codes[i + 2]); i += 2  # noqa: E702
                 elif i + 1 < len(codes) and codes[i + 1] == 2:
                     r, g, b = codes[i + 2], codes[i + 3], codes[i + 4]
-                    state[key] = f"#{r:02x}{g:02x}{b:02x}"; i += 4
+                    state[key] = f"#{r:02x}{g:02x}{b:02x}"; i += 4  # noqa: E702
             i += 1
 
     text = OTHER_ESC.sub("", text)

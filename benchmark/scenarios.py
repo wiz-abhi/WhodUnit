@@ -7,7 +7,7 @@ discriminator exists at all (the abstention scenarios have none).
 """
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 
 @dataclass(frozen=True)

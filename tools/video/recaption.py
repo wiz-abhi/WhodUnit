@@ -13,7 +13,6 @@ reads as part of the picture rather than something pasted on top.
 """
 from __future__ import annotations
 
-import json
 import re
 import subprocess
 import sys
@@ -72,7 +71,7 @@ def ts(sec: float) -> str:
         sec = 0.0
     h, r = divmod(sec, 3600)
     m, s = divmod(r, 60)
-    ms = int(round((s - int(s)) * 1000))
+    ms = round((s - int(s)) * 1000)
     if ms == 1000:
         s, ms = int(s) + 1, 0
     return f"{int(h):02d}:{int(m):02d}:{int(s):02d},{ms:03d}"
@@ -166,7 +165,7 @@ def main() -> int:
         cur.clear()
 
     for i, w in enumerate(disp):
-        trial = len(" ".join(disp[j] for j in cur + [i]))
+        trial = len(" ".join(disp[j] for j in [*cur, i]))
         if cur and trial > MAX_CHARS:
             flush()
         cur.append(i)
@@ -210,7 +209,7 @@ def main() -> int:
          "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k", str(OUT)], "burn")
 
     dur = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration",
-                          "-of", "csv=p=0", str(OUT)], capture_output=True, text=True).stdout.strip()
+                          "-of", "csv=p=0", str(OUT)], capture_output=True, text=True).stdout.strip()  # noqa: E501
     print(f"\n{OUT}\n  {float(dur):.2f}s  {len(cues)} cues, single-line, outline style")
     return 0
 

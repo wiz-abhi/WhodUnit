@@ -25,7 +25,7 @@ PORT = 9099
 
 
 class Handler(BaseHTTPRequestHandler):
-    def do_POST(self) -> None:  # noqa: N802
+    def do_POST(self) -> None:
         n = int(self.headers.get("Content-Length") or 0)
         raw = self.rfile.read(n)
         self.send_response(200)
@@ -62,7 +62,7 @@ class Handler(BaseHTTPRequestHandler):
             print("\n  the compiled discriminator is now a live SigNoz alert.\n", flush=True)
             threading.Thread(target=lambda: (time.sleep(6), os._exit(0))).start()
 
-    def do_GET(self) -> None:  # noqa: N802
+    def do_GET(self) -> None:
         self.send_response(200)
         self.end_headers()
         self.wfile.write(b"whodunit webhook listener\n")

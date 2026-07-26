@@ -13,16 +13,16 @@ def _f(x) -> str:
 def render_report(payload: dict) -> str:
     results = payload["results"]
     sc = payload.get("scan_config", {})
-    L: list[str] = []
-    L.append("# Whodunit benchmark — live results\n")
-    L.append(f"_Generated {payload['generated_at']} against the running SigNoz "
+    lines_: list[str] = []
+    lines_.append("# Whodunit benchmark — live results\n")
+    lines_.append(f"_Generated {payload['generated_at']} against the running SigNoz "
              f"stack (localhost:8080). Total wall-clock "
              f"**{payload['total_wall_clock_s']}s**._\n")
 
     # ---- bottom line -------------------------------------------------------
     npass_pre = sum(1 for r in results if r["passed"])
-    L.append("## Bottom line\n")
-    L.append(f"**{npass_pre}/{len(results)} scenarios pass.** Whodunit nails the "
+    lines_.append("## Bottom line\n")
+    lines_.append(f"**{npass_pre}/{len(results)} scenarios pass.** Whodunit nails the "
              "flagship conjunctive fault the flat baseline cannot (`conditional_dep`: "
              "`(A => B) && NOT C`, recall 1.0, baseline top-feature precision 0.23); "
              "ties the baseline on the single-feature fault (`new_edge`); and takes the "
@@ -35,78 +35,78 @@ def render_report(payload: dict) -> str:
              "ISSUES.md #2 FIXED).\n")
 
     # ---- aggregate table ---------------------------------------------------
-    L.append("## Aggregate results\n")
-    L.append("| scenario | expected | got | pass | precision@1 | label-recall | "
+    lines_.append("## Aggregate results\n")
+    lines_.append("| scenario | expected | got | pass | precision@1 | label-recall | "
              "label-prec | abstain-ok | baseline-found | base prec/rec | "
              "wall-clock | rows | features |")
-    L.append("|---|---|---|:--:|:--:|:--:|:--:|:--:|:--:|---|--:|--:|--:|")
+    lines_.append("|---|---|---|:--:|:--:|:--:|:--:|:--:|:--:|---|--:|--:|--:|")
     npass = 0
     for r in results:
         npass += 1 if r["passed"] else 0
         basepr = (f"{_f(r['baseline_precision'])}/{_f(r['baseline_recall'])}"
                   if r["baseline_predicate"] else "-")
-        L.append(
+        lines_.append(
             f"| `{r['key']}` | {r['expected']} | **{r['got']}** | {_b(r['passed'])} | "
             f"{_b(r['precision_at_1']) if r['expected']=='discriminator' else '-'} | "
             f"{_f(r['label_recall'])} | {_f(r['label_precision'])} | "
             f"{_b(r['abstained_correctly'])} | {_b(r['baseline_found'])} | {basepr} | "
             f"{_f(r['wall_clock_s'])}s | {_f(r['rows_scanned'])} | {r['n_features']} |"
         )
-    L.append(f"\n**{npass}/{len(results)} scenarios passed.**\n")
+    lines_.append(f"\n**{npass}/{len(results)} scenarios passed.**\n")
 
     # ---- verification receipts --------------------------------------------
-    L.append("## Verification receipts (mined vs live SigNoz)\n")
-    L.append("| scenario | mined | signoz | match | verdict headline |")
-    L.append("|---|--:|--:|:--:|---|")
+    lines_.append("## Verification receipts (mined vs live SigNoz)\n")
+    lines_.append("| scenario | mined | signoz | match | verdict headline |")
+    lines_.append("|---|--:|--:|:--:|---|")
     for r in results:
-        L.append(f"| `{r['key']}` | {_f(r['verify_mined'])} | {_f(r['verify_signoz'])} | "
+        lines_.append(f"| `{r['key']}` | {_f(r['verify_mined'])} | {_f(r['verify_signoz'])} | "
                  f"{_b(r['verify_match'])} | {r['headline'][:90]} |")
-    L.append("")
+    lines_.append("")
 
     # ---- per-scenario detail ----------------------------------------------
-    L.append("## Per-scenario detail\n")
+    lines_.append("## Per-scenario detail\n")
     for r in results:
-        L.append(f"### `{r['key']}` — {r['fault']} (seed {r['seed']})\n")
-        L.append(f"- **Expected:** {r['expected']}  **Got:** **{r['got']}**  "
+        lines_.append(f"### `{r['key']}` — {r['fault']} (seed {r['seed']})\n")
+        lines_.append(f"- **Expected:** {r['expected']}  **Got:** **{r['got']}**  "
                  f"**Pass:** {_b(r['passed'])}")
         if r["chosen_itemset"]:
-            L.append(f"- **Winner itemset:** `{' AND '.join(r['chosen_itemset'])}`")
+            lines_.append(f"- **Winner itemset:** `{' AND '.join(r['chosen_itemset'])}`")
         if r["expression"]:
-            L.append(f"- **Compiled trace-operator:** `{r['expression']}`")
-        L.append(f"- **Matrix:** {r['n_bad']} bad / {r['n_healthy']} healthy traces, "
+            lines_.append(f"- **Compiled trace-operator:** `{r['expression']}`")
+        lines_.append(f"- **Matrix:** {r['n_bad']} bad / {r['n_healthy']} healthy traces, "
                  f"{r['n_features']} features, family size {r['family_size']}, "
                  f"{_f(r['ingested_bad'])} bad ingested")
-        L.append(f"- **Label metrics vs manifest:** recall {_f(r['label_recall'])}, "
+        lines_.append(f"- **Label metrics vs manifest:** recall {_f(r['label_recall'])}, "
                  f"precision(in-corpus) {_f(r['label_precision'])}")
-        L.append(f"- **Flat baseline top pick:** `{r['baseline_predicate']}` "
+        lines_.append(f"- **Flat baseline top pick:** `{r['baseline_predicate']}` "
                  f"(z={_f(r['baseline_z'])}, prec {_f(r['baseline_precision'])}, "
                  f"rec {_f(r['baseline_recall'])}) -> found={_b(r['baseline_found'])}")
         if r["refusals"]:
-            L.append(f"- **Refusals surfaced:** {'; '.join(r['refusals'])}")
-        L.append(f"- _{r['notes']}_\n")
+            lines_.append(f"- **Refusals surfaced:** {'; '.join(r['refusals'])}")
+        lines_.append(f"- _{r['notes']}_\n")
 
     # ---- baseline honesty section -----------------------------------------
-    L.append("## Where the flat baseline wins or loses\n")
-    L.append("The flat baseline ranks every *single* feature (presence and "
+    lines_.append("## Where the flat baseline wins or loses\n")
+    lines_.append("The flat baseline ranks every *single* feature (presence and "
              "trace-scoped absence) by a two-proportion z-test and takes the top "
              "pick — no conjunctions, no algebra. Per the thesis:\n")
     for r in results:
         verdict = ("WINS/TIES" if r["baseline_found"] else "FAILS")
-        L.append(f"- `{r['key']}`: baseline **{verdict}** "
+        lines_.append(f"- `{r['key']}`: baseline **{verdict}** "
                  f"(top `{r['baseline_predicate']}`, prec {_f(r['baseline_precision'])}, "
                  f"rec {_f(r['baseline_recall'])}).")
-    L.append("")
+    lines_.append("")
 
     # ---- methods -----------------------------------------------------------
     mc = payload.get("mine_config", {})
-    L.append(_METHODS.format(
+    lines_.append(_METHODS.format(
         dur=payload.get("duration_hours_per_run"),
         logs=sc.get("include_logs"),
         attrs=", ".join(sc.get("attribute_keys", []) or ["-"]),
         anc=sc.get("include_ancestors"),
         nboot=mc.get("n_bootstrap"),
     ))
-    return "\n".join(L) + "\n"
+    return "\n".join(lines_) + "\n"
 
 
 _METHODS = """## Methods

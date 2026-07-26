@@ -50,7 +50,7 @@ def main() -> int:
 
     print(f"{'seg':>4} {'audio':>7} {'window':>7} {'budget':>7} {'tempo':>6}  status")
     problems = 0
-    for a, win in zip(align, windows):
+    for a, win in zip(align, windows, strict=True):
         n = a["seg"]
         raw = OUTDIR / f"_raw{n:02d}.wav"
         out = OUTDIR / f"seg{n:02d}.wav"

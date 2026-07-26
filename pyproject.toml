@@ -56,6 +56,10 @@ select = [
     "RUF",
 ]
 
+[tool.ruff.lint.per-file-ignores]
+# Embeds JS/CSS as string literals; physical line length is not meaningful there.
+"tools/video/record_termcast.py" = ["E501"]
+
 [tool.ruff.lint.isort]
 known-first-party = ["whodunit"]
 

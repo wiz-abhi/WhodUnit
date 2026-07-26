@@ -20,12 +20,11 @@ import argparse
 import tempfile
 from pathlib import Path
 
-from _style import (  # noqa: E402  (sibling module, run as a script)
+from _style import (
     AMBER,
     BLUE,
     GREEN,
     GREY,
-    INK,
     RAW,
     box_mark,
     card,
@@ -137,7 +136,7 @@ def draw(ax, s) -> None:
 
     # ---- the conjunction -------------------------------------------------
     box_mark(ax, R_BOTH, GREEN, s["both"], lw=3.4)
-    label(ax, 960, 252, "only both at once  —  13.1× lift,  61 bad / 0 healthy",
+    label(ax, 960, 252, "only both at once  —  13.1x lift,  61 bad / 0 healthy",
           GREEN, s["cap_final"], size=25)
 
 

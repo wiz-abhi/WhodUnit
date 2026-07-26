@@ -35,15 +35,14 @@ ENDPOINT = "http://localhost:4318"
 DURATION_HOURS = 0.01  # ~36s spread: keep each run's traces tightly clustered
 TRACE_TABLE = "signoz_traces.distributed_signoz_index_v3"
 
+from baseline import run_baseline  # noqa: E402
+from pipeline_scoped import all_trace_ids, explain_scoped  # noqa: E402
+from scenarios import SCENARIOS, Scenario  # noqa: E402
+
 from whodunit.extract import ScanConfig  # noqa: E402
 from whodunit.extract.sql import id_list_predicate, run_clickhouse_sql  # noqa: E402
 from whodunit.mine import MineConfig  # noqa: E402
 from whodunit.signoz_client import SigNozClient  # noqa: E402
-from whodunit.types import Verdict  # noqa: E402
-
-from baseline import run_baseline  # noqa: E402
-from pipeline_scoped import all_trace_ids, explain_scoped  # noqa: E402
-from scenarios import SCENARIOS, Scenario  # noqa: E402
 
 # Structural-only scan config (see REPORT.md methods): logs are EXCLUDED because
 # the corpus injects ground-truth-leaking ERROR log lines whose bodies literally
@@ -82,7 +81,7 @@ def make_runid(fault: str, seed: int, traces: int, fault_rate: float, decoys: fl
 
 
 def emit_corpus(sc: Scenario) -> tuple[dict, float, float]:
-    """Shell out to the OTel-capable interpreter; return (manifest, t_pre, t_post)."""
+    """Shell out to the OTel-capable interpreter; return (manifest, t_pre, _t_post)."""
     runid = make_runid(sc.fault, sc.seed, sc.traces, sc.fault_rate, sc.decoys)
     t_pre = time.time()
     cmd = [
@@ -97,9 +96,9 @@ def emit_corpus(sc: Scenario) -> tuple[dict, float, float]:
     proc = subprocess.run(cmd, cwd=REPO, capture_output=True, text=True)
     if proc.returncode != 0:
         raise RuntimeError(f"emit failed for {sc.key}: {proc.stderr[-500:]}")
-    t_post = time.time()
+    _t_post = time.time()
     manifest = json.loads((OUT / f"manifest-{runid}.json").read_text(encoding="utf-8"))
-    return manifest, t_pre, t_post
+    return manifest, t_pre, _t_post
 
 
 def poll_ingestion(
@@ -165,7 +164,7 @@ class ScenarioResult:
 
 def score_scenario(client: SigNozClient, sc: Scenario) -> ScenarioResult:
     print(f"\n=== {sc.key} (seed {sc.seed}, fault {sc.fault}) ===", flush=True)
-    manifest, t_pre, t_post = emit_corpus(sc)
+    manifest, t_pre, _t_post = emit_corpus(sc)
     all_ids = all_trace_ids(sc.seed, sc.traces)
     all_set = set(all_ids)
 

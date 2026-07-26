@@ -25,15 +25,14 @@ sys.path.insert(0, str(REPO / "benchmark"))
 sys.path.insert(0, str(REPO / "tools" / "video"))
 
 from _console import make_console, status  # noqa: E402
+from baseline import run_baseline  # noqa: E402
+from demo_explain import ENVIRONMENT, SCAN_CONFIG, resolve_cohort, window_bounds  # noqa: E402
 from rich.panel import Panel  # noqa: E402
 from rich.table import Table  # noqa: E402
 
 from whodunit.extract import build_feature_matrix, run_scan  # noqa: E402
 from whodunit.pipeline import booleanize_frame  # noqa: E402
 from whodunit.signoz_client import SigNozClient  # noqa: E402
-
-from baseline import run_baseline  # noqa: E402
-from demo_explain import ENVIRONMENT, SCAN_CONFIG, resolve_cohort, window_bounds  # noqa: E402
 
 
 def main() -> int:
@@ -48,7 +47,7 @@ def main() -> int:
     p.add_argument("--top", type=int, default=6)
     a = p.parse_args()
 
-    bad_ids, healthy_ids, all_ids, label = resolve_cohort(a)
+    bad_ids, healthy_ids, _all_ids, label = resolve_cohort(a)
     start, end = window_bounds(a)
     console = make_console()
     console.print(

@@ -36,10 +36,10 @@ import matplotlib
 
 matplotlib.use("Agg")
 
-import matplotlib.pyplot as plt  # noqa: E402
-from matplotlib import patheffects as pe  # noqa: E402
-from matplotlib.lines import Line2D  # noqa: E402
-from matplotlib.patches import (  # noqa: E402
+import matplotlib.pyplot as plt
+from matplotlib import patheffects as pe
+from matplotlib.lines import Line2D
+from matplotlib.patches import (
     Arc,
     Ellipse,
     FancyArrowPatch,
@@ -266,7 +266,7 @@ def render_sequence(state, draw, duration: float, out: Path, frames_dir: Path,
     for stale in frames_dir.glob("f*.png"):
         stale.unlink()
 
-    n = int(round(duration * fps))
+    n = round(duration * fps)
     prev_key = None
     prev_path: Path | None = None
     rendered = 0

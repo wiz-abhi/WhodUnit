@@ -25,7 +25,7 @@ import hashlib
 import time
 from dataclasses import dataclass, field
 
-from whodunit.compile import compile_finding, verify
+from whodunit.compile import verify
 from whodunit.extract import ScanConfig, build_feature_matrix, run_scan
 from whodunit.mine import MineConfig, mine
 from whodunit.pipeline import (
@@ -156,7 +156,7 @@ def explain_scoped(
             tp = len(matched_ids & bad_set)
             label_recall = tp / len(bad_set) if bad_set else None
             # precision counting only ids that belong to THIS corpus run
-            universe = all_corpus_ids if all_corpus_ids is not None else (bad_set | set(healthy_ids))
+            universe = all_corpus_ids if all_corpus_ids is not None else (bad_set | set(healthy_ids))  # noqa: E501
             matched_incorpus = matched_ids & universe
             label_precision_incorpus = (
                 tp / len(matched_incorpus) if matched_incorpus else None

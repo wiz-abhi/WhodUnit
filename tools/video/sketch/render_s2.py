@@ -15,7 +15,7 @@ import argparse
 import tempfile
 from pathlib import Path
 
-from _style import (  # noqa: E402  (sibling module, run as a script)
+from _style import (
     GREEN,
     GREY,
     INK,
