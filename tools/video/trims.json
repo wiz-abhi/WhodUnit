@@ -160,7 +160,7 @@
         ],
         [
           33.0,
-          45.3
+          40.5
         ]
       ],
       "on_screen": [
@@ -168,7 +168,7 @@
         "leaves"
       ],
       "narration": "That permalink opens the machine-written query in SigNoz's own Trace Explorer - all three leaves and the operator, rendered in the real UI. The result set collapses to the matched traces. Open one, and the flame graph shows the shape: payment retries redis, and flag-service never ran.",
-      "notes": "compositeQuery is double-URL-encoded and carries builder.queryTraceOperator (materialize/NOTES.md 1). The Explorer renders all three leaves and the operator, and the flame graph shows redis-retry under shop-payment with no shop-flag-service span."
+      "notes": "compositeQuery is double-URL-encoded and carries builder.queryTraceOperator (materialize/NOTES.md 1). The Explorer renders all three leaves and the operator, and the flame graph shows redis-retry under shop-payment with no shop-flag-service span. Tail trimmed: the flame graph held static ~6s past the narration."
     },
     {
       "id": "b6",
@@ -216,14 +216,18 @@
       "segments": [
         [
           0.0,
-          25.4
+          16.0
+        ],
+        [
+          21.0,
+          24.5
         ]
       ],
       "on_screen": [
         "verdict_hash"
       ],
       "narration": "Run it twice. Same input, same seed, same verdict hash. There is no LLM anywhere in the runtime - this is deterministic. The corpus is synthetic and disclosed; ground truth comes from a manifest.",
-      "notes": "Two complete live runs (scan, mine the whole lattice, compile, verify). The mining waits are played back compressed; the hashes are not touched."
+      "notes": "Two complete live runs (scan, mine the whole lattice, compile, verify). The mining waits are played back compressed; the hashes are not touched. Spinner wait for run 2 (16-21s) spliced out; both hashes still land."
     },
     {
       "id": "b11",

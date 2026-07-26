@@ -17,7 +17,7 @@
   "crossfade_s": 0.3,
   "voice_lead_s": 0.3,
   "cap_s": 295.0,
-  "predicted_total_s": 288.57,
+  "predicted_total_s": 277.87,
   "real_numbers": {
     "verdict": "discriminator",
     "expression": "(A => B) && NOT C",
@@ -305,13 +305,13 @@
         {
           "source": "docs/video/raw/b5.mp4",
           "start": 33.0,
-          "end": 45.3,
-          "seconds": 12.3
+          "end": 40.5,
+          "seconds": 7.5
         }
       ],
-      "cut_duration_s": 28.3,
+      "cut_duration_s": 23.5,
       "timeline_start_s": 136.25,
-      "timeline_end_s": 164.55,
+      "timeline_end_s": 159.75,
       "on_screen": {
         "expression": "(A => B) && NOT C",
         "leaves": {
@@ -322,11 +322,11 @@
       },
       "narration": {
         "window_start_s": 136.55,
-        "window_end_s": 164.55,
-        "seconds_available": 28.0,
+        "window_end_s": 159.75,
+        "seconds_available": 23.2,
         "beat": "That permalink opens the machine-written query in SigNoz's own Trace Explorer - all three leaves and the operator, rendered in the real UI. The result set collapses to the matched traces. Open one, and the flame graph shows the shape: payment retries redis, and flag-service never ran."
       },
-      "notes": "compositeQuery is double-URL-encoded and carries builder.queryTraceOperator (materialize/NOTES.md 1). The Explorer renders all three leaves and the operator, and the flame graph shows redis-retry under shop-payment with no shop-flag-service span."
+      "notes": "compositeQuery is double-URL-encoded and carries builder.queryTraceOperator (materialize/NOTES.md 1). The Explorer renders all three leaves and the operator, and the flame graph shows redis-retry under shop-payment with no shop-flag-service span. Tail trimmed: the flame graph held static ~6s past the narration."
     },
     {
       "id": "b6",
@@ -358,14 +358,14 @@
         }
       ],
       "cut_duration_s": 30.97,
-      "timeline_start_s": 164.25,
-      "timeline_end_s": 195.21,
+      "timeline_start_s": 159.45,
+      "timeline_end_s": 190.41,
       "on_screen": {
         "expression": "(A => B) && NOT C"
       },
       "narration": {
-        "window_start_s": 164.55,
-        "window_end_s": 195.21,
+        "window_start_s": 159.75,
+        "window_end_s": 190.41,
         "seconds_available": 30.66,
         "beat": "One flag arms it. The discriminator becomes a native v2alpha1 alert with warning and critical thresholds. Replay the fault, and at t plus one eighty-two seconds the webhook fires - the rule ID in that payload is the rule the command just created. Everyone else in this category stops at a panel."
       },
@@ -388,12 +388,12 @@
         }
       ],
       "cut_duration_s": 32.93,
-      "timeline_start_s": 194.91,
-      "timeline_end_s": 227.84,
+      "timeline_start_s": 190.11,
+      "timeline_end_s": 223.04,
       "on_screen": {},
       "narration": {
-        "window_start_s": 195.21,
-        "window_end_s": 227.84,
+        "window_start_s": 190.41,
+        "window_end_s": 223.04,
         "seconds_available": 32.63,
         "beat": "Here's what matters more. Point it at a decoy - an attribute that tracks failure but doesn't cause it - and it abstains. Point it at a healthy system, it abstains again. Across six seeded faults, it never named a false culprit. And this one it first got wrong - it abstained where a real answer existed. I found the seam, fixed it, and left the original failure in the repo."
       },
@@ -411,23 +411,29 @@
         {
           "source": "docs/video/raw/b7.mp4",
           "start": 0.0,
-          "end": 25.4,
-          "seconds": 25.4
+          "end": 16.0,
+          "seconds": 16.0
+        },
+        {
+          "source": "docs/video/raw/b7.mp4",
+          "start": 21.0,
+          "end": 24.5,
+          "seconds": 3.5
         }
       ],
-      "cut_duration_s": 25.4,
-      "timeline_start_s": 227.54,
-      "timeline_end_s": 252.94,
+      "cut_duration_s": 19.5,
+      "timeline_start_s": 222.74,
+      "timeline_end_s": 242.24,
       "on_screen": {
         "verdict_hash": "95f8835759e2865ec90f17b45df7f1f74f9944484bad4f014e0f209826f91fb5"
       },
       "narration": {
-        "window_start_s": 227.84,
-        "window_end_s": 252.94,
-        "seconds_available": 25.1,
+        "window_start_s": 223.04,
+        "window_end_s": 242.24,
+        "seconds_available": 19.2,
         "beat": "Run it twice. Same input, same seed, same verdict hash. There is no LLM anywhere in the runtime - this is deterministic. The corpus is synthetic and disclosed; ground truth comes from a manifest."
       },
-      "notes": "Two complete live runs (scan, mine the whole lattice, compile, verify). The mining waits are played back compressed; the hashes are not touched."
+      "notes": "Two complete live runs (scan, mine the whole lattice, compile, verify). The mining waits are played back compressed; the hashes are not touched. Spinner wait for run 2 (16-21s) spliced out; both hashes still land."
     },
     {
       "id": "b11",
@@ -446,8 +452,8 @@
         }
       ],
       "cut_duration_s": 18.0,
-      "timeline_start_s": 252.64,
-      "timeline_end_s": 270.64,
+      "timeline_start_s": 241.94,
+      "timeline_end_s": 259.94,
       "on_screen": {
         "mined": 61,
         "signoz": 61,
@@ -457,8 +463,8 @@
         "verify_rows_scanned": 46805
       },
       "narration": {
-        "window_start_s": 252.94,
-        "window_end_s": 270.64,
+        "window_start_s": 242.24,
+        "window_end_s": 259.94,
         "seconds_available": 17.7,
         "beat": "And you don't need my machine to check any of it. The whole run is stepped through in the browser - the board, the compiled query, the receipt, the hash - hosted, no install."
       },
@@ -481,12 +487,12 @@
         }
       ],
       "cut_duration_s": 18.23,
-      "timeline_start_s": 270.34,
-      "timeline_end_s": 288.57,
+      "timeline_start_s": 259.64,
+      "timeline_end_s": 277.87,
       "on_screen": {},
       "narration": {
-        "window_start_s": 270.64,
-        "window_end_s": 288.57,
+        "window_start_s": 259.94,
+        "window_end_s": 277.87,
         "seconds_available": 17.93,
         "beat": "Everyone can show you the difference. Only SigNoz can arm it. Everything's on GitHub - one command reproduces the whole run, casting file and lock committed."
       },
@@ -495,7 +501,7 @@
   ],
   "assembled": {
     "file": "docs/video/demo-silent.mp4",
-    "measured_total_s": 288.63,
+    "measured_total_s": 277.93,
     "crossfade_s": 0.3,
     "cap_s": 295.0
   }

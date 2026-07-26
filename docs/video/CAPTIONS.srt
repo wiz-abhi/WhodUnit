@@ -191,19 +191,19 @@ single scan joins them by trace ID.
 On Tempo plus Loki, that join doesn't exist.
 
 49
-00:02:16,940 --> 00:02:18,760
+00:02:16,820 --> 00:02:18,760
 That permalink opens the machine-written
 
 50
-00:02:18,800 --> 00:02:21,600
+00:02:18,800 --> 00:02:21,580
 query in SigNoz's own Trace Explorer —
 
 51
-00:02:21,840 --> 00:02:24,600
+00:02:21,800 --> 00:02:24,620
 all three leaves and the operator, rendered
 
 52
-00:02:24,640 --> 00:02:28,400
+00:02:24,660 --> 00:02:28,400
 in the real UI. The result set collapses to
 
 53
@@ -223,145 +223,145 @@ shape: payment retries redis, and
 flag-service never ran.
 
 57
-00:02:44,380 --> 00:02:47,660
+00:02:39,520 --> 00:02:42,860
 One flag arms it. The discriminator becomes
 
 58
-00:02:47,700 --> 00:02:52,020
+00:02:42,900 --> 00:02:47,220
 a native v2alpha1 alert with warning and
 
 59
-00:02:52,060 --> 00:02:53,160
+00:02:47,260 --> 00:02:48,360
 critical thresholds.
 
 60
-00:02:53,810 --> 00:02:57,413
+00:02:48,860 --> 00:02:52,340
 Replay the fault, and at t plus one
 
 61
-00:02:57,667 --> 00:03:01,540
+00:02:52,913 --> 00:02:56,710
 eighty-two seconds the webhook fires —
 
 62
-00:03:01,780 --> 00:03:04,540
+00:02:56,900 --> 00:02:59,740
 the rule ID in that payload is the rule the
 
 63
-00:03:04,580 --> 00:03:05,680
+00:02:59,780 --> 00:03:00,880
 command just created.
 
 64
-00:03:06,400 --> 00:03:08,600
+00:03:01,560 --> 00:03:03,800
 Everyone else in this category stops at a
 
 65
-00:03:08,640 --> 00:03:13,640
+00:03:03,840 --> 00:03:08,840
 panel. None of them hand you back a query, a
 
 66
-00:03:14,000 --> 00:03:15,340
+00:03:09,200 --> 00:03:09,960
 dashboard, and an armed tripwire.
 
 67
-00:03:15,380 --> 00:03:16,540
+00:03:10,000 --> 00:03:11,760
 Here's what matters more.
 
 68
-00:03:16,940 --> 00:03:18,327
+00:03:12,140 --> 00:03:13,527
 Point it at a decoy —
 
 69
-00:03:18,373 --> 00:03:21,040
+00:03:13,573 --> 00:03:16,240
 an attribute that tracks failure but doesn't
 
 70
-00:03:21,080 --> 00:03:22,820
+00:03:16,280 --> 00:03:18,020
 cause it — and it abstains.
 
 71
-00:03:23,340 --> 00:03:26,300
+00:03:18,540 --> 00:03:21,500
 Point it at a healthy system, it abstains
 
 72
-00:03:26,700 --> 00:03:30,640
+00:03:22,120 --> 00:03:25,840
 again. Across six seeded faults, it never
 
 73
-00:03:30,680 --> 00:03:31,940
+00:03:25,880 --> 00:03:27,000
 named a false culprit.
 
 74
-00:03:31,980 --> 00:03:36,980
+00:03:27,040 --> 00:03:32,040
 And this one it first got wrong —
 
 75
-00:03:37,100 --> 00:03:40,780
+00:03:32,520 --> 00:03:36,020
 it abstained where a real answer existed.
 
 76
-00:03:42,300 --> 00:03:44,920
+00:03:37,560 --> 00:03:40,120
 I found the seam, fixed it, and left the
 
 77
-00:03:44,960 --> 00:03:47,260
+00:03:40,160 --> 00:03:42,420
 original failure in the repo.
 
 78
-00:03:48,320 --> 00:03:51,120
+00:03:43,220 --> 00:03:46,320
 Run it twice. Same input, same seed, same
 
 79
-00:03:51,160 --> 00:03:53,840
+00:03:46,360 --> 00:03:49,040
 verdict hash. There is no LLM anywhere in
 
 80
-00:03:53,880 --> 00:03:55,900
+00:03:49,080 --> 00:03:51,160
 the runtime — this is deterministic.
 
 81
-00:03:56,980 --> 00:03:59,100
+00:03:51,860 --> 00:03:54,240
 The corpus is synthetic and disclosed;
 
 82
-00:04:00,960 --> 00:04:02,860
+00:03:55,900 --> 00:04:00,900
 ground truth comes from a manifest.
 
 83
-00:04:13,720 --> 00:04:16,780
+00:04:02,360 --> 00:04:06,080
 And you don't need my machine to check any
 
 84
-00:04:16,820 --> 00:04:20,240
+00:04:06,120 --> 00:04:09,540
 of it. The whole run is stepped through in
 
 85
-00:04:20,280 --> 00:04:23,160
+00:04:09,580 --> 00:04:12,440
 the browser — the board, the compiled query,
 
 86
-00:04:23,900 --> 00:04:25,920
+00:04:13,160 --> 00:04:15,240
 the receipt, the hash —
 
 87
-00:04:25,960 --> 00:04:27,440
+00:04:15,280 --> 00:04:16,740
 hosted, no install.
 
 88
-00:04:30,920 --> 00:04:33,580
+00:04:20,200 --> 00:04:22,860
 Everyone can show you the difference.
 
 89
-00:04:34,100 --> 00:04:35,660
+00:04:23,460 --> 00:04:24,940
 Only SigNoz can arm it.
 
 90
-00:04:36,420 --> 00:04:38,020
+00:04:25,800 --> 00:04:27,330
 Everything's on GitHub —
 
 91
-00:04:38,180 --> 00:04:40,460
+00:04:27,480 --> 00:04:29,760
 one command reproduces the whole run,
 
 92
-00:04:40,960 --> 00:04:42,820
+00:04:30,280 --> 00:04:32,120
 casting file and lock committed.
