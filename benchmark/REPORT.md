@@ -54,6 +54,14 @@ _Generated 2026-07-24T18:44:08Z against the running SigNoz stack (localhost:8080
 
 ### `cache_bypass` — cache_bypass (seed 203)
 
+> **Seed note.** The scenario's canonical seed is `103`, whose original **pre-fix abstain** is
+> preserved verbatim in [`ISSUES.md`](ISSUES.md) #2. This committed pass is the post-fix live
+> re-validation, run on a fresh seed (`203`) — chosen deliberately *different* from the one the
+> failure was found on, so the recovery isn't credited to the seed it was debugged against. The
+> fix is a seed-independent pipeline change (recover the best compilable near-miss at a tied CI
+> floor) with a synthetic regression test in `tests/pipeline/`. Counts vary by seed; the asserted
+> invariant is DISCRIMINATOR + recall 1.0 + live count match (160/160).
+
 - **Expected:** discriminator  **Got:** **discriminator**  **Pass:** yes
 - **Winner itemset:** `edge__shop_cart__SELECT_cart_items AND NOT edge__shop_cart__cache_get`
 - **Compiled trace-operator:** `(A => B) && NOT (C => D)`

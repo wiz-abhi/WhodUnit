@@ -1,8 +1,10 @@
-# Foundry Installation for the Whodunit demo stack.
+# Foundry Installation for the Whodunit demo stack: SigNoz + its MCP server.
 #
-# `foundryctl forge -f deploy/casting.yaml` generates the compose bundle
-# (files only). NEVER run `cast`/`deploy` here: a live SigNoz stack already
-# occupies :8080 and :4318 on this machine.
+# On a CLEAN host, this IS the one-command install:
+#     foundryctl cast -f deploy/casting.yaml
+# On THIS machine only `forge` (generate the compose bundle, files only) is safe —
+# a live SigNoz stack already occupies :8080 and :4318, so `cast`/`deploy` here
+# would collide. The port note is about the author's box, not the file.
 apiVersion: v1alpha1
 kind: Installation
 metadata:
@@ -14,10 +16,12 @@ spec:
   mcp:
     spec:
       enabled: true
-  # --- Whodunit corpus injection (lands in Wave 3) --------------------------
-  # The seeded demo corpus emits OTLP traces+logs at volume so the miner has
-  # real data to work on. It is injected as an extra compose service via an
-  # RFC6902 JSON Patch. Uncomment once the corpus image is published.
+  # --- Optional: bake the demo corpus into the stack (future work) ----------
+  # NOT required to reproduce anything: the documented demo seeds the corpus
+  # directly with `python -m corpus.generate --seed 778 --fault conditional_dep`
+  # (see README Quickstart, step 2). This patch only matters if you want a
+  # self-contained image that emits traffic on boot; publish whodunit/corpus:latest
+  # first, then uncomment.
   #
   # patches:
   #   - op: add

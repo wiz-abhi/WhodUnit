@@ -152,6 +152,8 @@ SigNoz     61 traces   ✓ MATCH   recall 1.00   163,464 rows scanned
 
 *The elimination board from a live `whodunit explain --board` run: 7,806 candidate itemsets enumerated, and the conjunction `edge__shop_payment__redis_retry AND NOT shop-flag-service` is the only survivor — lift 13.1x, 61 bad traces, 0 healthy. Every single-predicate near-miss above it was struck out.*
 
+> A note on the numbers: this is the seed-778 run (61 bad traces). The [benchmark report](https://github.com/wiz-abhi/WhodUnit/blob/main/benchmark/REPORT.md) seeds each scenario differently, so `conditional_dep` there shows 89 — the seed sets the volume, the invariants (the surviving conjunction, MATCH, recall 1.0) don't move. And the `mined == SigNoz` match is exact on a freshly-seeded single-corpus stack; on a shared stack the environment-independent guarantee is `recall == 1.0` — the query captures every labelled bad trace.
+
 The flat baseline — a properly-implemented BubbleUp-style z-test over every single
 feature, not a strawman — runs on the *same* matrix and returns
 `NOT edge__shop_checkout__GET_flags_evaluate` at precision **0.17**, recall 1.00. It
@@ -159,9 +161,13 @@ cannot see the conjunction because no single predicate separates the cohorts. Th
 the whole thesis in one number: the fault requires two conditions at once, and that is
 exactly the regime flat tools miss.
 
-Across all six benchmark scenarios (two expressible faults, one trace-scoped absence,
-three abstain-cases), Whodunit now passes 6/6 — but the most useful row is the one it
-initially *lost*, because a benchmark that only reports wins isn't a benchmark:
+Across six live scenarios the behaviour matters more than the scoreboard: one conjunction
+no flat tool can structurally express, an honest tie where a single feature is enough, two
+correct abstentions on inputs engineered to contain no real cause, and one below-confidence
+partial on an inexpressible N+1 — and, on every scenario where a confident answer would have
+been *wrong*, it declined to name one. **Zero false culprits across six**, where the flat
+baseline confidently hands you `tenant.tier=gold` at 0.29 precision. The most useful row, though,
+is the one it initially *lost* — because a benchmark that only reports wins isn't a benchmark:
 
 ![Six benchmark scenarios. Three where a real discriminator exists — conditional_dep, new_edge, cache_bypass — all found by Whodunit; the flat baseline fails on conditional_dep at 0.23 precision and ties on the two single-feature faults. Three where abstaining is the right answer — retry_storm (partial), decoys and null_scenario (abstain) — where the flat baseline fails at 0.21, 0.29 and 0.14. Six out of six, and never a false culprit.](https://raw.githubusercontent.com/wiz-abhi/WhodUnit/main/docs/blog/images/sketch-benchmark.png)
 

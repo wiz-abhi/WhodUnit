@@ -158,7 +158,7 @@ rolling 5m window always has data.
 
 - **On screen:** the prior-art table (BubbleUp / Trace Patterns / APM Recommendations /
   DDx / `compare()` / TraceContrast), each with its one-line delta, then a closing card:
-  `foundryctl cast -f deploy/casting.yaml`, the repo URL, and the two upstream PRs.
+  `foundryctl cast -f deploy/casting.yaml` and the repo URL.
 - **Narration:** "Everyone shows you the difference. Only SigNoz can arm it. One command
   to reproduce the whole thing."
 

@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import random
 import subprocess
 import sys
@@ -27,9 +28,10 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parent.parent
 OUT = REPO / "corpus" / "out"
 BENCH = REPO / "benchmark"
-WARMUP_PY = Path(
-    r"C:\Users\abhis\Desktop\OSS\Signoz\warmup-agent\.venv\Scripts\python.exe"
-)
+# The corpus emitter needs OpenTelemetry deps absent from the repo venv. Point
+# WHODUNIT_EMITTER_PYTHON at any interpreter that has them (see benchmark/README.md);
+# falls back to this process's interpreter so the harness is not machine-specific.
+WARMUP_PY = Path(os.environ.get("WHODUNIT_EMITTER_PYTHON", sys.executable))
 ENVIRONMENT = "whodunit-demo"
 ENDPOINT = "http://localhost:4318"
 DURATION_HOURS = 0.01  # ~36s spread: keep each run's traces tightly clustered

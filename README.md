@@ -32,9 +32,13 @@ Every product in this space — Honeycomb BubbleUp, Datadog Trace Patterns, Chro
 Grafana `compare()` — stops at a *ranking a human then re-types by hand*. Whodunit closes the
 loop: **mine → compile → verify → arm.** It's the implementation of
 [SigNoz/signoz#1957](https://github.com/SigNoz/signoz/issues/1957) — *"Enable a way to compare
-2 sets of filtered spans"* — opened by co-founder pranay01 in January 2023 and still open.
-And there is **no LLM anywhere in the runtime**: the same input plus seed always produces the
-same verdict hash.
+2 sets of filtered spans"* — opened by co-founder pranay01 in January 2023 and still open. Not
+a story of overwhelming demand — the issue has **zero reactions** — but a real, unanswered gap
+from someone who would know, answered with an executable artifact instead of a panel.
+
+And it's **deterministic and auditable** — no LLM anywhere in the runtime, so the same input
+plus seed always produces the same verdict hash. You want a tripwire authored by something that
+*can't* hallucinate.
 
 ## The hero beat
 
@@ -62,6 +66,13 @@ mined 61  |  SigNoz 61  |  MATCH  |  precision 1.00  |  recall 1.00
 Paste the generated permalink into Trace Explorer — the result set collapses to exactly those
 61 traces. One flag (`--arm`) turns it into a live alert whose webhook fires end-to-end. **No
 model wrote any of it**, and running it again lands the identical verdict hash.
+
+> *These numbers are the seed-778 demo run (61 bad traces). The
+> [benchmark table](benchmark/REPORT.md) seeds each scenario differently, so its counts differ
+> (e.g. `conditional_dep` at seed 101 → 89) — the seed sets the volume; the invariants (the
+> surviving conjunction, MATCH, recall 1.0) don't move. The `mined == SigNoz` match is exact on
+> a freshly-seeded single-corpus stack; on a shared stack the environment-independent guarantee
+> is `recall == 1.0` — the compiled query captures every labelled bad trace.*
 
 ## How it works
 
@@ -116,7 +127,7 @@ Add `--arm` (live alert), `--dashboard` (v6 panel), or `--json`. Run `cast` on a
 the dev stack already holds `:8080`/`:4318`. Full pristine-corpus steps in
 [`docs/DEMO-RUNBOOK.md`](docs/DEMO-RUNBOOK.md).
 
-## The research story — 6/6, and the one it first got wrong
+## The research story — zero false culprits across six
 
 Six scenarios, run **live** against the stack, scored against a machine-checkable ground-truth
 manifest, versus a properly-implemented (not strawman) BubbleUp-style flat baseline
@@ -126,14 +137,19 @@ manifest, versus a properly-implemented (not strawman) BubbleUp-style flat basel
 |---|---|---|
 | `conditional_dep` — the conjunctive fault | **discriminator** ✓ | **fails** (0.23 precision) |
 | `new_edge`, `cache_bypass` — single-feature | **discriminator** ✓ | ties (their home turf) |
-| `retry_storm` — N+1, inexpressible | partial ✓ (abstains from a culprit) | fails |
+| `retry_storm` — N+1, inexpressible | partial ✓ (below-confidence, no culprit named) | fails |
 | `decoys`, `null_scenario` — nothing real | **abstain** ✓ | fails |
 
-Whodunit nails the conjunction flat tools structurally cannot see, **ties honestly** where a
-single feature is enough, and abstains rather than inventing a culprit. Never a false culprit
-across six scenarios.
+The honest scorecard is not a leaderboard number — it's the behaviour: **one conjunction no
+flat tool can structurally express** (`conditional_dep`), an **honest tie** where a single
+feature is enough (`new_edge`), **two correct abstentions** on inputs engineered to contain no
+cause (`decoys`, `null_scenario`), and **one below-confidence partial** on an inexpressible N+1
+(`retry_storm`) — and, on every scenario where a confident answer would have been *wrong*, it
+declined to name one. **Zero false culprits across six**, where the flat baseline hands you
+`tenant.tier=gold` at 0.29 precision.
 
-The most useful row is the one it *first failed*: `cache_bypass` originally **abstained** — the
+The most useful row is the one it *first failed* — a benchmark that only reports wins isn't a
+benchmark. `cache_bypass` originally **abstained**: the
 pure-absence discriminator was soundly refused by the compiler while the miner's parsimony prune
 dropped the compilable superset. The fix recovers the best *compilable* near-miss at a tied
 confidence floor; the original failure is preserved in
@@ -147,9 +163,18 @@ exactly what this project is for.
   **abstains** rather than fabricate one.
 - **Pure-absence needs a positive anchor** — `NOT C` alone returns zero spans; absence is only
   expressible as `A && NOT C`.
-- **The corpus is synthetic and disclosed.** Ground truth comes from a manifest, not human
-  judgement — a methodology strength (exact labels) and a caveat (no real-world messiness beyond
-  the injected decoys). Hidden synthetic data is fatal; disclosed is standard fault-injection.
+- **Attribute-value causes aren't compiled yet.** A discriminator like `tenant.tier = gold` or
+  `build = 2026.07-canary` can be *mined*, but the compiler currently only lowers span / edge /
+  ancestor **structure** to the trace-operator algebra, so it refuses attribute-value predicates
+  rather than emit something unsound. Bad-deploy / bad-tenant / bad-region faults — a common real
+  shape — are the top of the roadmap, not in scope today. (They *are* expressible as builder
+  filters, so this is a compiler-coverage gap, not an engine one.)
+- **The corpus is synthetic, disclosed, and author-written.** Ground truth comes from a manifest,
+  not human judgement — a methodology strength (exact, machine-checkable labels) and a real
+  ceiling: this demonstrates **compile-and-verify correctness on injected faults**, not discovery
+  on real production traces. There is no real-trace evaluation yet. Hidden synthetic data would be
+  fatal; disclosed fault-injection is standard method — but the honest claim is "the loop is
+  sound," not "it will find your incident."
 - **Engine constraints** (operator left-bias + `=>`/`->` direction, documented in
   [#10025](https://github.com/SigNoz/signoz/issues/10025); trace-scoped `NOT`; the
   `clickhouse_sql` time-window behavior) are respected by the compiler and surfaced by the
@@ -183,7 +208,7 @@ whodunit/
 | Statistics | **bootstrap CIs + Benjamini–Hochberg** | valid inference; family fixed before testing |
 | SigNoz client | **httpx + `/api/v5/query_range`** | one typed client for scan, verify, and materialize |
 | CLI | **typer + rich** | the elimination board and verification receipt |
-| Deploy | **Foundry `casting.yaml`** | SigNoz + MCP server in one command; judges can re-run it |
+| Deploy | **Foundry `casting.yaml`** | SigNoz + MCP server in one command, on a clean host |
 | Replay | **static HTML/JS on HF Spaces** | tryable in a browser, no backend, cannot break in judging |
 
 ## AI disclosure
