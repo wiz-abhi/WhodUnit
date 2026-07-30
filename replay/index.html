@@ -322,7 +322,7 @@
     <div class="chips">
       <div class="chip c-green"><span class="cv">13.1×</span><span class="cl">lift</span></div>
       <div class="chip c-green"><span class="cv">61 = 61</span><span class="cl">verify match</span></div>
-      <div class="chip c-blue"><span class="cv">6 / 6</span><span class="cl">benchmark</span></div>
+      <div class="chip c-blue"><span class="cv">0</span><span class="cl">false culprits / 6</span></div>
       <div class="chip c-dim"><span class="cv">0</span><span class="cl">LLM at runtime</span></div>
     </div>
 
@@ -469,8 +469,8 @@
     <h2 class="sec wide">The receipt, not the claim.</h2>
     <p class="sub">The mined finding is not trusted on its word. The compiled query is executed against the live
       engine and asserted equal to the miner's own local count. Seed 778: <b>7,806</b> candidate itemsets
-      enumerated over <b>36</b> features leave <b>6 survivors</b>, from one scan of <b>163,464 rows in 1,843 ms</b>
-      — then <b>46,805 rows</b> to verify the winner.</p>
+      enumerated over <b>36</b> features leave <b>6 survivors</b> — one discriminator in six equivalent
+      encodings — from one scan of <b>163,464 rows in 1,843 ms</b>, then <b>46,805 rows</b> to verify the winner.</p>
 
     <div class="receipt">
       <div class="rlab">differential verification receipt · seed 778</div>
@@ -490,7 +490,7 @@
       <div class="hv">95f8835759e2865ec90f17b45df7f1f74f9944484bad4f014e0f209826f91fb5</div>
     </div>
 
-    <h3 style="font-size:19px;color:var(--ink2);margin:46px 0 8px;letter-spacing:-.015em;">6 / 6, honestly scored</h3>
+    <h3 style="font-size:19px;color:var(--ink2);margin:46px 0 8px;letter-spacing:-.015em;">Zero false culprits across six</h3>
     <p class="sub">Six scenarios, run <b>live</b> against the stack, scored against a machine-checkable
       ground-truth manifest, versus a properly-implemented (not strawman) BubbleUp-style flat baseline.
       Whodunit nails the conjunction flat tools structurally cannot see, <b>ties honestly</b> where a single
@@ -509,7 +509,7 @@
         </tbody>
       </table>
     </div>
-    <div class="bench-tot">6 / 6 scenarios pass · recall stays 1.00 on every expressible fault · baseline never clears the 0.80 precision gate on the conjunction</div>
+    <div class="bench-tot"><b>Zero false culprits across six</b> — one conjunction no flat tool can express, an honest tie, two correct abstentions, one below-confidence partial · recall stays 1.00 on every expressible fault · the baseline never clears the 0.80 precision gate on the conjunction <span style="opacity:.6">(6/6 by the scorecard)</span></div>
 
     <div class="callout amber">
       <b>The most useful row is the one it first got wrong.</b> <code style="font-family:var(--mono);color:var(--amber-b)">cache_bypass</code>

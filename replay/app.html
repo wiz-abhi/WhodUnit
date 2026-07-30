@@ -405,7 +405,7 @@
           <div class="chips">
             <div class="chip c-green"><span class="cv">13.1×</span><span class="cl">lift</span></div>
             <div class="chip c-green"><span class="cv">61 = 61</span><span class="cl">verify match</span></div>
-            <div class="chip c-blue"><span class="cv">6 / 6</span><span class="cl">benchmark</span></div>
+            <div class="chip c-blue"><span class="cv">0</span><span class="cl">false culprits / 6</span></div>
             <div class="chip c-dim"><span class="cv">0</span><span class="cl">LLM at runtime</span></div>
           </div>
           <div class="honest-inline">
@@ -438,7 +438,7 @@
               <span class="cost">cost meter: one scan, <b id="rowsN" style="color:var(--cyan)">163,464</b> rows, <b id="msN" style="color:var(--cyan)">1,843</b> ms</span>
             </div>
           </div>
-          <p class="note">Rows marked <span style="color:var(--amber)">✗</span> are near-misses struck out: adding a duration bucket to the winning pair changes nothing (same 61 / 0), so they are dominated and pruned. Single-predicate candidates never even reach here — each appears in both cohorts.</p>
+          <p class="note">The six survivors are <b>one discriminator in six equivalent encodings</b> (edge vs span for the retry, three ways to name the missing flag-service) — all at the same 61 / 0; the highlighted winner is the one that compiles cleanest. Rows marked <span style="color:var(--amber)">✗</span> are near-misses struck out: adding a duration bucket to the winning pair changes nothing (same 61 / 0), so they are dominated and pruned. Single-predicate candidates never even reach here — each appears in both cohorts.</p>
           <details class="shotbox">
             <summary>the same board, as the CLI actually printed it</summary>
             <img src="assets/elimination-board.png" alt="The Whodunit CLI elimination board" />
@@ -526,7 +526,7 @@
 
         <!-- 6 · BENCHMARK -->
         <section class="screen" data-step="6">
-          <h2>⑦ Benchmark — 6 / 6, honestly scored</h2>
+          <h2>⑦ Benchmark — zero false culprits across six</h2>
           <p class="lead">Six scenarios run live against the stack, each scored against a machine-checkable ground-truth manifest, with a properly-implemented BubbleUp-style flat baseline for comparison. Whodunit nails the conjunction the baseline can't see, ties on single-feature faults (their home turf), and takes the honesty path — abstain / partial, never a false culprit — where a confident answer would be wrong.</p>
           <div class="bench-wrap">
             <table class="bench">
@@ -534,7 +534,7 @@
               <tbody id="benchBody"></tbody>
             </table>
           </div>
-          <div class="bench-tot">6 / 6 scenarios pass · recall stays 1.00 on every expressible fault · baseline never clears the 0.80 precision gate on the conjunction</div>
+          <div class="bench-tot"><b>Zero false culprits across six</b> — one conjunction no flat tool can express, an honest tie, two correct abstentions, one below-confidence partial · recall stays 1.00 on every expressible fault · the baseline never clears the 0.80 precision gate on the conjunction <span style="opacity:.6">(6/6 by the scorecard)</span></div>
           <p class="note">The flagship replay above is <b>seed 778</b> (61 bad traces). The benchmark aggregates six scenarios at their own seeds 101–106 — e.g. <code>conditional_dep</code> at seed 101 has 89 bad traces. Counts vary with seed; the invariants do not. Full table: <a href="https://github.com/wiz-abhi/WhodUnit/blob/main/benchmark/REPORT.md" target="_blank" rel="noopener">benchmark/REPORT.md</a>.</p>
           <details class="shotbox">
             <summary>the benchmark as the harness printed it</summary>
@@ -596,7 +596,7 @@ const TITLES = [
   "Verify — mined vs the live engine",
   "Materialize — the artifact, not a paragraph",
   "Determinism — same input, same verdict",
-  "Benchmark — 6 / 6, honestly scored"
+  "Benchmark — zero false culprits across six"
 ];
 let cur = 0, maxSeen = 0;
 
