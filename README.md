@@ -108,24 +108,36 @@ into **all five surfaces**, and installs through Foundry:
 
 ## Quickstart
 
-Three commands, from an empty machine to a verified verdict:
+From an empty machine to a verified verdict — the whole thing is reproducible:
 
 ```bash
-# 1. Stand up SigNoz + its MCP server via Foundry.
+# 0. Install the engine + the corpus generator's OTLP deps. The engine itself is
+#    lean; only the demo-corpus emitter needs OpenTelemetry, so it's a separate extra.
+pip install -e ".[corpus]"          # add ".[corpus,dev]" to also run the tests
+
+# 1. Stand up SigNoz + its MCP server via Foundry (on a clean host — the dev stack
+#    already holds :8080/:4318).
 foundryctl cast -f deploy/casting.yaml
 
-# 2. Seed a disclosed, deterministic demo corpus (8-service shop, one conjunctive fault).
+# 2. Seed the disclosed, deterministic demo corpus (8-service shop, one conjunctive
+#    fault). Same package the replay was recorded from; `--seed` makes it repeatable.
 python -m corpus.generate --traces 800 --seed 778 \
     --fault conditional_dep --endpoint http://localhost:4318
+python -m corpus.smoke --endpoint http://localhost:4318   # optional: confirm ingestion
 
 # 3. Explain it: extract → mine → compile → verify, all against live SigNoz.
 export SIGNOZ_URL=http://localhost:8080 SIGNOZ_EMAIL=... SIGNOZ_PASSWORD=... SIGNOZ_ORG_ID=...
 whodunit explain --from-manifest corpus/out/manifest-<runid>.json
 ```
 
-Add `--arm` (live alert), `--dashboard` (v6 panel), or `--json`. Run `cast` on a clean host —
-the dev stack already holds `:8080`/`:4318`. Full pristine-corpus steps in
+Add `--arm` (live alert), `--dashboard` (v6 panel), or `--json`. No live stack? `pytest`
+runs the real miner + compiler offline (134 tests, no SigNoz). Corpus internals and knobs:
+[`corpus/README.md`](corpus/README.md); full pristine-corpus demo steps:
 [`docs/DEMO-RUNBOOK.md`](docs/DEMO-RUNBOOK.md).
+
+> Byte-exact reproduction: `corpus/REQUIREMENTS.txt` pins the OpenTelemetry stack to
+> `1.43.0`. Counts scale with `--traces`/`--fault-rate` and the seed; the *invariants*
+> (the surviving conjunction, the mined-vs-SigNoz match, `recall == 1.0`) do not.
 
 ## The research story — zero false culprits across six
 

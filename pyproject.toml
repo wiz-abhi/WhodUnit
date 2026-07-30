@@ -22,6 +22,13 @@ dev = [
     "mypy>=1.10",
     "types-pyyaml>=6.0",
 ]
+# The engine needs no OpenTelemetry — only the demo-corpus GENERATOR emits OTLP.
+# `pip install -e ".[corpus]"` gets the CLI plus the emitter. `corpus/REQUIREMENTS.txt`
+# pins the full transitive set (== 1.43.0) for byte-exact reproduction.
+corpus = [
+    "opentelemetry-sdk>=1.43",
+    "opentelemetry-exporter-otlp-proto-http>=1.43",
+]
 
 [project.scripts]
 whodunit = "whodunit.cli:main"
