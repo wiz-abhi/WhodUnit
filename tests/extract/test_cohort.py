@@ -116,3 +116,32 @@ def test_resolve_stratified_mirrors_marginals_and_is_deterministic() -> None:
     assert all(h.startswith("hA") for h in r1.healthy_ids)
     # ratio 3 * 2 bad = 6 healthy requested from stratum A.
     assert len(r1.healthy_ids) == 6
+
+
+def test_resolve_stratified_is_invariant_to_input_row_order() -> None:
+    """The sampled healthy cohort must not depend on the order ClickHouse returns
+    rows in. The scan is unordered and ``bad_ids`` is a set, so without sorting the
+    pool before ``rng.sample`` the same seed draws a different cohort per process —
+    breaking the verdict-hash determinism guarantee. This shuffles the frame and
+    asserts an identical cohort; it fails before the sort-the-pool fix."""
+    base: list[dict[str, Any]] = [
+        {"trace_id": f"b{i}", "root_name": "A", "start_ns": 0, "duration_ns": 10}
+        for i in range(2)
+    ]
+    base += [
+        {"trace_id": f"hA{i:02d}", "root_name": "A", "start_ns": 0, "duration_ns": 10}
+        for i in range(20)
+    ]
+    spec = CohortSpec(0, 1, trace_ids=("b0", "b1"))
+    cfg = MatchingConfig(strategy="stratified", ratio=3.0, seed=42,
+                         match_time_bucket=False, match_duration_stratum=False)
+
+    forward = resolve_cohorts(FakeClient(base), spec, cfg)  # type: ignore[arg-type]
+    reversed_ = resolve_cohorts(
+        FakeClient(list(reversed(base))), spec, cfg  # type: ignore[arg-type]
+    )
+    rotated = resolve_cohorts(
+        FakeClient(base[7:] + base[:7]), spec, cfg  # type: ignore[arg-type]
+    )
+    assert set(forward.healthy_ids) == set(reversed_.healthy_ids) == set(rotated.healthy_ids)
+    assert len(forward.healthy_ids) == 6

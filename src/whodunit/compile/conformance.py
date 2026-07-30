@@ -163,7 +163,9 @@ def leaf_trace_ids(
                         if isinstance(tid, str) and tid:
                             ids.add(tid)
                             seen += 1
-        if not next_cursor or seen == 0:
+        # Stop on no next page or a non-advancing cursor; do not stop merely
+        # because one page came back empty while a new cursor was handed out.
+        if not next_cursor or next_cursor == cursor:
             break
         cursor = next_cursor
     return ids

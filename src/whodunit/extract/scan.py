@@ -570,7 +570,13 @@ def _build_scan_sql(
     with_kw = "WITH RECURSIVE" if recursive else "WITH"
     select_body = ",\n        ".join(final_cols)
     joined_ctes = ",\n    ".join(ctes)
-    return f"{with_kw} {joined_ctes}\n    SELECT {select_body}\n    FROM per_trace pt"
+    # ORDER BY pins row order: the feature matrix packs columns positionally and
+    # the bootstrap indexes rows positionally, so a stable scan order is what makes
+    # the verdict hash reproducible across ClickHouse's otherwise-unordered scans.
+    return (
+        f"{with_kw} {joined_ctes}\n    SELECT {select_body}\n"
+        "    FROM per_trace pt\n    ORDER BY pt.trace_id"
+    )
 
 
 # --------------------------------------------------------------------------- #

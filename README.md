@@ -11,7 +11,7 @@
 
 ![ci](https://img.shields.io/badge/ci-passing-brightgreen)
 ![python](https://img.shields.io/badge/python-3.11%2B-blue)
-![tests](https://img.shields.io/badge/tests-131%20passing-brightgreen)
+![tests](https://img.shields.io/badge/tests-134%20passing-brightgreen)
 ![no LLM](https://img.shields.io/badge/runtime-no%20LLM-8b5cf6)
 ![license](https://img.shields.io/badge/license-MIT-green)
 ![track](https://img.shields.io/badge/SigNoz%20hackathon-Track%202-orange)
@@ -179,6 +179,11 @@ exactly what this project is for.
   [#10025](https://github.com/SigNoz/signoz/issues/10025); trace-scoped `NOT`; the
   `clickhouse_sql` time-window behavior) are respected by the compiler and surfaced by the
   differential receipt — details in [`compile/ENGINE-NOTES.md`](src/whodunit/compile/ENGINE-NOTES.md).
+- **Statistical refinements are tracked in the open.** The effect measure (report the
+  design-invariant odds ratio alongside lift), FDR under negative dependence (BH → BY), and the
+  duration-matching variable are known sharpenings, documented with rationale in
+  [`docs/STATS-NOTES.md`](docs/STATS-NOTES.md). Determinism and empty-result handling are already
+  fixed and regression-tested.
 
 ## Project map
 

@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 
 import httpx
+import pytest
 
 from whodunit.compile.emit import compile_finding
 from whodunit.compile.verify import (
@@ -88,6 +89,23 @@ def _client(handler: object) -> SigNozClient:
 def test_scalar_value_extraction() -> None:
     resp = _scalar_response("T1", 55)
     assert scalar_value(resp, "T1") == 55
+
+
+def test_scalar_value_empty_result_is_zero_not_error() -> None:
+    """A query that ran but matched nothing (empty ``data``) is a genuine zero —
+    a legitimately-empty discriminator must not crash verification."""
+    resp: dict[str, object] = {
+        "status": "success",
+        "data": {"meta": {}, "data": {"results": [{"queryName": "T1", "data": []}]}},
+    }
+    assert scalar_value(resp, "T1") == 0
+
+
+def test_scalar_value_absent_query_still_raises() -> None:
+    """A truly missing query name is a malformed response, not a zero."""
+    resp = _scalar_response("T1", 55)
+    with pytest.raises(ValueError):
+        scalar_value(resp, "NOPE")
 
 
 def test_precision_recall() -> None:

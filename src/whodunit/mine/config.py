@@ -24,14 +24,19 @@ class MineConfig(BaseModel):
 
     min_support: int | None = None
     """Min bad-cohort support (traces) for enumeration. ``None`` -> computed
-    default ``max(10, round(0.5 * n_bad))`` (half the bad cohort, or 10)."""
+    default ``max(10, round(min_support_frac_bad * n_bad))`` (a fraction of the
+    bad cohort, or 10 traces, whichever is larger)."""
 
     min_lift: float = Field(default=3.0, ge=1.0)
     """Effect-size gate: an itemset must reach at least this lift vs the label."""
 
-    min_support_frac_bad: float = Field(default=0.30, ge=0.0, le=1.0)
+    min_support_frac_bad: float = Field(default=0.50, ge=0.0, le=1.0)
     """Tolerance gate: an itemset must match at least this share of the bad
-    cohort to be a candidate discriminator."""
+    cohort to be a candidate discriminator. Kept equal to the enumeration floor
+    (``default_min_support`` derives from this same fraction), so the gate and the
+    floor agree — nothing is enumerated below the floor, so a lower value here
+    would be a dead gate. Lowering both together, to mine faults present in a
+    minority of the bad cohort, is a deliberate, benchmark-re-validated change."""
 
     background_penalty_frac: float = Field(default=0.30, ge=0.0, le=1.0)
     """Flag/penalize itemsets matching more than this share of the healthy

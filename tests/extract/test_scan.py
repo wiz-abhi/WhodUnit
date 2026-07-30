@@ -72,6 +72,10 @@ def test_build_scan_sql_includes_all_families() -> None:
     # Log CTE joined by trace_id.
     assert "log_0 AS (" in sql
     assert "body ILIKE '%err%'" in sql
+    # Row order is pinned: the feature matrix packs columns positionally and the
+    # bootstrap indexes rows positionally, so a stable scan order is what makes the
+    # verdict hash reproducible across ClickHouse's otherwise-unordered scans.
+    assert "ORDER BY pt.trace_id" in sql
 
 
 def test_build_scan_sql_no_recursive_without_ancestors() -> None:

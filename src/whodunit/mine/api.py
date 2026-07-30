@@ -35,10 +35,14 @@ from whodunit.mine.stats import compute_family_stats
 from whodunit.types import FeatureColumn, Finding
 
 
-def default_min_support(n_bad: int) -> int:
-    """Default enumeration min-support in traces: ``max(10, round(0.5*n_bad))``
-    — half the bad cohort, or 10 traces, whichever is larger."""
-    return max(10, round(0.5 * n_bad))
+def default_min_support(n_bad: int, min_support_frac_bad: float = 0.5) -> int:
+    """Default enumeration min-support in traces:
+    ``max(10, round(min_support_frac_bad * n_bad))`` — a fraction of the bad
+    cohort, or 10 traces, whichever is larger. Derives from the same fraction the
+    tolerance gate uses (``MineConfig.min_support_frac_bad``) so the enumeration
+    floor and the gate agree: nothing below the floor is enumerated, so the gate
+    is never dead."""
+    return max(10, round(min_support_frac_bad * n_bad))
 
 
 def mine(
@@ -52,7 +56,11 @@ def mine(
     cfg = config if config is not None else MineConfig()
     data = build_feature_data(frame, columns)
 
-    raw_min = cfg.min_support if cfg.min_support is not None else default_min_support(data.n_bad)
+    raw_min = (
+        cfg.min_support
+        if cfg.min_support is not None
+        else default_min_support(data.n_bad, cfg.min_support_frac_bad)
+    )
     min_support = max(1, raw_min)
 
     family = enumerate_family(data, min_support, cfg.max_itemset_size)

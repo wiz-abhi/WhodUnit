@@ -324,8 +324,12 @@ def _stratified_sample(
         ).append(r)
 
     chosen: list[_TraceRow] = []
-    for stratum, n_bad in bad_by_stratum.items():
-        pool = healthy_by_stratum.get(stratum, [])
+    # Iterate strata and pools in a fixed order so the seeded RNG draws the same
+    # healthy cohort across processes. Without this, ``bad_ids`` is a set and the
+    # healthy pool order follows the (unordered) scan, so the sample — and thus the
+    # verdict hash — varies with PYTHONHASHSEED / ClickHouse row order.
+    for stratum, n_bad in sorted(bad_by_stratum.items()):
+        pool = sorted(healthy_by_stratum.get(stratum, []), key=lambda r: r.trace_id)
         want = round(cfg.ratio * n_bad)
         if want >= len(pool):
             chosen.extend(pool)

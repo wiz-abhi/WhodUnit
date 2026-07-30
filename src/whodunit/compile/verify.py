@@ -47,6 +47,9 @@ def scalar_value(response: dict[str, Any], query_name: str) -> int:
             data = result.get("data")
             if isinstance(data, list) and data and isinstance(data[0], list) and data[0]:
                 return int(data[0][0])
+            # The query ran but matched nothing: a genuine zero, not an error.
+            # (A truly absent query name still raises below.)
+            return 0
     raise ValueError(f"no scalar value for query {query_name!r} in response")
 
 
@@ -128,7 +131,11 @@ def fetch_matched_trace_ids(
                     if tid is not None:
                         trace_ids.add(tid)
                         rows_seen += 1
-        if not next_cursor or rows_seen == 0:
+        # Stop when the engine hands back no next page, or when the cursor stops
+        # advancing (a guard against an empty page paired with a repeated cursor).
+        # Crucially we do NOT stop merely because one page was empty while a *new*
+        # cursor was returned — that would silently truncate the matched set.
+        if not next_cursor or next_cursor == cursor:
             break
         cursor = next_cursor
     return trace_ids

@@ -120,12 +120,16 @@ candidates rather than re-deriving parsimony inside the compiler-facing code.
   *compilable* candidate from `near_misses` whose calibrated verdict matches the
   refused top tier and whose lift-CI floor ties it (`ci_low >= best.ci_low - eps`),
   ordered by the existing executability tie-break (max positive edges, then min
-  operators). This is the same principle as the intra-tier tie-break already in
-  that function — the candidates are statistically equivalent, so the engineering
-  selection favours the phrasing SigNoz can execute — applied across the
-  dominance-prune boundary. The dominance-pruned superset `A && NOT cache-get`
-  lands in `near_misses` as a DISCRIMINATOR at the tied CI floor, so it is exactly
-  what gets recovered. Both callers (`pipeline.explain` and the benchmark's
+  operators). This extends the same principle as the intra-tier tie-break already
+  in that function — favour the phrasing SigNoz can execute among candidates tied
+  on the ranking key — across the dominance-prune boundary. (The recovery ties on
+  the lift-CI floor, not the full contingency table; here the anchor `A` is present
+  in every trace, so the superset's support tuple is in fact identical to the
+  refused itemset's, but the code only enforces the CI-floor tie.) The
+  dominance-pruned superset `A && NOT cache-get` lands in `near_misses` as a
+  DISCRIMINATOR at the tied CI floor, so it is exactly what gets recovered. Live
+  `verify` then recomputes precision/recall against SigNoz, so any mismatch would
+  surface rather than ship silently. Both callers (`pipeline.explain` and the benchmark's
   `pipeline_scoped.explain_scoped`) pass `mine_result.near_misses`.
 - **Refusals still surfaced.** The absence-only itemsets are tried and refused
   first, so their refusals remain in `refusals` (honest); the compiled winner is
