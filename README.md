@@ -130,9 +130,11 @@ export SIGNOZ_URL=http://localhost:8080 SIGNOZ_EMAIL=... SIGNOZ_PASSWORD=... SIG
 whodunit explain --from-manifest corpus/out/manifest-<runid>.json
 ```
 
-Add `--arm` (live alert), `--dashboard` (v6 panel), or `--json`. No live stack? `pytest`
-runs the real miner + compiler offline (134 tests, no SigNoz). Corpus internals and knobs:
-[`corpus/README.md`](corpus/README.md); full pristine-corpus demo steps:
+Add `--arm` (live alert), `--dashboard` (v6 panel), or `--json`. With a stack up and the
+`SIGNOZ_*` vars set, **`bash scripts/verify-repro.sh`** runs steps 2–3 above and asserts the
+verdict — one command to reproduce the flagship result end-to-end. No live stack at all?
+`pytest` runs the real miner + compiler offline (134 tests, no SigNoz). Corpus internals and
+knobs: [`corpus/README.md`](corpus/README.md); full pristine-corpus demo steps:
 [`docs/DEMO-RUNBOOK.md`](docs/DEMO-RUNBOOK.md).
 
 > Byte-exact reproduction: `corpus/REQUIREMENTS.txt` pins the OpenTelemetry stack to
